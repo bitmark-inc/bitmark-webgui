@@ -1,0 +1,24 @@
+<h3>Bitmark Management System</h3>
+  <p>{{errorMsg}}</p>
+  <div>
+    <button ng-click="goUrl('/')">Cancel</button>
+  </div>
+  <br>
+  <div class="panel panel-default">
+    <div class="panel-heading">Set password</div>
+    <div class="panel-body">
+      <p><b>Original Password</b></p>
+      <input type="password" ng-model="request.Origin">
+      
+      <p><b>New Password (8~16 Characters)</b></p>
+      <table>
+        <tr>
+          <td><input type="password" ng-model="request.New"></td>
+          <td ng-if="request.New.length > 0"><b>verify</b></td>
+          <td ng-show="request.New.length > 0"><input type="password" ng-model="verifyPassword"></td>
+          <td ng-show="!bitmarkMgmtPasswordEqual">not equal</td>
+        </tr>
+      </table>
+    </div>
+    <div class="panel-footer"><button ng-click="save()">save</button></div>    
+  </div>

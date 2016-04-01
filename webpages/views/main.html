@@ -1,0 +1,99 @@
+<div>
+  <button ng-click="logout()">Logout</button>
+  <button ng-click="goUrl('system')">Change bitmark-mgmt password</button>
+  <h3>Bitmark Status</h3>
+  <div>
+    <button ng-click="startBitmark()" ng-disabled="disableStart">Start</button>
+    <button ng-click="stopBitmark()" ng-disabled="disableStop">Stop</button>
+    <button ng-click="goUrl('edit')" ng-disabled="disableStart">Config</button>
+  </div>
+  <br>
+  <p>{{errorMsg}}</p>
+  <div class="panel panel-default">
+    <div class="panel-heading">Bitmark RPC</div>
+    <div class="panel-body">
+      <p><b>listen</b></p>
+      <ul style="list-style-type:none">
+        <li ng-repeat="listen in bitmarkConfig.ClientRPC.Listen"> {{listen}} </li>
+      </ul>
+      
+      <p><b>announce</b></p>
+      <ul style="list-style-type:none">
+        <li ng-repeat="announce in bitmarkConfig.ClientRPC.Announce"> {{announce}} </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Bitmark Peer</div>
+    <div class="panel-body">
+      <p>
+        <b>PublicKey</b>
+      </p>
+      <ul style="list-style-type:none">
+        <li ng-if="bitmarkConfig.Peering.PublicKey == ''">Please Generate Keypairs <button>Generate</button></li>
+        <li ng-if="bitmarkConfig.Peering.PublicKey != ''"> {{bitmarkConfig.Peering.PublicKey}} </li>
+      </ul>      
+      
+      <p><b>listen</b></p>
+      <ul style="list-style-type:none">
+        <li ng-repeat="listen in bitmarkConfig.Peering.Listen"> {{listen}} </li>
+      </ul>
+
+      <p><b>announce</b></p>
+      <ul style="list-style-type:none">
+        <li ng-repeat="announce in bitmarkConfig.Peering.Announce"> {{announce}} </li>
+      </ul>
+      
+      <p><b>connect</b></p>
+      <table>
+        <tr>
+          <th>PublicKey</th>
+          <th>Address</th>
+        </tr>
+        <tr ng-repeat="connect in bitmarkConfig.Peering.Connect">
+          <td>{{connect.PublicKey}}<td>
+          <td>{{connect.Address}}<td>
+        </tr>
+      </table>
+      
+    </div>
+  </div>  
+
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Miner</div>
+    <div class="panel-body">
+      <p><b>listen</b></p>
+      <ul style="list-style-type:none">
+        <li ng-repeat="listen in bitmarkConfig.Mining.Listen"> {{listen}} </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">Bitcoin</div>
+    <div class="panel-body">
+      <table>
+        <tr>
+          <td><b>username</b></td>
+          <td>{{bitmarkConfig.Bitcoin.Username}}</td>
+        </tr>
+        <tr>
+          <td><b>password</b></td>
+          <td>********</td>
+        </tr>
+        <tr>
+          <td><b>url</b></td>
+          <td>{{bitmarkConfig.Bitcoin.URL}}</td>
+        </tr>
+        <tr>
+          <td><b>fee<b></td>
+          <td>{{bitmarkConfig.Bitcoin.Fee}}</td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+  
+</div>
