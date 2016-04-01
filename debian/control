@@ -18,5 +18,5 @@ Package: bitmark-mgmt
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends:
-Description: Bitmark command line interface
- This is a command line program for bitmark.
+Description: Bitmarkd configuration program 
+ This is a program for bitmarkd configuration
