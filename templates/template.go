@@ -6,7 +6,7 @@ package templates
 const (
 	/**** Configuration template ****/
 	ConfigurationTemplate = `
-# bitmark-cli.conf -*- mode: libucl -*-
+# bitmark-mgmt.conf -*- mode: libucl -*-
 
 port = "{{.Port}}"
 password = "{{.Password}}"
