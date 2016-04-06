@@ -32,8 +32,8 @@ case "$1" in
     # but is of lesser priority.
     # Note that at the time of this writing, neither passwd nor adduser
     # are essential packages.
-    userdel bitmarkd >/dev/null 2>&1 || true
-    groupdel bitmarkd >/dev/null 2>&1 || true
+    userdel bitmark-mgmt >/dev/null 2>&1 || true
+    groupdel bitmark-mgmt >/dev/null 2>&1 || true
     rm -rf /var/lib/bitmark-mgmt /etc/bitmark-mgmt
     ;;
 
