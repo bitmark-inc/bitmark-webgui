@@ -1,0 +1,21 @@
+[Unit]
+Description=Bitmarkd configuration program daemon
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+
+User=bitmark
+Group=bitmark
+
+PIDFile=/run/bitmark-mgmt.pid
+
+StandardOutput=journal
+StandardError=journal
+
+WorkingDirectory=/var/lib/bitmark-mgmt
+ExecStart=/usr/sbin/bitmark-mgmt --config=/etc/bitmark-mgmt start
+
+[Install]
+WantedBy=multi-user.target
