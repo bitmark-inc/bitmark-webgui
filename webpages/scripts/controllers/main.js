@@ -41,7 +41,7 @@ angular.module('bitmarkMgmtApp')
             httpService.send("startBitmarkd").then(
                 function(result){
                     // disable bitmark start button
-                    if(result.search("Starting bitmarkd")>= 0){
+                    if(result.search("start running bitmarkd")>= 0){
                         setBitmarkdDisable(true);
                     }else{
                         setBitmarkdDisable(false);
@@ -54,7 +54,7 @@ angular.module('bitmarkMgmtApp')
             allBitmarkdDisable();
             httpService.send("stopBitmarkd").then(
                 function(result){
-                    if(result.search("PIDS")>0) {
+                    if(result.search("stop running bitmarkd")>=0) {
                         setBitmarkdDisable(false);
                     }else{
                         setBitmarkdDisable(true);
