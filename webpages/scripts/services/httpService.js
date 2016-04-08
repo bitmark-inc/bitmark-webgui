@@ -2,13 +2,8 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-app.factory('httpService', function(ApiHost, $http, $q, $location){
-    var protocal = "http://";
-    if(ApiHost.enableHttps){
-        protocal = "https://";
-    }
-
-    var hostApiPath = protocal + ApiHost.host + ":" + ApiHost.port + "/api";
+app.factory('httpService', function($http, $q, $location){
+    var hostApiPath = "/api";
 
     var API = {
         getBitmarkConfig: {

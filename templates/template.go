@@ -19,12 +19,4 @@ bitmark_config_file = "{{.BitmarkConfigFile}}"
 
 	BitmarkConnectTemplate = `
   connect = {public_key = "{{.PublicKey}}", address = "{{.Address}}"}`
-
-	WebpagesConfigTemplate = `
-app.value("ApiHost", {
-    host: "127.0.0.1",
-    port: "{{.Port}}",
-    enableHttps: {{.EnableHttps}}
-});
-`
 )

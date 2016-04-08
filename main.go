@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/bitmark-inc/exitwithstatus"
 	"github.com/bitmark-inc/bitmark-mgmt/api"
@@ -15,7 +14,6 @@ import (
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
 	"github.com/codegangsta/cli"
 	"golang.org/x/crypto/bcrypt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -145,11 +143,6 @@ func startWebServer(configs *configuration.Configuration) error {
 	host := "0.0.0.0"
 	port := strconv.Itoa(configs.Port)
 
-	// set up webpages config.js
-	if err := setupWebpagesConfig(host, port, configs.EnableHttps); nil != err {
-		return err
-	}
-
 	// serve web pages
 	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir("./webpages/lib/"))))
 	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./webpages/scripts/"))))
@@ -202,30 +195,6 @@ type webPagesConfigType struct {
 	Host        string
 	Port        string
 	EnableHttps bool
-}
-
-func setupWebpagesConfig(host string, port string, enableHttps bool) error {
-	configFile := "./webpages/scripts/config.js"
-	if !utils.EnsureFileExists(configFile) {
-		if _, err := os.Create(configFile); nil != err {
-			return err
-		}
-	}
-
-	webPagesConfig := &webPagesConfigType{
-		Host:        host,
-		Port:        port,
-		EnableHttps: enableHttps,
-	}
-	configTemp := template.Must(template.New("config").Parse(templates.WebpagesConfigTemplate))
-	configBuffer := new(bytes.Buffer)
-	if err := configTemp.Execute(configBuffer, webPagesConfig); nil != err {
-		return err
-	}
-	if err := ioutil.WriteFile(configFile, []byte(configBuffer.String()), 0644); nil != err {
-		return err
-	}
-	return nil
 }
 
 func checkAuthorization(w http.ResponseWriter, req *http.Request, writeHeader bool) bool {
