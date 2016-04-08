@@ -142,7 +142,7 @@ func runStart(c *cli.Context, configDir string) {
 func startWebServer(configs *configuration.Configuration) error {
 	fmt.Println("bitmark-mgmt web start...")
 
-	host := "127.0.0.1"
+	host := "0.0.0.0"
 	port := strconv.Itoa(configs.Port)
 
 	// set up webpages config.js
