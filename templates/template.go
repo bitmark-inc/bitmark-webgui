@@ -22,7 +22,7 @@ bitmark_config_file = "{{.BitmarkConfigFile}}"
 
 	WebpagesConfigTemplate = `
 app.value("ApiHost", {
-    host: "{{.Host}}",
+    host: "127.0.0.1",
     port: "{{.Port}}",
     enableHttps: {{.EnableHttps}}
 });
