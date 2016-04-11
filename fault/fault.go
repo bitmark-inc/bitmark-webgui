@@ -19,6 +19,7 @@ type ProcessError GenericError
 // common errors - keep in alphabetic order
 var (
 	ErrCertificateFileAlreadyExists = ExistsError("certificate file already exists")
+	ErrInvalidLoggerChannel         = InvalidError("invalid logger channel")
 	ErrKeyFileAlreadyExists         = ExistsError("key file already exists")
 	ErrPasswordLength               = InvalidError("Password Length is invalid")
 	ErrVerifiedPassword             = InvalidError("Verified password is different")

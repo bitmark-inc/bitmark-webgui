@@ -5,8 +5,8 @@
 package utils
 
 import (
-	"github.com/bitmark-inc/certgen"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/certgen"
 	"io/ioutil"
 	"os"
 	"time"

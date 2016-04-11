@@ -12,6 +12,17 @@ port = "{{.Port}}"
 password = "{{.Password}}"
 enable_https = "{{.EnableHttps}}"
 bitmark_config_file = "{{.BitmarkConfigFile}}"
+
+logging {
+  size = 1048576
+  count = 10
+
+  levels {
+    "*" = info
+    main = info
+    api = info
+  }
+}
 `
 
 	BitmarkConfigTemplate = `

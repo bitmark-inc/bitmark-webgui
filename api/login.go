@@ -6,23 +6,23 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
 // GET /api/login
-func LoginStatus(w http.ResponseWriter) {
+func LoginStatus(w http.ResponseWriter, log *logger.L) {
 
-	fmt.Println("GET /api/login")
+	log.Info("GET /api/login: check login status")
 	response := &Response{
 		Ok:     true,
 		Result: nil,
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	}
 }
 
@@ -31,9 +31,9 @@ type loginRequset struct {
 }
 
 // POST /api/login
-func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string) {
+func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string, log *logger.L) {
 
-	fmt.Println("POST /api/login")
+	log.Info("POST /api/login")
 	response := &Response{
 		Ok:     false,
 		Result: fault.ApiErrLogin,
@@ -43,17 +43,17 @@ func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string)
 	var request loginRequset
 	err := decoder.Decode(&request)
 	if nil != err {
-		fmt.Printf("Error:%v\n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponse(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(request.Password)); nil != err {
-		fmt.Printf("Error: %v\n", fault.ErrWrongPassword)
+		log.Errorf("Login failed: %v, Host: %v, User-Agent: %v", fault.ErrWrongPassword, req.Host, req.Header.Get("User-Agent"))
 		if err := writeApiResponse(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -61,7 +61,7 @@ func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string)
 	response.Ok = true
 	response.Result = nil
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	}
 
 	// clean request password
@@ -70,9 +70,9 @@ func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string)
 }
 
 // POST /api/logout
-func LogoutBitmarkMgmt(w http.ResponseWriter) {
+func LogoutBitmarkMgmt(w http.ResponseWriter, log *logger.L) {
 
-	fmt.Println("POST /api/logout")
+	log.Info("POST /api/logout")
 	cookie := &http.Cookie{
 		Name:   cookieName,
 		Secure: true,
@@ -87,7 +87,7 @@ func LogoutBitmarkMgmt(w http.ResponseWriter) {
 
 	w.Header().Set("Content-Type", "text/json; charset=utf-8")
 	if b, err := json.MarshalIndent(response, "", "  "); nil != err {
-		fmt.Printf("Error: %v\n", fault.ErrJsonParseFail)
+		log.Errorf("Error: %v", fault.ErrJsonParseFail)
 	} else {
 		w.Write(b)
 	}

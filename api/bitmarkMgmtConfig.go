@@ -6,8 +6,8 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"net/http"
@@ -20,9 +20,9 @@ type bMgmtPasswordRequset struct {
 }
 
 // POST /api/password
-func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgmtConfigFile string, password string) {
+func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgmtConfigFile string, password string, log *logger.L) {
 
-	fmt.Println("POST /api/password")
+	log.Info("POST /api/password")
 	response := &Response{
 		Ok:     false,
 		Result: fault.ApiErrSetPassword,
@@ -32,18 +32,18 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	var request bMgmtPasswordRequset
 	err := decoder.Decode(&request)
 	if nil != err {
-		fmt.Printf("Error:%v\n", err)
+		log.Errorf("Error:%v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
 
 	if password != "" {
 		if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(request.Origin)); nil != err {
-			fmt.Printf("Error: %v\n", fault.ErrWrongPassword)
+			log.Errorf("Error: %v", fault.ErrWrongPassword)
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				fmt.Printf("Error: %v\n", err)
+				log.Errorf("Error: %v", err)
 			}
 			return
 		}
@@ -51,9 +51,9 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 
 	encryptPassword, err := bcrypt.GenerateFromPassword([]byte(request.New), bcrypt.DefaultCost)
 	if nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -61,9 +61,9 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	// write new password to bitmark-mgmt config file
 	input, err := ioutil.ReadFile(bitmarkMgmtConfigFile)
 	if nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -79,9 +79,9 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	output := strings.Join(lines, "\n")
 	err = ioutil.WriteFile(bitmarkMgmtConfigFile, []byte(output), 0644)
 	if nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -89,7 +89,7 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	response.Ok = true
 	response.Result = nil
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	}
 
 	// clean request password

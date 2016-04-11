@@ -7,6 +7,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"time"
@@ -66,12 +67,13 @@ func setCookie(w http.ResponseWriter) error {
 	return nil
 }
 
-func WriteGlobalErrorResponse(w http.ResponseWriter, err error) error {
+func WriteGlobalErrorResponse(w http.ResponseWriter, err error, log *logger.L) error {
 	response := &Response{
 		Ok:     false,
 		Result: err,
 	}
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
+		log.Errorf("writeApiResponseAndSetCookie error: %v", err)
 		return err
 	}
 
@@ -80,13 +82,15 @@ func WriteGlobalErrorResponse(w http.ResponseWriter, err error) error {
 
 var cookiePlain string
 
-func GetAndCheckCookie(w http.ResponseWriter, req *http.Request) error {
+func GetAndCheckCookie(w http.ResponseWriter, req *http.Request, log *logger.L) error {
 	reqCookie, err := req.Cookie(cookieName)
 	if nil != err {
+		log.Errorf("request cookie error: %v", err)
 		return fault.ApiErrUnauthorized
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(reqCookie.Value), []byte(cookiePlain)); nil != err {
+		log.Errorf("decrypt cookie error: %v", err)
 		return fault.ApiErrChekAuthorize
 	}
 

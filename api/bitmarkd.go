@@ -6,14 +6,14 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
-	"net/http"
-	"os/exec"
-	"os"
-	"io/ioutil"
+	"github.com/bitmark-inc/logger"
 	"io"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"os/exec"
 	"time"
 )
 
@@ -24,9 +24,9 @@ type bitmarkdRequest struct {
 var cmd *exec.Cmd
 
 // POST /api/bitmarkd
-func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string) {
+func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
 
-	fmt.Println("POST /api/bitmarkd")
+	log.Info("POST /api/bitmarkd")
 	response := &Response{
 		Ok:     false,
 		Result: nil,
@@ -36,12 +36,13 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 	var request bitmarkdRequest
 	err := decoder.Decode(&request)
 	if nil != err {
-		fmt.Printf("Error:%v\n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
+	log.Infof("bitmarkd option: %s", request.Option)
 
 	if nil == cmd {
 		cmd = exec.Command("bitmarkd", "--config-file="+bitmarkConfigFile)
@@ -53,13 +54,13 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 		// Check if bitmarkd is running
 		if bitmarkdIsRunning() {
 			response.Result = fault.ApiErrAlreadyStartBitmarkd
-		}else{
+		} else {
 			// Check bitmarkConfigFile exists
 			if !utils.EnsureFileExists(bitmarkConfigFile) {
-				fmt.Printf("Error: %v\n", fault.ErrNotFoundConfigFile)
+				log.Errorf("Error: %v", fault.ErrNotFoundConfigFile)
 				response.Result = fault.ApiErrStartBitmarkd
 				if err := writeApiResponseAndSetCookie(w, response); nil != err {
-					fmt.Printf("Error: %v\n", err)
+					log.Errorf("Error: %v", err)
 				}
 				return
 			}
@@ -67,31 +68,31 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 			// start bitmarkd as sub process
 			stderr, err := cmd.StderrPipe()
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				log.Errorf("Error: %v", err)
 			}
 			stdout, err := cmd.StdoutPipe()
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				log.Errorf("Error: %v", err)
 			}
 
 			if err := cmd.Start(); nil != err {
-				fmt.Printf("Error: %v\n", err)
+				log.Errorf("Error: %v", err)
 				response.Result = fault.ApiErrStartBitmarkd
 				if err := writeApiResponseAndSetCookie(w, response); nil != err {
-					fmt.Printf("Error: %v\n", err)
+					log.Errorf("Error: %v", err)
 				}
 				cmd = nil
 				return
 			}
 
-			fmt.Printf("running bitmarkd in pid: %d\n",cmd.Process.Pid)
+			log.Errorf("running bitmarkd in pid: %d\n", cmd.Process.Pid)
 
-			bitmarkdProcessErr := runBitmarkdProcess(cmd, stderr, stdout)
-			if nil != <- bitmarkdProcessErr {
-				fmt.Printf("Exited: %v\n", cmd.ProcessState.Exited())
+			bitmarkdProcessErr := runBitmarkdProcess(cmd, stderr, stdout, log)
+			if nil != <-bitmarkdProcessErr {
+				log.Errorf("Exited: %v", cmd.ProcessState.Exited())
 				response.Result = fault.ApiErrStartBitmarkd
 				if err := writeApiResponseAndSetCookie(w, response); nil != err {
-					fmt.Printf("Error: %v\n", err)
+					log.Errorf("Error: %v", err)
 				}
 				cmd = nil
 				return
@@ -101,11 +102,10 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 			response.Result = "start running bitmarkd"
 		}
 
-
 	case `stop`:
-		if !bitmarkdIsRunning(){
+		if !bitmarkdIsRunning() {
 			response.Result = "bitmarkd is not running"
-		}else{
+		} else {
 			err := cmd.Process.Signal(os.Interrupt)
 			if nil != err {
 				cmd.Process.Signal(os.Kill)
@@ -120,19 +120,19 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 		if bitmarkdIsRunning() {
 			response.Result = "bitmarkd is running"
 
-		}else{
+		} else {
 			response.Result = "bitmarkd is not running"
 		}
 	default:
 		response.Result = apiErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	}
 
 }
@@ -145,28 +145,27 @@ func bitmarkdIsRunning() bool {
 	return true
 }
 
-func runBitmarkdProcess(cmd *exec.Cmd, stderr io.ReadCloser, stdout io.ReadCloser) <-chan error {
+func runBitmarkdProcess(cmd *exec.Cmd, stderr io.ReadCloser, stdout io.ReadCloser, log *logger.L) <-chan error {
 	err := make(chan error, 1)
 
 	go func() {
 		stde, e := ioutil.ReadAll(stderr)
 		if nil != e {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 
 		stdo, e := ioutil.ReadAll(stdout)
 		if nil != e {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 
-		fmt.Printf("Error: %s\n", stde)
-		fmt.Printf("Out: %s\n", stdo)
+		log.Errorf("Error: %s\n", stde)
+		log.Errorf("Out: %s\n", stdo)
 
 		if e := cmd.Wait(); nil != e {
 			err <- e
 		}
 	}()
-
 
 	// wait for 1 second if cmd has no error then return nil
 	go func() {

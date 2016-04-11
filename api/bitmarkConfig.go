@@ -7,11 +7,11 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
 	"github.com/bitmark-inc/bitmark-mgmt/templates"
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
+	"github.com/bitmark-inc/bitmarkd/configuration"
+	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -19,14 +19,14 @@ import (
 )
 
 // Get /api/config
-func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string) {
-	fmt.Println("GET /api/config")
+func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
+	log.Info("GET /api/config")
 	response := &Response{
 		Ok:     false,
 		Result: fault.ApiErrGetBitmarkConfig,
 	}
 	if bitmarkConfigs, err := configuration.GetConfiguration(bitmarkConfigFile); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	} else {
 
 		bitmarkConfigs.Bitcoin.Password = ""
@@ -43,14 +43,14 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile stri
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	}
 }
 
 // Post /api/config
-func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string) {
+func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
 
-	fmt.Println("POST /api/config")
+	log.Info("POST /api/config")
 	response := &Response{
 		Ok:     false,
 		Result: fault.ApiErrUpdateBitmarkdConfig,
@@ -60,9 +60,9 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	var request configuration.Configuration
 	err := decoder.Decode(&request)
 	if nil != err {
-		fmt.Printf("Error:%v/n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -70,9 +70,9 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	// Prepare bitmarkConfig
 	linesPtr, err := prepareBitmarkConfig(request, bitmarkConfigFile)
 	if nil != err {
-		fmt.Printf("Error:%v/n", err)
+		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -94,10 +94,10 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	output := strings.Join(outputLines, "\n")
 	err = ioutil.WriteFile(bitmarkConfigFile, []byte(output), 0644)
 	if nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 		response.Result = fault.ApiErrUpdateBitmarkdConfig
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			fmt.Printf("Error: %v\n", err)
+			log.Errorf("Error: %v", err)
 		}
 		return
 	}
@@ -105,7 +105,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	response.Ok = true
 	response.Result = nil
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
-		fmt.Printf("Error: %v\n", err)
+		log.Errorf("Error: %v", err)
 	}
 }
 
