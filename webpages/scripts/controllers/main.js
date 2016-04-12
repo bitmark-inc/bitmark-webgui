@@ -20,7 +20,7 @@ angular.module('bitmarkMgmtApp')
         httpService.send('statusBitmarkd').then(
             function(result){
                 // TODO: check status and set disable button
-                if(result.search("not running") >= 0) {
+                if(result.search("stop") >= 0) {
                     setBitmarkdDisable(false);
                 }else{
                     setBitmarkdDisable(true);

@@ -17,7 +17,7 @@ angular.module('bitmarkMgmtApp')
         // Check bitamrkd is not running, if it is running, stop it first
         httpService.send('statusBitmarkd').then(
             function(result){
-                if(result.search("not running") >= 0) {
+                if(result.search("stop") >= 0) {
                     getAndSetBitmarkConfig();
                 }else{
                     httpService.send("stopBitmarkd").then(

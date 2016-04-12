@@ -25,7 +25,7 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	log.Info("POST /api/password")
 	response := &Response{
 		Ok:     false,
-		Result: fault.ApiErrSetPassword,
+		Result: setPasswordErr,
 	}
 
 	decoder := json.NewDecoder(req.Body)

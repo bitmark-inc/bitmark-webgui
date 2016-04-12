@@ -6,13 +6,10 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
 	"github.com/bitmark-inc/logger"
 	"net/http"
 	"time"
 )
-
-
 
 type bitmarkdRequest struct {
 	Option string
@@ -39,44 +36,43 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 	}
 	log.Infof("bitmarkd option: %s", request.Option)
 
-
-	apiErr := fault.ApiErrInvalidValue
+	apiErr := invalidValueErr
 	switch request.Option {
 	case `start`:
 		// Check if bitmarkd is running
 		if bitmarkService.IsRunning() {
-			response.Result = fault.ApiErrAlreadyStartBitmarkd
+			response.Result = bitmarkdAlreadyStartErr
 		} else {
 			bitmarkService.ModeStart <- true
 			// wait one second to get correct result
 			time.Sleep(time.Second * 1)
 			if !bitmarkService.IsRunning() {
-				response.Result = fault.ApiErrStartBitmarkd
-			}else {
+				response.Result = bitmarkdStartErr
+			} else {
 				response.Ok = true
-				response.Result = "start running bitmarkd"
+				response.Result = bitmarkdStartSuccess
 			}
 		}
 	case `stop`:
 		if !bitmarkService.IsRunning() {
-			response.Result = "bitmarkd is not running"
+			response.Result = bitmarkdAlreadyStopErr
 		} else {
 			bitmarkService.ModeStart <- false
 			time.Sleep(time.Second * 1)
 			if bitmarkService.IsRunning() {
-				response.Result = fault.ApiErrStopBitmarkd
-			}else {
+				response.Result = bitmarkdStopErr
+			} else {
 				response.Ok = true
-				response.Result = "stop running bitmarkd"
+				response.Result = bitmarkdStopSuccess
 			}
 
 		}
 	case `status`:
 		response.Ok = true
 		if bitmarkService.IsRunning() {
-			response.Result = "bitmarkd is running"
+			response.Result = bitmarkdStarted
 		} else {
-			response.Result = "bitmarkd is not running"
+			response.Result = bitmarkdStopped
 		}
 	default:
 		response.Result = apiErr

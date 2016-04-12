@@ -4,11 +4,12 @@
 
 package api
 
-import(
+import (
 	"github.com/bitmark-inc/bitmark-mgmt/services"
 )
 
 var bitmarkService *services.Bitmarkd
+
 func RegisterBitmarkd(bitmarkd *services.Bitmarkd) {
 	bitmarkService = bitmarkd
 }

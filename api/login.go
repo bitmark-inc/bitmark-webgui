@@ -36,7 +36,7 @@ func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string,
 	log.Info("POST /api/login")
 	response := &Response{
 		Ok:     false,
-		Result: fault.ApiErrLogin,
+		Result: loginErr,
 	}
 
 	decoder := json.NewDecoder(req.Body)

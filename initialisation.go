@@ -4,12 +4,11 @@
 
 package main
 
-import(
-	"github.com/bitmark-inc/bitmarkd/background"
+import (
 	"github.com/bitmark-inc/bitmark-mgmt/api"
 	"github.com/bitmark-inc/bitmark-mgmt/services"
+	"github.com/bitmark-inc/bitmarkd/background"
 )
-
 
 var backgroundService *background.T
 var bitmarkService services.Bitmarkd

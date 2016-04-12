@@ -23,7 +23,7 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile stri
 	log.Info("GET /api/config")
 	response := &Response{
 		Ok:     false,
-		Result: fault.ApiErrGetBitmarkConfig,
+		Result: bitmarkdConfigGetErr,
 	}
 	if bitmarkConfigs, err := configuration.GetConfiguration(bitmarkConfigFile); nil != err {
 		log.Errorf("Error: %v", err)
@@ -53,7 +53,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	log.Info("POST /api/config")
 	response := &Response{
 		Ok:     false,
-		Result: fault.ApiErrUpdateBitmarkdConfig,
+		Result: bitmarkdConfigUpdateErr,
 	}
 
 	decoder := json.NewDecoder(req.Body)
@@ -95,7 +95,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	err = ioutil.WriteFile(bitmarkConfigFile, []byte(output), 0644)
 	if nil != err {
 		log.Errorf("Error: %v", err)
-		response.Result = fault.ApiErrUpdateBitmarkdConfig
+		response.Result = bitmarkdConfigUpdateErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}

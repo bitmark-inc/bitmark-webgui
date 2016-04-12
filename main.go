@@ -18,8 +18,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"strconv"
+	"syscall"
 	"text/template"
 	"time"
 )
@@ -150,13 +150,13 @@ func runStart(c *cli.Context, configDir string) {
 		defer logger.Finalise()
 
 		// initialise services
-		if err := InitialiseBackgroundService(configs.BitmarkConfigFile); nil != err{
+		if err := InitialiseBackgroundService(configs.BitmarkConfigFile); nil != err {
 			mainLog.Criticalf("initialise background services failed: %v", err)
 			exitwithstatus.Exit(1)
 		}
 		defer FinaliseBackgroundService()
 
-		go func(){
+		go func() {
 			if err := startWebServer(GlobalConfig); err != nil {
 				mainLog.Criticalf("%s", err)
 				exitwithstatus.Message("Error: %v\n", err)

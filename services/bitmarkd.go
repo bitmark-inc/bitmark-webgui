@@ -4,25 +4,25 @@
 
 package services
 
-import(
-	"github.com/bitmark-inc/logger"
-	"github.com/bitmark-inc/bitmark-mgmt/utils"
+import (
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
-	"os/exec"
-	"os"
-	"time"
-	"sync"
+	"github.com/bitmark-inc/bitmark-mgmt/utils"
+	"github.com/bitmark-inc/logger"
 	"io/ioutil"
+	"os"
+	"os/exec"
+	"sync"
+	"time"
 )
 
 type Bitmarkd struct {
 	sync.RWMutex
 	initialised bool
-	log *logger.L
-	configFile string
-	process *os.Process
-	running bool
-	ModeStart chan bool
+	log         *logger.L
+	configFile  string
+	process     *os.Process
+	running     bool
+	ModeStart   chan bool
 }
 
 func (bitmarkd *Bitmarkd) Initialise(configFile string) error {
@@ -64,10 +64,10 @@ func (bitmarkd *Bitmarkd) IsRunning() bool {
 	return bitmarkd.running
 }
 
-func (bitmarkd *Bitmarkd) BitmarkdBackground(args interface{}, shutdown <-chan bool, finished chan<-bool){
+func (bitmarkd *Bitmarkd) BitmarkdBackground(args interface{}, shutdown <-chan bool, finished chan<- bool) {
 loop:
-	for{
-		select{
+	for {
+		select {
 
 		case <-shutdown:
 			break loop
@@ -77,7 +77,7 @@ loop:
 					bitmarkd.log.Errorf("Start bitmarkd failed: %v", err)
 				}
 
-			}else{
+			} else {
 				if err := bitmarkd.stopBitmarkd(); nil != err {
 					bitmarkd.log.Errorf("Stop bitmarkd failed: %v", err)
 				}
@@ -120,16 +120,16 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	go func() {
 		stde, err := ioutil.ReadAll(stderr)
 		if nil != err {
-                       bitmarkd.log.Errorf("Error: %v", err)
-               }
+			bitmarkd.log.Errorf("Error: %v", err)
+		}
 
-               stdo, err := ioutil.ReadAll(stdout)
-               if nil != err {
-                       bitmarkd.log.Errorf("Error: %v", err)
-               }
+		stdo, err := ioutil.ReadAll(stdout)
+		if nil != err {
+			bitmarkd.log.Errorf("Error: %v", err)
+		}
 
-               bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
-               bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
+		bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
+		bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
 
 		if err := cmd.Wait(); nil != err {
 			bitmarkd.log.Errorf("Start bitmarkd failed: %v", err)
@@ -151,7 +151,7 @@ func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 
 	if err := bitmarkd.process.Signal(os.Interrupt); nil != err {
 		bitmarkd.log.Errorf("Send interrupt to bitmarkd failed: %v", err)
-		if err := bitmarkd.process.Signal(os.Kill); nil != err{
+		if err := bitmarkd.process.Signal(os.Kill); nil != err {
 			bitmarkd.log.Errorf("Send kill to bitmarkd failed: %v", err)
 			return err
 		}
