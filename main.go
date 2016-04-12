@@ -147,6 +147,13 @@ func runStart(c *cli.Context, configDir string) {
 		setupLogger(&configs.Logging)
 		defer logger.Finalise()
 
+		// initialise  services
+		if err := Initialise(configs.BitmarkConfigFile); nil != err{
+			mainLog.Criticalf("initialise bitmark service failed: %v", err)
+			exitwithstatus.Exit(1)
+		}
+		defer Finalise()
+
 		if err := startWebServer(GlobalConfig); err != nil {
 			mainLog.Criticalf("%s", err)
 			exitwithstatus.Message("Error: %v\n", err)

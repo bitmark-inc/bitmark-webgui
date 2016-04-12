@@ -31,6 +31,8 @@ var (
 	ErrJsonParseFail                = ProcessError("Parse to json failed")
 	ErrInvalidStructPointer         = InvalidError("invalid struct pointer")
 
+	ErrAlreadyInitialised            = ExistsError("already initialised")
+	ErrNotInitialised                = NotFoundError("not initialised")
 	// For API response
 	ApiErrAlreadyLoggedIn      = InvalidError("Already logged in")
 	ApiErrUnauthorized         = InvalidError("API Unauthorized")
