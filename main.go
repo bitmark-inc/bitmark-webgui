@@ -168,7 +168,7 @@ func runStart(c *cli.Context, configDir string) {
 		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 		sig := <-ch
 		mainLog.Infof("received signal: %v", sig)
-
+		mainLog.Info("shutting down...")
 	}
 }
 
