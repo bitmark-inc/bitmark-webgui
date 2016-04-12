@@ -17,6 +17,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"strconv"
 	"text/template"
 	"time"
@@ -147,17 +149,25 @@ func runStart(c *cli.Context, configDir string) {
 		setupLogger(&configs.Logging)
 		defer logger.Finalise()
 
-		// initialise  services
-		if err := Initialise(configs.BitmarkConfigFile); nil != err{
-			mainLog.Criticalf("initialise bitmark service failed: %v", err)
+		// initialise services
+		if err := InitialiseBackgroundService(configs.BitmarkConfigFile); nil != err{
+			mainLog.Criticalf("initialise background services failed: %v", err)
 			exitwithstatus.Exit(1)
 		}
-		defer Finalise()
+		defer FinaliseBackgroundService()
 
-		if err := startWebServer(GlobalConfig); err != nil {
-			mainLog.Criticalf("%s", err)
-			exitwithstatus.Message("Error: %v\n", err)
-		}
+		go func(){
+			if err := startWebServer(GlobalConfig); err != nil {
+				mainLog.Criticalf("%s", err)
+				exitwithstatus.Message("Error: %v\n", err)
+			}
+		}()
+
+		// turn Signals into channel messages
+		ch := make(chan os.Signal)
+		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+		sig := <-ch
+		mainLog.Infof("received signal: %v", sig)
 
 	}
 }

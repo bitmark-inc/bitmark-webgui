@@ -8,48 +8,40 @@ import(
 	"github.com/bitmark-inc/bitmarkd/background"
 	"github.com/bitmark-inc/bitmark-mgmt/api"
 	"github.com/bitmark-inc/bitmark-mgmt/services"
-	"github.com/bitmark-inc/logger"
 )
 
-type service struct {
 
-	background *background.T
-
-	log *logger.L
-
- 	service interface{}
-}
-
+var backgroundService *background.T
 var bitmarkService services.Bitmarkd
-var globalService service
 
 // start service
-func Initialise(configFile string) error {
+func InitialiseBackgroundService(configFile string) error {
 
+	// initialise all services
 	if err := bitmarkService.Initialise(configFile); nil != err {
 		return err
 	}
 
-	globalService.service = bitmarkService
-	globalService.log = logger.New("service")
-
+	// create and start all background service
 	var processes = background.Processes{
 		bitmarkService.BitmarkdBackground,
 	}
-	globalService.background = background.Start(processes, nil)
+	backgroundService = background.Start(processes, nil)
 
+	// register services to api
 	api.RegisterBitmarkd(&bitmarkService)
 
 	return nil
 }
 
 // finialise - stop all background tasks
-func Finalise() error {
+func FinaliseBackgroundService() error {
 
 	if err := bitmarkService.Finalise(); nil != err {
 		return err
 	}
 
-	background.Stop(globalService.background)
+	// stop backgrond services
+	background.Stop(backgroundService)
 	return nil
 }
