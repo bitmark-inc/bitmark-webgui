@@ -52,6 +52,13 @@ func main() {
 		{
 			Name:  "setup",
 			Usage: "Initialise bitmark-mgmt configuration",
+			// Flags: []cli.Flag{
+			// 	cli.StringFlag{
+			// 		Name:  "hostname, H",
+			// 		Value: "",
+			// 		Usage: "generate server certificate with the hostname [localhost]",
+			// 	},
+			// },
 			Action: func(c *cli.Context) {
 				runSetup(c, configDir)
 			},
@@ -82,7 +89,7 @@ func runSetup(c *cli.Context, configDir string) {
 	}
 
 	// set logger
-	setupLogger(configuration.GetDefaultLogger(configDir))
+	setupLogger(configuration.GetDefaultLogger("."))
 	defer logger.Finalise()
 
 	configFile, err := configuration.GetConfigPath(configDir)
@@ -118,6 +125,30 @@ func runSetup(c *cli.Context, configDir string) {
 			exitwithstatus.Message("Error: %v\n", err)
 		}
 		mainLog.Info("Successfully setup bitmark-mgmt configuration file")
+
+		// // gen certificate
+		// hostname := c.String("hostname")
+		// if "" != hostname {
+		// 	// gen certs
+		// 	cert, key, newCreate, err := utils.GetTLSCertFile()
+		// 	if nil != err {
+		// 		mainLog.Errorf("get TLS file failed: %v", err)
+		// 		exitwithstatus.Message("get TLS file failed: %v\n", err)
+		// 	}
+
+		// 	if newCreate {
+		// 		mainLog.Infof("Generate self signed certificate for hostname: %s", hostname)
+		// 		hostnames := []string{hostname}
+		// 		if err := utils.MakeSelfSignedCertificate("bitmark-mgmt", cert, key, false, hostnames); nil != err {
+		// 			mainLog.Errorf("generate TLS file failed: %v", err)
+		// 			exitwithstatus.Message("generate TLS file failed: %v\n", err)
+		// 		}
+		// 	}else{
+		// 		mainLog.Error("TLS file existed")
+		// 		exitwithstatus.Message("TLS file existed\n")
+		// 	}
+		// 	mainLog.Info("Successfully generate TLS files")
+		// }
 	} else {
 		mainLog.Errorf("config file %s existed", configFile)
 		exitwithstatus.Message("Error: %s existed\n", configFile)

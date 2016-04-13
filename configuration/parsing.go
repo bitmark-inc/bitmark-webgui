@@ -81,40 +81,7 @@ func GetConfiguration(baseDir string, configurationFileName string) (*Configurat
 		return nil, err
 	}
 
-	setLoggerPath(baseDir, &options.Logging)
-	// // force all relevant items to be absolute paths
-	// // if not, assign them to the dsts directory
-	// mustBeAbsolute := []*string{
-	// 	&options.Logging.Directory,
-	// }
-
-	// for _, f := range mustBeAbsolute {
-	// 	*f = ensureAbsolute(baseDir, *f)
-	// }
-
-	// // fail if any of these are not simple file names i.e. must not contain path seperator
-	// // then add the correct directory prefix, file item is first and corresponding directory is second
-	// mustNotBePaths := [][2]*string{
-	// 	{&options.Logging.File, &options.Logging.Directory},
-	// }
-	// for _, f := range mustNotBePaths {
-	// 	switch filepath.Dir(*f[0]) {
-	// 	case "", ".":
-	// 		*f[0] = ensureAbsolute(*f[1], *f[0])
-	// 	default:
-	// 		return nil, errors.New(fmt.Sprintf("Files: %q is not plain name", *f[0]))
-	// 	}
-	// }
-
-	// // make absolute and create directories if they do not already exist
-	// for _, d := range []*string{&options.Logging.Directory} {
-	// 	*d = ensureAbsolute(baseDir, *d)
-	// 	if err := os.MkdirAll(*d, 0700); nil != err {
-	// 		return nil, err
-	// 	}
-	// }
-
-	// done
+	setLoggerPath(".", &options.Logging)
 	return options, nil
 }
 
@@ -152,6 +119,7 @@ func setLoggerPath(baseDir string, logging *LoggerType) error {
 	}
 
 	return nil
+
 }
 
 // ensure the path is absolute
