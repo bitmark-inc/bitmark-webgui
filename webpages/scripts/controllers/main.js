@@ -16,18 +16,24 @@ angular.module('bitmarkMgmtApp')
 
         $scope.disableStart = true;
         $scope.disableStop = true;
+        $scope.bitmarkStatus = "Running";
+
 
         httpService.send('statusBitmarkd').then(
             function(result){
                 // TODO: check status and set disable button
                 if(result.search("stop") >= 0) {
                     setBitmarkdDisable(false);
+                    $scope.bitmarkStatus = "Stopped";
                 }else{
                     setBitmarkdDisable(true);
+                    $scope.bitmarkStatus = "Running";
+                    getBitmarkInfo();
                 }
             }, function(errorMsg){
                 $scope.errorMsg = errorMsg;
             });
+
 
         httpService.send('getBitmarkConfig').then(
             function(result){
@@ -42,11 +48,14 @@ angular.module('bitmarkMgmtApp')
                 function(result){
                     // disable bitmark start button
                     if(result.search("start running bitmarkd")>= 0){
+                        $scope.bitmarkStatus = "Running";
                         setBitmarkdDisable(true);
+                        getBitmarkInfo();
                     }else{
                         setBitmarkdDisable(false);
                     }
                 }, function(errorMsg){
+                    $scope.bitmarkStatus = "Error";
                     $scope.errorMsg = errorMsg;
                 });
         };
@@ -55,11 +64,13 @@ angular.module('bitmarkMgmtApp')
             httpService.send("stopBitmarkd").then(
                 function(result){
                     if(result.search("stop running bitmarkd")>=0) {
+                        $scope.bitmarkStatus = "Stopped";
                         setBitmarkdDisable(false);
                     }else{
                         setBitmarkdDisable(true);
                     }
                 }, function(errorMsg){
+                    $scope.bitmarkStatus = "Error";
                     $scope.errorMsg = errorMsg;
                 });
         };
@@ -76,13 +87,23 @@ angular.module('bitmarkMgmtApp')
                 });
         };
 
-        function setBitmarkdDisable(startDisableBool) {
+        var setBitmarkdDisable = function(startDisableBool) {
             $scope.disableStart = startDisableBool;
             $scope.disableStop = !startDisableBool;
-        }
+        };
 
-        function allBitmarkdDisable() {
+        var allBitmarkdDisable = function() {
             $scope.disableStart = true;
             $scope.disableStop = true;
-        }
+        };
+
+        var getBitmarkInfo = function(){
+            httpService.send("getBitmarkdInfo").then(
+                function(result){
+                    $scope.bitmarkInfo = result;
+                },
+                function(errorMsg){
+                    $scope.errorMsg = errorMsg;
+                });
+        };
   }]);

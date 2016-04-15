@@ -50,6 +50,13 @@ app.factory('httpService', function($http, $q, $location){
             data:{
                 option: "status"
             }
+        },
+        getBitmarkdInfo: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkd',
+            data:{
+                option: "info"
+            }
         }
     };
 
@@ -74,6 +81,9 @@ app.factory('httpService', function($http, $q, $location){
                         break;
                     case 'updateBitmarkConfig':
                         errorMsg = "Failed to update bitmark config";
+                        if(response.data.result.invalid_field != null){
+                            errorMsg = errorMsg + ". Invalid field: " + response.data.result.invalid_field;
+                        }
                         break;
                     default:
                         errorMsg = response.data.result;

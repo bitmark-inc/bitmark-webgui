@@ -1,7 +1,7 @@
 <div>
   <button ng-click="logout()">Logout</button>
   <button ng-click="goUrl('system')">Change bitmark-mgmt password</button>
-  <h3>Bitmark Status</h3>
+  <h3>Bitmark Status - {{bitmarkStatus}}</h3>
   <div>
     <button ng-click="startBitmark()" ng-disabled="disableStart">Start</button>
     <button ng-click="stopBitmark()" ng-disabled="disableStop">Stop</button>
@@ -9,6 +9,21 @@
   </div>
   <br>
   <p>{{errorMsg}}</p>
+  <div class="panel panel-default">
+    <div class="panel-heading">Bitmark Info</div>
+    <div class="panel-body" ng-show="!disableStart">
+      <p><b>Start bitmarkd to get its info</b></p>
+    </div>
+    <div class="panel-body" ng-show="disableStart">
+      <table>
+        <tr ng-repeat="(key, val) in bitmarkInfo">
+          <td><b>{{key}}</b></td>
+          <td>{{val}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+    
   <div class="panel panel-default">
     <div class="panel-heading">Bitmark RPC</div>
     <div class="panel-body">
@@ -90,6 +105,10 @@
         <tr>
           <td><b>fee<b></td>
           <td>{{bitmarkConfig.Bitcoin.Fee}}</td>
+        </tr>
+        <tr>
+          <td><b>address<b></td>
+          <td>{{bitmarkConfig.Bitcoin.Address}}</td>
         </tr>
       </table>
 

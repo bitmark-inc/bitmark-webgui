@@ -11,6 +11,7 @@ import (
 	"github.com/bitmark-inc/bitmark-mgmt/templates"
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
 	"github.com/bitmark-inc/bitmarkd/configuration"
+	"github.com/bitmark-inc/bitmarkd/transaction"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"net/http"
@@ -61,6 +62,19 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	err := decoder.Decode(&request)
 	if nil != err {
 		log.Errorf("Error: %v", err)
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	// check bitcoin address is valid
+	_, err = transaction.AddressFromBase58(request.Bitcoin.Address)
+	if nil != err {
+		log.Errorf("Error: %v", err)
+		response.Result = map[string][]string{
+			"invalid_field": {"Bitcoin.Address"},
+		}
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -191,6 +205,12 @@ func prepareBitmarkConfig(request configuration.Configuration, bitmarkConfigFile
 			item = []string{request.Bitcoin.Fee}
 			ifItem = prepareBitmarkField("fee", item)
 			if err := updateConfigString(lines, i, "fee", ifItem); nil != err {
+				return nil, err
+			}
+
+			item = []string{request.Bitcoin.Address}
+			ifItem = prepareBitmarkField("address", item)
+			if err := updateConfigString(lines, i, "address", ifItem); nil != err {
 				return nil, err
 			}
 		}

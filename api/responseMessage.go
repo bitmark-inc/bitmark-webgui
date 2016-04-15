@@ -26,7 +26,9 @@ const (
 	bitmarkdStopErr         = `Failed to stop bitmarkd`
 	bitmarkdAlreadyStartErr = `Already started bitmarkd`
 	bitmarkdAlreadyStopErr  = `Already stoped bitmarkd`
-
+	bitmarkdConnectErr      = `Failed to connect to bitmarkd`
+	bitmarkdGetInfoErr      = `Failed to get bitmarkd info`
+	bitmarkdGetConfigErr    = `Failed to get bitamrkd configuration`
 	// login
 	loginErr = `Failed to log in`
 )

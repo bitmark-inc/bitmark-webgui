@@ -5,10 +5,14 @@
 package services
 
 import (
+	"crypto/tls"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
+	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
+	"net"
+	netrpc "net/rpc"
 	"os"
 	"os/exec"
 	"sync"
@@ -161,4 +165,30 @@ func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 	bitmarkd.running = false
 	bitmarkd.process = nil
 	return nil
+}
+
+func (bitmarkd *Bitmarkd) GetInfo(client *netrpc.Client) (*rpc.InfoReply, error) {
+
+	var reply rpc.InfoReply
+	if err := client.Call("Node.Info", rpc.InfoArguments{}, &reply); err != nil {
+		bitmarkd.log.Errorf("Node.Info error: %v\n", err)
+		return nil, fault.ErrNodeInfoRequestFail
+	}
+
+	return &reply, nil
+}
+
+// connect to bitmarkd RPC
+func (bitmarkd *Bitmarkd) Connect(connect string) (net.Conn, error) {
+
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+
+	conn, err := tls.Dial("tcp", connect, tlsConfig)
+	if nil != err {
+		return nil, err
+	}
+
+	return conn, nil
 }

@@ -25,6 +25,7 @@ var (
 	ErrInvalidStructPointer         = InvalidError("invalid struct pointer")
 	ErrJsonParseFail                = ProcessError("Parse to json failed")
 	ErrKeyFileAlreadyExists         = ExistsError("key file already exists")
+	ErrNodeInfoRequestFail          = ProcessError("Send info request failed")
 	ErrNotFoundConfigFile           = NotFoundError("Config file is not found")
 	ErrNotFoundPublicKey            = NotFoundError("PublicKey is not existed")
 	ErrNotInitialised               = NotFoundError("not initialised")

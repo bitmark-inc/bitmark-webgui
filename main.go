@@ -143,7 +143,7 @@ func runSetup(c *cli.Context, configDir string) {
 					mainLog.Errorf("generate TLS file failed: %v", err)
 					exitwithstatus.Message("generate TLS file failed: %v\n", err)
 				}
-			}else{
+			} else {
 				mainLog.Error("TLS file existed")
 				exitwithstatus.Message("TLS file existed\n")
 			}
