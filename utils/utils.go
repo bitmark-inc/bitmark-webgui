@@ -9,6 +9,7 @@ import (
 	"github.com/bitmark-inc/certgen"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"time"
 )
 
@@ -86,5 +87,14 @@ func MakeSelfSignedCertificate(name string, certificateFileName string, privateK
 		return err
 	}
 
+	return nil
+}
+
+var validBitcoinAddress = regexp.MustCompile(`^([a-z]*[A-Z]*[0-9]*)+$`)
+func CheckBitcoinAddress(address string) error {
+	addrLen := len(address)
+	if addrLen < 26 || addrLen > 35 || !validBitcoinAddress.MatchString(address) {
+		return fault.ErrBitcoinAddress
+	}
 	return nil
 }

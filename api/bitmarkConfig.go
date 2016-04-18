@@ -11,7 +11,6 @@ import (
 	"github.com/bitmark-inc/bitmark-mgmt/templates"
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
 	"github.com/bitmark-inc/bitmarkd/configuration"
-	"github.com/bitmark-inc/bitmarkd/transaction"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"net/http"
@@ -69,8 +68,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	}
 
 	// check bitcoin address is valid
-	_, err = transaction.AddressFromBase58(request.Bitcoin.Address)
-	if nil != err {
+	if err := utils.CheckBitcoinAddress(request.Bitcoin.Address); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = map[string][]string{
 			"invalid_field": {"Bitcoin.Address"},

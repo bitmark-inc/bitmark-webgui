@@ -19,6 +19,7 @@ type ProcessError GenericError
 // common errors - keep in alphabetic order
 var (
 	ErrAlreadyInitialised           = ExistsError("already initialised")
+	ErrBitcoinAddress = InvalidError("Invalid bitcoin address")
 	ErrCertificateFileAlreadyExists = ExistsError("certificate file already exists")
 	ErrConfigDirPath                = InvalidError("Config is not a folder")
 	ErrInvalidLoggerChannel         = InvalidError("invalid logger channel")
