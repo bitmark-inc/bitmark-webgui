@@ -144,7 +144,13 @@ func prepareBitmarkConfig(request configuration.Configuration, bitmarkConfigFile
 
 	lines := strings.Split(string(input), "\n")
 	for i, line := range lines {
-		if strings.Index(line, "client_rpc") == 0 {
+		if strings.Index(line, "chain") == 0 {
+			item := []string{request.Chain}
+			ifItem := prepareBitmarkField("chain", item)
+			if err := updateConfigString(lines, i, "chain", ifItem); nil != err {
+				return nil, err
+			}
+		} else if strings.Index(line, "client_rpc") == 0 {
 			// Set listen
 			listens := prepareBitmarkField("listen", request.ClientRPC.Listen)
 			if err := updateConfigString(lines, i, "listen", listens); nil != err {
@@ -265,6 +271,8 @@ func updateConfigString(lines []string, index int, field string, values []interf
 	templateStr := templates.BitmarkConfigTemplate
 	if field == "connect" {
 		templateStr = templates.BitmarkConnectTemplate
+	}else if field == "chain" {
+		templateStr = templates.BitmarkGeneralTemplate
 	}
 
 	// Prepare update string

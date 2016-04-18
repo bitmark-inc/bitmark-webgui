@@ -90,11 +90,11 @@
     <div class="panel-heading">Bitcoin</div>
     <div class="panel-body">
       <table>
-        <tr>
+        <tr ng-if="bitmarkConfig.Chain == 'local'">
           <td><b>username</b></td>
           <td>{{bitmarkConfig.Bitcoin.Username}}</td>
         </tr>
-        <tr>
+        <tr ng-if="bitmarkConfig.Chain == 'local'">
           <td><b>password</b></td>
           <td>********</td>
         </tr>

@@ -30,4 +30,8 @@ logging {
 
 	BitmarkConnectTemplate = `
   connect = {public_key = "{{.PublicKey}}", address = "{{.Address}}"}`
+
+	BitmarkGeneralTemplate = `
+{{.Field}} = {{.Value}}
+`
 )

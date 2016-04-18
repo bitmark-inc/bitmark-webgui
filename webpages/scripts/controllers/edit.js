@@ -13,7 +13,6 @@
  */
 angular.module('bitmarkMgmtApp')
     .controller('EditCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
-
         // Check bitamrkd is not running, if it is running, stop it first
         httpService.send('statusBitmarkd').then(
             function(result){
@@ -33,15 +32,16 @@ angular.module('bitmarkMgmtApp')
             }
         );
 
-
         $scope.errorMsg = "";
+        $scope.bitmarkProxy = false;
+
         $scope.verifyPassowrd = "";
         $scope.bitcoinPasswordEqual = true;
         $scope.publicKeyPattern = /^(\w|\d|\.|\-|:|\+|=|\^|!|\/|\*|\?|&|<|>|\(|\)|\[|\]|\{|\}|@|%|\$|#)+$/;
 
         // check bitcoin password
-        $scope.$watchGroup(['bitmarkConfig.Bitcoin.Password','verifyPassword'], function(){
-            if($scope.bitmarkConfig != null && !passwordVerified($scope.bitmarkConfig.Bitcoin.Password, $scope.verifyPassword)){
+        $scope.$watchGroup(['localProxyTemp.Password','verifyPassword'], function(){
+            if($scope.bitmarkConfig != null && !passwordVerified($scope.localProxyTemp.Password, $scope.verifyPassword)){
                 $scope.bitcoinPasswordEqual = false;
             }else{
                 $scope.bitcoinPasswordEqual = true;
@@ -82,7 +82,60 @@ angular.module('bitmarkMgmtApp')
         };
 
 
-        function saveConfig(callBackFunc){
+        $scope.bitmarkTestNetProxyTemp = {
+            Username: "No-need-username",
+            Password: "No-need-password",
+            URL: "Testnet proxy not implement yet",
+            Fee: "0.0002",
+            Address: ""
+        };
+        $scope.bitmarkProxyTemp = {
+            Username: "No-need-username",
+            Password: "No-need-password",
+            URL: "Bitmark proxy not implement yet",
+            Fee: "0.0002",
+            Address: ""
+        };
+        $scope.localProxyTemp = {
+            Username: "",
+            Password: "",
+            URL: "",
+            Fee: "",
+            Address: ""
+        };
+
+        $scope.setBitmarkProxy = function(chainType){
+            if(chainType == null) {
+                chainType = angular.copy($scope.bitmarkConfig.Chain);
+
+            }
+            switch(chainType){
+            case 'local':
+                $scope.bitmarkProxy = false;
+                break;
+            case 'testing':
+                $scope.bitmarkProxy = true;
+                break;
+            case 'bitmark':
+                $scope.bitmarkProxy = true;
+                break;
+            }
+        };
+
+        var saveConfig = function(callBackFunc){
+            // set bitcoin proxy
+            switch($scope.bitmarkConfig.Chain){
+            case 'local':
+                $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
+                break;
+            case 'testing':
+                $scope.bitmarkConfig.Bitcoin = $scope.bitmarkTestNetProxyTemp;
+                break;
+            case 'bitmark':
+                $scope.bitmarkConfig.Bitcoin = $scope.bitmarkProxyTemp;
+                break;
+            }
+
             var result = checkBitmarkConfig($scope.bitmarkConfig);
             if (result.error !== "") {
                 $scope.errorMsg = result.error;
@@ -98,18 +151,33 @@ angular.module('bitmarkMgmtApp')
                 }, function(errorMsg){
                     $scope.errorMsg = errorMsg;
                 });
-        }
+        };
 
-        function getAndSetBitmarkConfig(){
+        var getAndSetBitmarkConfig = function(){
             httpService.send('getBitmarkConfig').then(
                 function(result){
                     $scope.bitmarkConfig = initBitmarkConfig(result);
+
+                    // setup bitmark proxy
+                    switch($scope.bitmarkConfig.Bitcoin.URL){
+                    case $scope.bitmarkTestNetProxyTemp.URL:
+                        $scope.bitmarkProxy = true;
+                        angular.extend($scope.bitmarkTestNetProxyTemp, $scope.bitmarkConfig.Bitcoin);
+                        break;
+                    case $scope.bitmarkProxyTemp.URL:
+                        $scope.bitmarkProxy = true;
+                        angular.extend($scope.bitmarkProxyTemp, $scope.bitmarkConfig.Bitcoin);
+                        break;
+                    default:
+                        $scope.bitmarkProxy = false;
+                        angular.extend($scope.localProxyTemp, $scope.bitmarkConfig.Bitcoin);
+                    }
                 }, function(errorMsg){
                     $scope.errorMsg = errorMsg;
                 });
-        }
+        };
 
-        function initBitmarkConfig(bitmarkConfig){
+        var initBitmarkConfig = function (bitmarkConfig){
             // give empty array for null field
             var checkItems = ["ClientRPC", "Peering", "Mining"];
             var checkFields = ["Listen", "Announce", "Connect"];
@@ -126,7 +194,7 @@ angular.module('bitmarkMgmtApp')
             return bitmarkConfig;
         };
 
-        function passwordVerified(password, verifyPassword){
+        var passwordVerified = function(password, verifyPassword){
             if(password != "" && password != verifyPassword){
               return false;
             }
@@ -134,14 +202,14 @@ angular.module('bitmarkMgmtApp')
         };
 
         // return {bitmarkConfig:{}, error:""}
-        function checkBitmarkConfig(bitmarkConfig){
+        var checkBitmarkConfig = function(bitmarkConfig){
             var result = {
                 bitmarkConfig:{},
                 error:""
             };
 
             // check bitcoin password
-            if(!passwordVerified(bitmarkConfig.Bitcoin.Password, $scope.verifyPassword)){
+            if(!$scope.bitmarkProxy && !passwordVerified(bitmarkConfig.Bitcoin.Password, $scope.verifyPassword)){
                 result.error = "ErrPasswordNotEqual";
                 return result;
             }

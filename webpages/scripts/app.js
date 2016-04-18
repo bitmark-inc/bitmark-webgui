@@ -16,7 +16,8 @@ var app = angular
   .module('bitmarkMgmtApp', [
     'ngCookies',
     'ngResource',
-    'ngRoute'
+    'ngRoute',
+    'ui.bootstrap'
   ])
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;
