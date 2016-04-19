@@ -2,7 +2,7 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-app.factory('httpService', function($http, $q, $location){
+app.factory('httpService', function($http, $q, $location, $rootScope){
     var hostApiPath = "/api";
 
     var API = {
@@ -94,6 +94,7 @@ app.factory('httpService', function($http, $q, $location){
             }, function errorCallback(response) {
                 // backend internal error
                 if(response.status === 401) {
+                    $rootScope.$broadcast('AppAuthenticated', false);
                     $location.path('/login');
 
                 }else{

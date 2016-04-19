@@ -20,8 +20,8 @@ var app = angular
     'ui.bootstrap'
   ])
         .constant("BitmarkProxyURL", {
-            "testing": "Testnet proxy not implement yet",
-            "bitmark": "Bitmark proxy not implement yet"
+            "testing": "https://spoon.test.bitmark.com:17555/rpc-call",
+            "bitmark": "https://spoon.live.bitmark.com:17555/rpc-call"
         })
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;

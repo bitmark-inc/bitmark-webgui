@@ -130,7 +130,8 @@
         <span>
           <label>
             <input type="radio" ng-model="bitmarkProxy" ng-value="false" ng-change="setBitmarkProxy('local')">
-            local-proxy
+            <span ng-show="bitmarkConfig.Chain == 'local'">local-proxy</span>
+            <span ng-hide="bitmarkConfig.Chain == 'local'">local-bitcoin</span>
           </label>
           <label ng-hide="bitmarkConfig.Chain == 'local'">
             <input type="radio" ng-model="bitmarkProxy" ng-value="true" ng-change="setBitmarkProxy()">
