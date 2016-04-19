@@ -16,15 +16,15 @@
         <p>
           <b>chain</b>
           <label>
-            <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitmarkProxy()">
+            <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
             Local
           </label>
           <label>
-            <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitmarkProxy()">
+            <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
             Testing
           </label>
           <label>
-            <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitmarkProxy()">
+            <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
             Bitmark
           </label>
         </p>
@@ -129,12 +129,19 @@
         <span>Bitcoin</span>
         <span>
           <label>
-            <input type="radio" ng-model="bitmarkProxy" ng-value="false" ng-change="setBitmarkProxy('local')">
-            <span ng-show="bitmarkConfig.Chain == 'local'">local-proxy</span>
-            <span ng-hide="bitmarkConfig.Chain == 'local'">local-bitcoin</span>
+            <input type="radio" ng-model="bitcoinUseProxy" value="local">
+            <span>local-bitcoin</span>
           </label>
           <label ng-hide="bitmarkConfig.Chain == 'local'">
-            <input type="radio" ng-model="bitmarkProxy" ng-value="true" ng-change="setBitmarkProxy()">
+            <input type="radio" ng-model="bitcoinUseProxy" value="other">
+            proxy
+          </label>
+          <label ng-hide="bitmarkConfig.Chain == 'local' || bitmarkConfig.Chain == 'bitmark'">
+            <input type="radio" ng-model="bitcoinUseProxy" value="testing">
+            BitmarkInc-proxy
+          </label>
+          <label ng-hide="bitmarkConfig.Chain == 'local'  || bitmarkConfig.Chain == 'testing'">
+            <input type="radio" ng-model="bitcoinUseProxy" value="bitmark">
             BitmarkInc-proxy
           </label>
           <button uib-popover="Trustworthy bitcoin proxy from Bitmark Inc, help you to get rid of setting up a full node bitcoin (around 50 GB). Bitmark RPC chain should be testing or bitmark" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm" ng-hide="bitmarkConfig.Chain == 'local'">
@@ -144,34 +151,50 @@
     </div>
       <div class="panel-body">
         <!-- for local proxy -->
-        <table ng-show="!bitmarkProxy">
+        <table ng-show="bitcoinUseProxy == 'local'">
           <tr>
             <td><b>username</b></td>
-            <td><input type="text" ng-model="localProxyTemp.Username" required></td>
+            <td><input type="text" ng-model="localBitcoin.Username" required></td>
           </tr>
           <tr>
             <td><b>password</b></td>
-            <td><input type="password" ng-model="localProxyTemp.Password"></td>
-            <td ng-show="localProxyTemp.Password.length > 0"><b>verify</b></td>
-            <td ng-show="localProxyTemp.Password.length > 0"><input type="password" ng-model="verifyPassword"></td>
+            <td><input type="password" ng-model="localBitcoin.Password"></td>
+            <td ng-show="localBitcoin.Password.length > 0"><b>verify</b></td>
+            <td ng-show="localBitcoin.Password.length > 0"><input type="password" ng-model="verifyPassword"></td>
             <td ng-show="!bitcoinPasswordEqual">not equal</td>
           </tr>
           <tr>
             <td><b>url</b></td>
-            <td><input type="text" ng-model="localProxyTemp.URL" required></td>
+            <td><input type="text" ng-model="localBitcoin.URL" required></td>
           </tr>
           <tr>
             <td><b>fee<b></td>
-            <td><input type="text" ng-model="localProxyTemp.Fee"></td>
+            <td><input type="text" ng-model="localBitcoin.Fee"></td>
           </tr>
           <tr>
             <td><b>Address<b></td>
-            <td><input type="text" ng-model="localProxyTemp.Address"></td>
+            <td><input type="text" ng-model="localBitcoin.Address"></td>
           </tr>
         </table>
 
+        <!-- for other proxy -->
+        <table ng-show="bitcoinUseProxy == 'other'">
+          <tr>
+            <td><b>url</b></td>
+            <td><input type="text" ng-model="otherProxyTemp.URL" required></td>
+          </tr>
+          <tr>
+            <td><b>fee<b></td>
+            <td>{{ otherProxyTemp.Fee }}</td>
+          </tr>
+          <tr>
+            <td><b>Address<b></td>
+            <td><input type="text" ng-model="otherProxyTemp.Address"></td>
+          </tr>
+        </table>
+        
         <!-- for bitmark testnet proxy -->
-        <table ng-show="bitmarkProxy && bitmarkConfig.Chain == 'testing'">
+        <table ng-show="bitcoinUseProxy == 'testing' && bitmarkConfig.Chain == 'testing'">
           <tr>
             <td><b>url</b></td>
             <td>{{ bitmarkTestNetProxyTemp.URL }}</td>
@@ -187,7 +210,7 @@
         </table>
         
         <!-- for bitmark proxy -->
-        <table ng-show="bitmarkProxy && bitmarkConfig.Chain == 'bitmark'">
+        <table ng-show="bitcoinUseProxy == 'bitmark' && bitmarkConfig.Chain == 'bitmark'">
           <tr>
             <td><b>url</b></td>
             <td>{{ bitmarkProxyTemp.URL }}</td>

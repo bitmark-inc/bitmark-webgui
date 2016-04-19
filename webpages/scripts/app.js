@@ -23,6 +23,13 @@ var app = angular
             "testing": "https://spoon.test.bitmark.com:17555/rpc-call",
             "bitmark": "https://spoon.live.bitmark.com:17555/rpc-call"
         })
+        .constant("ProxyTemp", {
+            Username: "No-need-username",
+            Password: "No-need-password",
+            URL: "",
+            Fee: "0.0002",
+            Address: ""
+        })
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;
     delete $httpProvider.defaults.headers.common["X-Requested-With"];

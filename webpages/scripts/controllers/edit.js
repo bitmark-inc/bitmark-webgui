@@ -12,7 +12,7 @@
  * Controller of the bitmarkMgmtApp
  */
 angular.module('bitmarkMgmtApp')
-    .controller('EditCtrl', ['$scope', '$location', 'httpService', 'BitmarkProxyURL', function ($scope, $location, httpService, BitmarkProxyURL) {
+    .controller('EditCtrl', ['$scope', '$location', 'httpService', 'BitmarkProxyURL', 'ProxyTemp', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp) {
         // Check bitamrkd is not running, if it is running, stop it first
         httpService.send('statusBitmarkd').then(
             function(result){
@@ -33,23 +33,26 @@ angular.module('bitmarkMgmtApp')
         );
 
         $scope.errorMsg = "";
-        $scope.bitmarkProxy = false;
 
-        $scope.bitmarkTestNetProxyTemp = {
-            Username: "No-need-username",
-            Password: "No-need-password",
-            URL: BitmarkProxyURL.testing,
-            Fee: "0.0002",
-            Address: ""
+        // setup proxy temp
+        var proxyType = {
+            "local": "local",
+            "other": "other",
+            "testing": "testing",
+            "bitmark": "bitmark"
         };
-        $scope.bitmarkProxyTemp = {
-            Username: "No-need-username",
-            Password: "No-need-password",
-            URL: BitmarkProxyURL.bitmark,
-            Fee: "0.0002",
-            Address: ""
-        };
-        $scope.localProxyTemp = {
+
+        $scope.bitcoinUseProxy = proxyType.local;
+
+        $scope.otherProxyTemp = angular.copy(ProxyTemp);
+
+        $scope.bitmarkTestNetProxyTemp = angular.copy(ProxyTemp);
+        $scope.bitmarkTestNetProxyTemp.URL = BitmarkProxyURL.testing;
+
+        $scope.bitmarkProxyTemp = angular.copy(ProxyTemp);
+        $scope.bitmarkProxyTemp.URL = BitmarkProxyURL.bitmark;
+
+        $scope.localBitcoin = {
             Username: "",
             Password: "",
             URL: "",
@@ -57,21 +60,19 @@ angular.module('bitmarkMgmtApp')
             Address: ""
         };
 
-        $scope.setBitmarkProxy = function(chainType){
-            if(chainType == null) {
-                chainType = angular.copy($scope.bitmarkConfig.Chain);
-
-            }
-            switch(chainType){
+        $scope.setBitcoinProxy = function(){
+            switch($scope.bitmarkConfig.Chain){
             case 'local':
-                $scope.bitmarkProxy = false;
+                $scope.bitcoinUseProxy = proxyType.local;
                 break;
-            case 'testing':
-                $scope.bitmarkProxy = true;
-                break;
-            case 'bitmark':
-                $scope.bitmarkProxy = true;
-                break;
+            default:
+                if($scope.bitmarkConfig.Bitcoin.URL == BitmarkProxyURL.testing || $scope.bitmarkConfig.Bitcoin.URL == BitmarkProxyURL.bitmark){
+                    $scope.bitcoinUseProxy = proxyType[$scope.bitmarkConfig.Chain];
+                }else if($scope.bitmarkConfig.Bitcoin.Username == ProxyTemp.Username){
+                    $scope.bitcoinUseProxy = proxyType.other;
+                }else{
+                    $scope.bitcoinUseProxy = proxyType.local;
+                }
             }
         };
 
@@ -80,8 +81,8 @@ angular.module('bitmarkMgmtApp')
         $scope.publicKeyPattern = /^(\w|\d|\.|\-|:|\+|=|\^|!|\/|\*|\?|&|<|>|\(|\)|\[|\]|\{|\}|@|%|\$|#)+$/;
 
         // check bitcoin password
-        $scope.$watchGroup(['localProxyTemp.Password','verifyPassword'], function(){
-            if($scope.bitmarkConfig != null && !passwordVerified($scope.localProxyTemp.Password, $scope.verifyPassword)){
+        $scope.$watchGroup(['localBitcoin.Password','verifyPassword'], function(){
+            if($scope.bitmarkConfig != null && !passwordVerified($scope.localBitcoin.Password, $scope.verifyPassword)){
                 $scope.bitcoinPasswordEqual = false;
             }else{
                 $scope.bitcoinPasswordEqual = true;
@@ -122,24 +123,19 @@ angular.module('bitmarkMgmtApp')
         };
 
         var saveConfig = function(callBackFunc){
-            // set bitcoin proxy
-            switch($scope.bitmarkConfig.Chain){
+            // set bitcoin object
+            switch($scope.bitcoinUseProxy){
             case 'local':
-                $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
+                $scope.bitmarkConfig.Bitcoin = $scope.localBitcoin;
+                break;
+            case 'other':
+                $scope.bitmarkConfig.Bitcoin = $scope.otherProxyTemp;
                 break;
             case 'testing':
-                if($scope.bitmarkProxy){
-                  $scope.bitmarkConfig.Bitcoin = $scope.bitmarkTestNetProxyTemp;
-                }else{
-                  $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
-                }
+                 $scope.bitmarkConfig.Bitcoin = $scope.bitmarkTestNetProxyTemp;
                 break;
             case 'bitmark':
-                if($scope.bitmarkProxy){
-                  $scope.bitmarkConfig.Bitcoin = $scope.bitmarkProxyTemp;
-                }else{
-                  $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
-                }
+                 $scope.bitmarkConfig.Bitcoin = $scope.bitmarkProxyTemp;
                 break;
             }
 
@@ -168,16 +164,21 @@ angular.module('bitmarkMgmtApp')
                     // setup bitmark proxy
                     switch($scope.bitmarkConfig.Bitcoin.URL){
                     case $scope.bitmarkTestNetProxyTemp.URL:
-                        $scope.bitmarkProxy = true;
+                        $scope.bitcoinUseProxy = proxyType.testing;
                         angular.extend($scope.bitmarkTestNetProxyTemp, $scope.bitmarkConfig.Bitcoin);
                         break;
                     case $scope.bitmarkProxyTemp.URL:
-                        $scope.bitmarkProxy = true;
+                        $scope.bitcoinUseProxy = proxyType.bitmark;
                         angular.extend($scope.bitmarkProxyTemp, $scope.bitmarkConfig.Bitcoin);
                         break;
                     default:
-                        $scope.bitmarkProxy = false;
-                        angular.extend($scope.localProxyTemp, $scope.bitmarkConfig.Bitcoin);
+                        if($scope.bitmarkConfig.Bitcoin.Username == ProxyTemp.Username){
+                            $scope.bitcoinUseProxy = proxyType.other;
+                            angular.extend($scope.otherProxyTemp, $scope.bitmarkConfig.Bitcoin);
+                        }else{
+                            $scope.bitcoinUseProxy = proxyType.local;
+                            angular.extend($scope.localBitcoin, $scope.bitmarkConfig.Bitcoin);
+                        }
                     }
                 }, function(errorMsg){
                     $scope.errorMsg = errorMsg;
@@ -216,7 +217,7 @@ angular.module('bitmarkMgmtApp')
             };
 
             // check bitcoin password
-            if(!$scope.bitmarkProxy && !passwordVerified(bitmarkConfig.Bitcoin.Password, $scope.verifyPassword)){
+            if($scope.bitcoinUseProxy == 'local' && !passwordVerified(bitmarkConfig.Bitcoin.Password, $scope.verifyPassword)){
                 result.error = "ErrPasswordNotEqual";
                 return result;
             }

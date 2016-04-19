@@ -12,7 +12,7 @@
  * Controller of the bitmarkMgmtApp
  */
 angular.module('bitmarkMgmtApp')
-    .controller('MainCtrl', ['$scope', '$location', 'httpService', 'BitmarkProxyURL', function ($scope, $location, httpService, BitmarkProxyURL) {
+    .controller('MainCtrl', ['$scope', '$location', 'httpService', 'ProxyTemp', function ($scope, $location, httpService, ProxyTemp) {
 
         var bitmarkStatusObj = {
             "run": "Running",
@@ -46,7 +46,7 @@ angular.module('bitmarkMgmtApp')
                 $scope.bitmarkConfig = result;
 
                 $scope.showOptionBitcoinItems = true;
-                if(result.Bitcoin.URL == BitmarkProxyURL.testing || result.Bitcoin.URL == BitmarkProxyURL.bitmark ){
+                if(result.Bitcoin.Username == ProxyTemp.Username){
                         $scope.showOptionBitcoinItems = false;
                 }
 
