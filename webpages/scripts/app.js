@@ -19,7 +19,10 @@ var app = angular
     'ngRoute',
     'ui.bootstrap'
   ])
-        .value("ShowNavItem", false)
+        .constant("BitmarkProxyURL", {
+            "testing": "Testnet proxy not implement yet",
+            "bitmark": "Bitmark proxy not implement yet"
+        })
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;
     delete $httpProvider.defaults.headers.common["X-Requested-With"];

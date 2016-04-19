@@ -12,7 +12,7 @@
  * Controller of the bitmarkMgmtApp
  */
 angular.module('bitmarkMgmtApp')
-    .controller('EditCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
+    .controller('EditCtrl', ['$scope', '$location', 'httpService', 'BitmarkProxyURL', function ($scope, $location, httpService, BitmarkProxyURL) {
         // Check bitamrkd is not running, if it is running, stop it first
         httpService.send('statusBitmarkd').then(
             function(result){
@@ -38,14 +38,14 @@ angular.module('bitmarkMgmtApp')
         $scope.bitmarkTestNetProxyTemp = {
             Username: "No-need-username",
             Password: "No-need-password",
-            URL: "Testnet proxy not implement yet",
+            URL: BitmarkProxyURL.testing,
             Fee: "0.0002",
             Address: ""
         };
         $scope.bitmarkProxyTemp = {
             Username: "No-need-username",
             Password: "No-need-password",
-            URL: "Bitmark proxy not implement yet",
+            URL: BitmarkProxyURL.bitmark,
             Fee: "0.0002",
             Address: ""
         };
@@ -128,10 +128,18 @@ angular.module('bitmarkMgmtApp')
                 $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
                 break;
             case 'testing':
-                $scope.bitmarkConfig.Bitcoin = $scope.bitmarkTestNetProxyTemp;
+                if($scope.bitmarkProxy){
+                  $scope.bitmarkConfig.Bitcoin = $scope.bitmarkTestNetProxyTemp;
+                }else{
+                  $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
+                }
                 break;
             case 'bitmark':
-                $scope.bitmarkConfig.Bitcoin = $scope.bitmarkProxyTemp;
+                if($scope.bitmarkProxy){
+                  $scope.bitmarkConfig.Bitcoin = $scope.bitmarkProxyTemp;
+                }else{
+                  $scope.bitmarkConfig.Bitcoin = $scope.localProxyTemp;
+                }
                 break;
             }
 

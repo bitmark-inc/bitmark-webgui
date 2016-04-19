@@ -25,6 +25,10 @@
   <div class="panel panel-default">
     <div class="panel-heading">Bitmark RPC</div>
     <div class="panel-body">
+      <p>
+        <b>chain</b>
+        {{ bitmarkConfig.Chain }}
+      </p>
       <p><b>listen</b></p>
       <ul style="list-style-type:none">
         <li ng-repeat="listen in bitmarkConfig.ClientRPC.Listen"> {{listen}} </li>
@@ -88,11 +92,11 @@
     <div class="panel-heading">Bitcoin</div>
     <div class="panel-body">
       <table>
-        <tr ng-if="bitmarkConfig.Chain == 'local'">
+        <tr ng-if="showOptionBitcoinItems">
           <td><b>username</b></td>
           <td>{{bitmarkConfig.Bitcoin.Username}}</td>
         </tr>
-        <tr ng-if="bitmarkConfig.Chain == 'local'">
+        <tr ng-if="showOptionBitcoinItems">
           <td><b>password</b></td>
           <td>********</td>
         </tr>
