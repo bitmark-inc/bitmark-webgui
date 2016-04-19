@@ -14,6 +14,12 @@
 angular.module('bitmarkMgmtApp')
     .controller('MainCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
 
+        var bitmarkStatusObj = {
+            "run": "Running",
+            "stop": "Stopped",
+            "error": "Error"
+        };
+
         $scope.disableStart = true;
         $scope.disableStop = true;
         $scope.bitmarkStatus = "Running";
@@ -24,10 +30,10 @@ angular.module('bitmarkMgmtApp')
                 // TODO: check status and set disable button
                 if(result.search("stop") >= 0) {
                     setBitmarkdDisable(false);
-                    $scope.bitmarkStatus = "Stopped";
+                    $scope.bitmarkStatus = bitmarkStatusObj.stop;
                 }else{
                     setBitmarkdDisable(true);
-                    $scope.bitmarkStatus = "Running";
+                    $scope.bitmarkStatus = bitmarkStatusObj.run;
                     getBitmarkInfo();
                 }
             }, function(errorMsg){
@@ -48,14 +54,15 @@ angular.module('bitmarkMgmtApp')
                 function(result){
                     // disable bitmark start button
                     if(result.search("start running bitmarkd")>= 0){
-                        $scope.bitmarkStatus = "Running";
+                        $scope.bitmarkStatus = bitmarkStatusObj.run;
                         setBitmarkdDisable(true);
                         getBitmarkInfo();
                     }else{
                         setBitmarkdDisable(false);
                     }
                 }, function(errorMsg){
-                    $scope.bitmarkStatus = "Error";
+                    setBitmarkdDisable(false);
+                    $scope.bitmarkStatus = bitmarkStatusObj.error;
                     $scope.errorMsg = errorMsg;
                 });
         };
@@ -64,27 +71,19 @@ angular.module('bitmarkMgmtApp')
             httpService.send("stopBitmarkd").then(
                 function(result){
                     if(result.search("stop running bitmarkd")>=0) {
-                        $scope.bitmarkStatus = "Stopped";
+                        $scope.bitmarkStatus = bitmarkStatusObj.stop;
                         setBitmarkdDisable(false);
                     }else{
                         setBitmarkdDisable(true);
                     }
                 }, function(errorMsg){
-                    $scope.bitmarkStatus = "Error";
+                    setBitmarkdDisable(true);
+                    $scope.bitmarkStatus = bitmarkStatusObj.error;
                     $scope.errorMsg = errorMsg;
                 });
         };
         $scope.goUrl = function(path){
             $location.path(path);
-        };
-
-        $scope.logout = function(){
-            httpService.send("logout").then(
-                function(){
-                    $scope.goUrl('/login');
-                }, function(errorMsg){
-                    $scope.errorMsg = errorMsg;
-                });
         };
 
         var setBitmarkdDisable = function(startDisableBool) {

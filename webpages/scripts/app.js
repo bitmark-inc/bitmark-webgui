@@ -19,6 +19,7 @@ var app = angular
     'ngRoute',
     'ui.bootstrap'
   ])
+        .value("ShowNavItem", false)
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;
     delete $httpProvider.defaults.headers.common["X-Requested-With"];
@@ -43,4 +44,5 @@ var app = angular
       .otherwise({
         redirectTo: '/'
       });
+
   });

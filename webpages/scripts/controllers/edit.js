@@ -35,6 +35,46 @@ angular.module('bitmarkMgmtApp')
         $scope.errorMsg = "";
         $scope.bitmarkProxy = false;
 
+        $scope.bitmarkTestNetProxyTemp = {
+            Username: "No-need-username",
+            Password: "No-need-password",
+            URL: "Testnet proxy not implement yet",
+            Fee: "0.0002",
+            Address: ""
+        };
+        $scope.bitmarkProxyTemp = {
+            Username: "No-need-username",
+            Password: "No-need-password",
+            URL: "Bitmark proxy not implement yet",
+            Fee: "0.0002",
+            Address: ""
+        };
+        $scope.localProxyTemp = {
+            Username: "",
+            Password: "",
+            URL: "",
+            Fee: "",
+            Address: ""
+        };
+
+        $scope.setBitmarkProxy = function(chainType){
+            if(chainType == null) {
+                chainType = angular.copy($scope.bitmarkConfig.Chain);
+
+            }
+            switch(chainType){
+            case 'local':
+                $scope.bitmarkProxy = false;
+                break;
+            case 'testing':
+                $scope.bitmarkProxy = true;
+                break;
+            case 'bitmark':
+                $scope.bitmarkProxy = true;
+                break;
+            }
+        };
+
         $scope.verifyPassowrd = "";
         $scope.bitcoinPasswordEqual = true;
         $scope.publicKeyPattern = /^(\w|\d|\.|\-|:|\+|=|\^|!|\/|\*|\?|&|<|>|\(|\)|\[|\]|\{|\}|@|%|\$|#)+$/;
@@ -79,47 +119,6 @@ angular.module('bitmarkMgmtApp')
 
         $scope.goUrl = function(path){
               $location.path(path);
-        };
-
-
-        $scope.bitmarkTestNetProxyTemp = {
-            Username: "No-need-username",
-            Password: "No-need-password",
-            URL: "Testnet proxy not implement yet",
-            Fee: "0.0002",
-            Address: ""
-        };
-        $scope.bitmarkProxyTemp = {
-            Username: "No-need-username",
-            Password: "No-need-password",
-            URL: "Bitmark proxy not implement yet",
-            Fee: "0.0002",
-            Address: ""
-        };
-        $scope.localProxyTemp = {
-            Username: "",
-            Password: "",
-            URL: "",
-            Fee: "",
-            Address: ""
-        };
-
-        $scope.setBitmarkProxy = function(chainType){
-            if(chainType == null) {
-                chainType = angular.copy($scope.bitmarkConfig.Chain);
-
-            }
-            switch(chainType){
-            case 'local':
-                $scope.bitmarkProxy = false;
-                break;
-            case 'testing':
-                $scope.bitmarkProxy = true;
-                break;
-            case 'bitmark':
-                $scope.bitmarkProxy = true;
-                break;
-            }
         };
 
         var saveConfig = function(callBackFunc){
