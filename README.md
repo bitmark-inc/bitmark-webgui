@@ -10,6 +10,8 @@ VERSION:
 
 COMMANDS:
    setup        Initialise bitmark-mgmt configuration
+     --hostname, -H               generate server certificate with the hostname [localhost]
+     --data-directory, -d         the direcotry of web and log
    start        start bitmark-mgmt
    help, h      Shows a list of commands or help for one command
 

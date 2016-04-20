@@ -14,20 +14,10 @@ import (
 )
 
 const (
-	ServerTlsDir = "tls"
+	ServerTlsDir   = "tls"
 	ServerCertFile = "bitmark-mgmt.crt"
 	ServerKeyFile  = "bitmark-mgmt.key"
 )
-
-// config is required
-func CheckConfigDir(path string) (string, error) {
-	if "" == path {
-		return "", fault.ErrRequiredConfigDir
-	}
-
-	path = os.ExpandEnv(path)
-	return path, nil
-}
 
 // check if file exists
 func EnsureFileExists(name string) bool {
@@ -92,6 +82,7 @@ func MakeSelfSignedCertificate(name string, certificateFileName string, privateK
 }
 
 var validBitcoinAddress = regexp.MustCompile(`^([a-z]*[A-Z]*[0-9]*)+$`)
+
 func CheckBitcoinAddress(address string) error {
 	addrLen := len(address)
 	if addrLen < 26 || addrLen > 35 || !validBitcoinAddress.MatchString(address) {

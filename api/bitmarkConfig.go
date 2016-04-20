@@ -271,7 +271,7 @@ func updateConfigString(lines []string, index int, field string, values []interf
 	templateStr := templates.BitmarkConfigTemplate
 	if field == "connect" {
 		templateStr = templates.BitmarkConnectTemplate
-	}else if field == "chain" {
+	} else if field == "chain" {
 		templateStr = templates.BitmarkGeneralTemplate
 	}
 

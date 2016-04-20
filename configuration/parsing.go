@@ -7,16 +7,15 @@ package configuration
 import (
 	"errors"
 	"fmt"
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
 	"os"
 	"path/filepath"
 )
 
 const (
-	defaultDataDirectory = "."
-	defaultPort = 2150
-	defaultPassword = "bitmark-mgmt"
-	defaultEnableHttps = true
+	defaultDataDirectory     = "."
+	defaultPort              = 2150
+	defaultPassword          = "bitmark-mgmt"
+	defaultEnableHttps       = true
 	defaultBitmarkConfigFile = "/etc/bitmarkd.conf"
 
 	defaultLogDirectory = "log"
@@ -54,28 +53,14 @@ type Configuration struct {
 	Logging           LoggerType `libucl:"logging"`
 }
 
-func GetConfigPath(dir string) (string, error) {
-	fileInfo, err := os.Stat(dir)
-	if nil != err {
-		return "", err
-	}
-	if !fileInfo.IsDir() {
-		return "", fault.ErrConfigDirPath
-	}
-
-	path := dir + "/bitmark-mgmt.conf"
-
-	return path, nil
-}
-
-func GetDefaultConfiguration(dataDirectory string)(*Configuration, error){
+func GetDefaultConfiguration(dataDirectory string) (*Configuration, error) {
 	config := Configuration{
-		DataDirectory: defaultDataDirectory,
-		Port: defaultPort,
-		Password: defaultPassword,
-		EnableHttps: defaultEnableHttps,
+		DataDirectory:     defaultDataDirectory,
+		Port:              defaultPort,
+		Password:          defaultPassword,
+		EnableHttps:       defaultEnableHttps,
 		BitmarkConfigFile: defaultBitmarkConfigFile,
-		Logging: *defaultLogger,
+		Logging:           *defaultLogger,
 	}
 
 	if "" != dataDirectory {
@@ -89,7 +74,7 @@ func GetDefaultConfiguration(dataDirectory string)(*Configuration, error){
 	return &config, nil
 }
 
-func GetConfiguration(baseDir string, configurationFileName string) (*Configuration, error) {
+func GetConfiguration(configurationFileName string) (*Configuration, error) {
 
 	configurationFileName, err := filepath.Abs(filepath.Clean(configurationFileName))
 	if nil != err {

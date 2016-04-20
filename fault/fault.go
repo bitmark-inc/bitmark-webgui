@@ -19,9 +19,9 @@ type ProcessError GenericError
 // common errors - keep in alphabetic order
 var (
 	ErrAlreadyInitialised           = ExistsError("already initialised")
-	ErrBitcoinAddress = InvalidError("Invalid bitcoin address")
+	ErrBitcoinAddress               = InvalidError("Invalid bitcoin address")
 	ErrCertificateFileAlreadyExists = ExistsError("certificate file already exists")
-	ErrConfigDirPath                = InvalidError("Config is not a folder")
+	ErrConfigFileExited             = ExistsError("Config file is existed")
 	ErrInvalidLoggerChannel         = InvalidError("invalid logger channel")
 	ErrInvalidStructPointer         = InvalidError("invalid struct pointer")
 	ErrJsonParseFail                = ProcessError("Parse to json failed")
@@ -31,7 +31,6 @@ var (
 	ErrNotFoundPublicKey            = NotFoundError("PublicKey is not existed")
 	ErrNotInitialised               = NotFoundError("not initialised")
 	ErrPasswordLength               = InvalidError("Password Length is invalid")
-	ErrRequiredConfigDir            = InvalidError("Config folder is required")
 	ErrVerifiedPassword             = InvalidError("Verified password is different")
 	ErrWrongPassword                = InvalidError("Wrong password")
 

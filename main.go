@@ -5,7 +5,6 @@
 package main
 
 import (
-	// "fmt"
 	"github.com/bitmark-inc/bitmark-mgmt/api"
 	"github.com/bitmark-inc/bitmark-mgmt/configuration"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
@@ -26,7 +25,6 @@ import (
 
 var GlobalConfig *configuration.Configuration
 var BitmarkMgmtConfigFile string
-var ConfigDir string
 
 var mainLog *logger.L
 
@@ -34,7 +32,7 @@ func main() {
 	// ensure exit handler is first
 	defer exitwithstatus.Handler()
 
-	var configDir string
+	var configFile string
 
 	app := cli.NewApp()
 	app.Name = "bitmark-mgmt"
@@ -42,10 +40,10 @@ func main() {
 	app.Version = Version()
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:        "config, c",
+			Name:        "config-file, c",
 			Value:       "",
 			Usage:       "*bitmark-mgmt config file",
-			Destination: &configDir,
+			Destination: &configFile,
 		},
 	}
 	app.Commands = []cli.Command{
@@ -65,14 +63,14 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				runSetup(c, configDir)
+				runSetup(c, configFile)
 			},
 		},
 		{
 			Name:  "start",
 			Usage: "start bitmark-mgmt",
 			Action: func(c *cli.Context) {
-				runStart(c, configDir)
+				runStart(c, configFile)
 			},
 		},
 	}
@@ -80,18 +78,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func runSetup(c *cli.Context, configDir string) {
-
-	configDir, err := utils.CheckConfigDir(configDir)
-	if nil != err {
-		exitwithstatus.Message("Error: %s\n", err)
-	}
-
-	if !utils.EnsureFileExists(configDir) {
-		if err := os.MkdirAll(configDir, 0755); nil != err {
-			exitwithstatus.Message("Error: %v\n", err)
-		}
-	}
+func runSetup(c *cli.Context, configFile string) {
 
 	// set data-directory
 	dataDir := c.String("data-directory")
@@ -104,7 +91,6 @@ func runSetup(c *cli.Context, configDir string) {
 	setupLogger(&defaultConfig.Logging)
 	defer logger.Finalise()
 
-	configFile, err := configuration.GetConfigPath(configDir)
 	if nil != err {
 		mainLog.Errorf("get config file path: %s error: %v", configFile, err)
 		exitwithstatus.Message("Error: %v\n", err)
@@ -164,23 +150,16 @@ func runSetup(c *cli.Context, configDir string) {
 
 }
 
-func runStart(c *cli.Context, configDir string) {
+func runStart(c *cli.Context, configFile string) {
 
-	configDir, err := utils.CheckConfigDir(configDir)
-	if nil != err {
-		exitwithstatus.Message("Error: %s\n", err)
-	}
-
-	configFile, err := configuration.GetConfigPath(configDir)
-	if nil != err {
-		exitwithstatus.Message("Error: %v\n", err)
+	if !utils.EnsureFileExists(configFile) {
+		exitwithstatus.Message("Error: %v\n", fault.ErrNotFoundConfigFile)
 	}
 
 	BitmarkMgmtConfigFile = configFile
-	ConfigDir = configDir
 
 	// read bitmark-mgmt config file
-	if configs, err := configuration.GetConfiguration(configDir, configFile); nil != err {
+	if configs, err := configuration.GetConfiguration(configFile); nil != err {
 		exitwithstatus.Message("Error: %v\n", err)
 	} else {
 		GlobalConfig = configs
@@ -337,7 +316,7 @@ func handleSetPassword(w http.ResponseWriter, req *http.Request) {
 		if !utils.EnsureFileExists(BitmarkMgmtConfigFile) {
 			exitwithstatus.Message("Error: %s\n", fault.ErrNotFoundConfigFile)
 		}
-		if configs, err := configuration.GetConfiguration(ConfigDir, BitmarkMgmtConfigFile); nil != err {
+		if configs, err := configuration.GetConfiguration(BitmarkMgmtConfigFile); nil != err {
 			exitwithstatus.Message("Error: %v\n", err)
 		} else {
 			GlobalConfig = configs
