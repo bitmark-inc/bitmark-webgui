@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	ServerTlsDir   = "./tls"
+	ServerTlsDir = "tls"
 	ServerCertFile = "bitmark-mgmt.crt"
 	ServerKeyFile  = "bitmark-mgmt.key"
 )
@@ -35,24 +35,25 @@ func EnsureFileExists(name string) bool {
 	return nil == err
 }
 
-func GetTLSCertFile() (string, string, bool, error) {
+func GetTLSCertFile(baseDir string) (string, string, bool, error) {
 	newCreate := false
+	serverTlsDir := baseDir + "/" + ServerTlsDir
 
 	// Set up folder
-	if !EnsureFileExists(ServerTlsDir) {
-		if err := os.MkdirAll(ServerTlsDir, 0755); nil != err {
+	if !EnsureFileExists(serverTlsDir) {
+		if err := os.MkdirAll(serverTlsDir, 0755); nil != err {
 			return "", "", newCreate, err
 		}
 		newCreate = true
 	}
 
 	//Set up certification files
-	certFile := ServerTlsDir + "/" + ServerCertFile
+	certFile := serverTlsDir + "/" + ServerCertFile
 	if !EnsureFileExists(certFile) {
 		newCreate = true
 	}
 
-	keyFile := ServerTlsDir + "/" + ServerKeyFile
+	keyFile := serverTlsDir + "/" + ServerKeyFile
 	if !EnsureFileExists(keyFile) {
 		newCreate = true
 	}

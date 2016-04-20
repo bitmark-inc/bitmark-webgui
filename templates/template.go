@@ -8,6 +8,8 @@ const (
 	ConfigurationTemplate = `
 # bitmark-mgmt.conf -*- mode: libucl -*-
 
+data_directory = "{{.DataDirectory}}"
+
 port = "{{.Port}}"
 password = "{{.Password}}"
 enable_https = "{{.EnableHttps}}"

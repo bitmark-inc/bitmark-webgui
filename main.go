@@ -58,6 +58,11 @@ func main() {
 					Value: "",
 					Usage: "generate server certificate with the hostname [localhost]",
 				},
+				cli.StringFlag{
+					Name:  "data-directory, d",
+					Value: "",
+					Usage: "the direcotry of web and log",
+				},
 			},
 			Action: func(c *cli.Context) {
 				runSetup(c, configDir)
@@ -88,8 +93,15 @@ func runSetup(c *cli.Context, configDir string) {
 		}
 	}
 
+	// set data-directory
+	dataDir := c.String("data-directory")
+	defaultConfig, err := configuration.GetDefaultConfiguration(dataDir)
+	if nil != err {
+		exitwithstatus.Message("Error: %v\n", err)
+	}
+
 	// set logger
-	setupLogger(configuration.GetDefaultLogger("."))
+	setupLogger(&defaultConfig.Logging)
 	defer logger.Finalise()
 
 	configFile, err := configuration.GetConfigPath(configDir)
@@ -106,21 +118,17 @@ func runSetup(c *cli.Context, configDir string) {
 			exitwithstatus.Message("Error: %v\n", err)
 		}
 
-		encryptPassword, err := bcrypt.GenerateFromPassword([]byte("bitmark-mgmt"), bcrypt.DefaultCost)
+		encryptPassword, err := bcrypt.GenerateFromPassword([]byte(defaultConfig.Password), bcrypt.DefaultCost)
 		if nil != err {
 			mainLog.Errorf("Encrypt password failed: %v", err)
 			exitwithstatus.Message("Error: %v\n", err)
 		}
 
-		configData := configuration.Configuration{
-			Port:              2150,
-			Password:          string(encryptPassword),
-			EnableHttps:       true,
-			BitmarkConfigFile: "/etc/bitmarkd.conf",
-		}
+		defaultConfig.Password = string(encryptPassword)
 
+		// generate config file
 		confTemp := template.Must(template.New("config").Parse(templates.ConfigurationTemplate))
-		if err := confTemp.Execute(file, configData); nil != err {
+		if err := confTemp.Execute(file, defaultConfig); nil != err {
 			mainLog.Errorf("Generate config template failed: %v", err)
 			exitwithstatus.Message("Error: %v\n", err)
 		}
@@ -130,7 +138,7 @@ func runSetup(c *cli.Context, configDir string) {
 		hostname := c.String("hostname")
 		if "" != hostname {
 			// gen certs
-			cert, key, newCreate, err := utils.GetTLSCertFile()
+			cert, key, newCreate, err := utils.GetTLSCertFile(defaultConfig.DataDirectory)
 			if nil != err {
 				mainLog.Errorf("get TLS file failed: %v", err)
 				exitwithstatus.Message("get TLS file failed: %v\n", err)
@@ -223,11 +231,12 @@ func startWebServer(configs *configuration.Configuration) error {
 
 	// serve web pages
 	mainLog.Info("Set up server files")
-	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir("./webpages/lib/"))))
-	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./webpages/scripts/"))))
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./webpages/images/"))))
-	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./webpages/styles/"))))
-	http.Handle("/", http.FileServer(http.Dir("./webpages/")))
+	baseWebDir := configs.DataDirectory + "/webpages"
+	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir(baseWebDir+"/lib/"))))
+	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir(baseWebDir+"/scripts/"))))
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(baseWebDir+"/images/"))))
+	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir(baseWebDir+"/styles/"))))
+	http.Handle("/", http.FileServer(http.Dir(baseWebDir+"/")))
 
 	// serve api
 	mainLog.Info("Set up server api")
@@ -247,7 +256,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	if configs.EnableHttps {
 		mainLog.Info("Starting https server...")
 		// gen certs
-		cert, key, newCreate, err := utils.GetTLSCertFile()
+		cert, key, newCreate, err := utils.GetTLSCertFile(configs.DataDirectory)
 		if nil != err {
 			return err
 		}

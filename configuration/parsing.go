@@ -13,6 +13,12 @@ import (
 )
 
 const (
+	defaultDataDirectory = "."
+	defaultPort = 2150
+	defaultPassword = "bitmark-mgmt"
+	defaultEnableHttps = true
+	defaultBitmarkConfigFile = "/etc/bitmarkd.conf"
+
 	defaultLogDirectory = "log"
 	defaultLogFile      = "bitmark-mgmt.log"
 	defaultLogCount     = 10          //  number of log files retained
@@ -40,6 +46,7 @@ type LoggerType struct {
 }
 
 type Configuration struct {
+	DataDirectory     string     `libucl:"data_directory"`
 	Port              int        `libucl:"port"`
 	Password          string     `libucl:"password"`
 	EnableHttps       bool       `libucl:"enable_https"`
@@ -61,9 +68,25 @@ func GetConfigPath(dir string) (string, error) {
 	return path, nil
 }
 
-func GetDefaultLogger(baseDir string) *LoggerType {
-	setLoggerPath(baseDir, defaultLogger)
-	return defaultLogger
+func GetDefaultConfiguration(dataDirectory string)(*Configuration, error){
+	config := Configuration{
+		DataDirectory: defaultDataDirectory,
+		Port: defaultPort,
+		Password: defaultPassword,
+		EnableHttps: defaultEnableHttps,
+		BitmarkConfigFile: defaultBitmarkConfigFile,
+		Logging: *defaultLogger,
+	}
+
+	if "" != dataDirectory {
+		config.DataDirectory = dataDirectory
+	}
+
+	if err := setLoggerPath(config.DataDirectory, &config.Logging); nil != err {
+		return nil, err
+	}
+
+	return &config, nil
 }
 
 func GetConfiguration(baseDir string, configurationFileName string) (*Configuration, error) {
@@ -81,7 +104,7 @@ func GetConfiguration(baseDir string, configurationFileName string) (*Configurat
 		return nil, err
 	}
 
-	setLoggerPath(".", &options.Logging)
+	setLoggerPath(options.DataDirectory, &options.Logging)
 	return options, nil
 }
 
@@ -111,8 +134,7 @@ func setLoggerPath(baseDir string, logging *LoggerType) error {
 	}
 
 	// make absolute and create directories if they do not already exist
-	for _, d := range []*string{&logging.Directory} {
-		*d = ensureAbsolute(baseDir, *d)
+	for _, d := range mustBeAbsolute {
 		if err := os.MkdirAll(*d, 0700); nil != err {
 			return err
 		}
