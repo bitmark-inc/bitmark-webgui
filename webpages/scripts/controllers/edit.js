@@ -13,6 +13,11 @@
  */
 angular.module('bitmarkMgmtApp')
     .controller('EditCtrl', ['$scope', '$location', 'httpService', 'BitmarkProxyURL', 'ProxyTemp', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp) {
+        $scope.error = {
+            show: false,
+            msg: ""
+        };
+
         // Check bitamrkd is not running, if it is running, stop it first
         httpService.send('statusBitmarkd').then(
             function(result){
@@ -21,18 +26,19 @@ angular.module('bitmarkMgmtApp')
                 }else{
                     httpService.send("stopBitmarkd").then(
                         function(result){
-                            $scope.errorMsg = "Bitmarkd has been stopped.";
+                            $scope.error.show = true;
+                            $scope.error.msg = "Bitmarkd has been stopped.";
                             getAndSetBitmarkConfig();
                         }, function(errorMsg){
-                            $scope.errorMsg = errorMsg;
+                            $scope.error.show = true;
+                            $scope.error.msg = errorMsg;
                         });
                 }
             }, function(errorMsg){
-                $scope.errorMsg = errorMsg;
+                $scope.error.show = true;
+                $scope.error.msg = errorMsg;
             }
         );
-
-        $scope.errorMsg = "";
 
         // setup proxy temp
         var proxyType = {
@@ -100,6 +106,7 @@ angular.module('bitmarkMgmtApp')
         };
 
         $scope.saveConfig = function(){
+            $scope.error.show = false;
             saveConfig(function(){
                 $scope.goUrl('/');
             });
@@ -107,13 +114,15 @@ angular.module('bitmarkMgmtApp')
 
 
         $scope.saveConfigAndStart = function(){
+            $scope.error.show = false;
             // send config post api and start bitmark then return to main page
             saveConfig(function(){
                 httpService.send("startBitmarkd").then(
                     function(result){
                         $scope.goUrl('/');
                     }, function(errorMsg){
-                        $scope.errorMsg = errorMsg;
+                        $scope.error.show = true;
+                        $scope.error.msg = errorMsg;
                     });
             });
         };
@@ -141,7 +150,8 @@ angular.module('bitmarkMgmtApp')
 
             var result = checkBitmarkConfig($scope.bitmarkConfig);
             if (result.error !== "") {
-                $scope.errorMsg = result.error;
+                $scope.error.show = true;
+                $scope.error.msg = result.error;
                 return;
             }
 
@@ -152,7 +162,8 @@ angular.module('bitmarkMgmtApp')
                         callBackFunc();
                     }
                 }, function(errorMsg){
-                    $scope.errorMsg = errorMsg;
+                    $scope.error.show = true;
+                    $scope.error.msg = errorMsg;
                 });
         };
 
@@ -181,7 +192,8 @@ angular.module('bitmarkMgmtApp')
                         }
                     }
                 }, function(errorMsg){
-                    $scope.errorMsg = errorMsg;
+                    $scope.error.show = true;
+                    $scope.error.msg = errorMsg;
                 });
         };
 

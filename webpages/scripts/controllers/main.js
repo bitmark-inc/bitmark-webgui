@@ -23,6 +23,10 @@ angular.module('bitmarkMgmtApp')
         $scope.disableStart = true;
         $scope.disableStop = true;
         $scope.bitmarkStatus = "Running";
+        $scope.error = {
+            show: false,
+            msg: ""
+        };
 
 
         httpService.send('statusBitmarkd').then(
@@ -37,7 +41,8 @@ angular.module('bitmarkMgmtApp')
                     getBitmarkInfo();
                 }
             }, function(errorMsg){
-                $scope.errorMsg = errorMsg;
+                $scope.error.show = true;
+                $scope.error.msg = errorMsg;
             });
 
 
@@ -51,11 +56,13 @@ angular.module('bitmarkMgmtApp')
                 }
 
             },function(errorMsg){
-                $scope.errorMsg = errorMsg;
+                $scope.error.show = true;
+                $scope.error.msg = errorMsg;
             });
 
         $scope.startBitmark = function(){
             allBitmarkdDisable();
+            $scope.error.show = false;
             httpService.send("startBitmarkd").then(
                 function(result){
                     // disable bitmark start button
@@ -69,11 +76,13 @@ angular.module('bitmarkMgmtApp')
                 }, function(errorMsg){
                     setBitmarkdDisable(false);
                     $scope.bitmarkStatus = bitmarkStatusObj.error;
-                    $scope.errorMsg = errorMsg;
+                    $scope.error.show = true;
+                    $scope.error.msg = errorMsg;
                 });
         };
         $scope.stopBitmark = function(){
             allBitmarkdDisable();
+            $scope.error.show = false;
             httpService.send("stopBitmarkd").then(
                 function(result){
                     if(result.search("stop running bitmarkd")>=0) {
@@ -85,7 +94,8 @@ angular.module('bitmarkMgmtApp')
                 }, function(errorMsg){
                     setBitmarkdDisable(true);
                     $scope.bitmarkStatus = bitmarkStatusObj.error;
-                    $scope.errorMsg = errorMsg;
+                    $scope.error.show = true;
+                    $scope.error.msg = errorMsg;
                 });
         };
         $scope.goUrl = function(path){
@@ -105,10 +115,12 @@ angular.module('bitmarkMgmtApp')
         var getBitmarkInfo = function(){
             httpService.send("getBitmarkdInfo").then(
                 function(result){
+                    $scope.error.show = false;
                     $scope.bitmarkInfo = result;
                 },
                 function(errorMsg){
-                    $scope.errorMsg = errorMsg;
+                    $scope.error.show = true;
+                    $scope.error.msg = errorMsg;
                 });
         };
   }]);

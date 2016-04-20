@@ -6,7 +6,7 @@
     <button ng-click="goUrl('edit')" ng-disabled="disableStart">Config</button>
   </div>
   <br>
-  <p>{{errorMsg}}</p>
+  <p ng-show="error.show">{{ error.msg }}</p>
   <div class="panel panel-default">
     <div class="panel-heading">Bitmark Info</div>
     <div class="panel-body" ng-show="!disableStart">

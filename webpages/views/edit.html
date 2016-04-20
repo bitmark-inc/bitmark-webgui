@@ -6,7 +6,7 @@
     <button ng-click="goUrl('/')">Cancel</button>
   </div>
   <br>
-  <p>{{errorMsg}}</p>
+  <p ng-show="error.show">{{ error.msg }}</p>
   <form name="bitmarkForm" novalidate>
     <div class="panel panel-default">
       <div class="panel-heading">Bitmark RPC</div>
