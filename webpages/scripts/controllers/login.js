@@ -12,7 +12,7 @@
  * Controller of the bitmarkMgmtApp
  */
 angular.module('bitmarkMgmtApp')
-    .controller('LoginCtrl', ['$rootScope', '$scope', '$location', 'httpService', function ($rootScope, $scope, $location, httpService) {
+    .controller('LoginCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
         httpService.send('checkAuthenticate').then(
             function(){
                 // already logined
@@ -45,11 +45,6 @@ angular.module('bitmarkMgmtApp')
 
                 });
         };
-
-        // to make the navbar item can show correctly
-        $rootScope.$on('Authenticated', function(event, value){
-            $rootScope.$broadcast('AppAuthenticated', value);
-        });
 
         $scope.goUrl = function(path){
             $location.path(path);

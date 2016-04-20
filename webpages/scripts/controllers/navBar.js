@@ -1,27 +1,34 @@
 angular.module('bitmarkMgmtApp')
-    .controller('NavbarCtrl', function ($scope, $location, httpService) {
+    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;
         });
-        httpService.send("checkAuthenticate").then(
-            function(){
-                $scope.showNavItem = true;
-                $location.path('/');
 
-            },function(){
-                $scope.showNavItem = false;
+        // to make the navbar item can show correctly
+        $rootScope.$on('Authenticated', function(event, value){
+            $rootScope.$broadcast('AppAuthenticated', value);
+        });
 
-                $location.path('/login');
+        $scope.init = function(){
+            httpService.send("checkAuthenticate").then(
+                function(){
+                    $scope.$emit('Authenticated', true);
+                    $location.path('/');
+
+                },function(){
+                    $scope.$emit('Authenticated', false);
+                    $location.path('/login');
             });
+        };
+
+
         $scope.logout = function(){
             httpService.send("logout").then(
                 function(){
-                    $scope.showNavItem = false;
-
+                    $scope.$emit('Authenticated', false);
                     $scope.goUrl('/login');
                 }, function(errorMsg){
-                    $scope.showNavItem = true;
-
+                    $scope.$emit('Authenticated', true);
                     $scope.errorMsg = errorMsg;
                 });
         };
