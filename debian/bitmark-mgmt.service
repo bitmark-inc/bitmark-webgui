@@ -15,7 +15,7 @@ StandardOutput=journal
 StandardError=journal
 
 WorkingDirectory=/var/lib/bitmark-mgmt
-ExecStart=/usr/sbin/bitmark-mgmt --config=/etc/bitmark-mgmt start
+ExecStart=/usr/sbin/bitmark-mgmt --config=/etc/bitmark-mgmt.conf start
 
 [Install]
 WantedBy=multi-user.target

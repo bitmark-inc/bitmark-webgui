@@ -34,7 +34,7 @@ case "$1" in
     # are essential packages.
     userdel bitmark-mgmt >/dev/null 2>&1 || true
     groupdel bitmark-mgmt >/dev/null 2>&1 || true
-    rm -rf /var/lib/bitmark-mgmt /etc/bitmark-mgmt
+    rm -rf /var/lib/bitmark-mgmt /etc/bitmark-mgmt.conf
     ;;
 
   (remove|failed-upgrade|abort-install|abort-upgrade|disappear)

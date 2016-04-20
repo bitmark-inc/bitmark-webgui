@@ -54,12 +54,22 @@ override_dh_auto_build:
 
 
 override_dh_auto_install:
-	# install app binary and configuration files
-	etc_dir="debian/tmp/etc" ; \
+	# install app binary and web files
+	# etc_dir="debian/tmp/etc" ; \
+	# bin_dir="debian/tmp/bin" ; \
+	# mkdir -p "$${etc_dir}" "$${bin_dir}" ; \
+	# conf="${SRC_DIR}/${APP_NAME}.conf.sample" ; \
+	# [ -f "$${conf}" ] && cp -p "$${conf}" "$${etc_dir}/${APP_NAME}.conf" ; \
+	# exe="${BIN_DIR}/${APP_NAME}" ; \
+	# [ -x "$${exe}" ] && cp -p "$${exe}" "$${bin_dir}" ; \
+	# done
+
+
 	bin_dir="debian/tmp/bin" ; \
-	mkdir -p "$${etc_dir}" "$${bin_dir}" ; \
-	conf="${SRC_DIR}/${APP_NAME}.conf.sample" ; \
-	[ -f "$${conf}" ] && cp -p "$${conf}" "$${etc_dir}/${APP_NAME}.conf" ; \
+	lib_dir="debian/tmp/var/lib/${APP_NAME}" ; \
+	mkdir -p "$${bin_dir}" "$${lib_dir}" ; \
+	webpages="${SRC_DIR}/webpages" ; \
+        [ -d "$${webpages}" ] && cp -rp "$${webpages}" "$${lib_dir}"; \
 	exe="${BIN_DIR}/${APP_NAME}" ; \
 	[ -x "$${exe}" ] && cp -p "$${exe}" "$${bin_dir}" ; \
 	done
