@@ -10,6 +10,7 @@ import (
 	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -44,27 +45,50 @@ func writeApiResponseAndSetCookie(w http.ResponseWriter, response *Response) err
 	return writeApiResponse(w, response)
 }
 
-func setCookie(w http.ResponseWriter) error {
 
+type cookie struct {
+	sync.RWMutex
+	expireTime time.Time
+	cipher string
+}
+
+var globalCookie [2]cookie // 0 is recent cookie, 1 is previous
+var cookieExpireDuration = 10
+
+func setCookie(w http.ResponseWriter) error {
 	cookie := &http.Cookie{
 		Name:   cookieName,
 		Secure: true,
 	}
 
-	timeStr := time.Now().String()
-	cookiePlain = cookieName + ":" + timeStr
-	cookieCipher, err := bcrypt.GenerateFromPassword([]byte(cookiePlain), bcrypt.DefaultCost)
-	if nil != err {
-		//fmt.Printf("Error: %v\n", err)
-		cookie.MaxAge = -1
-		http.SetCookie(w, cookie)
-		return fault.ApiErrSetAuthorize
+	globalCookie[0].Lock()
+	defer globalCookie[0].Unlock()
+	globalCookie[1].Lock()
+	defer globalCookie[1].Unlock()
+
+	// check if globalCookie need to be updated
+	localTime := time.Now().Add(time.Duration(2)*time.Minute)
+	if localTime.After(globalCookie[0].expireTime) {
+	// cookie will be expired in 2 minutes
+		globalCookie[1].expireTime = globalCookie[0].expireTime
+		globalCookie[0].expireTime = time.Now().Add(time.Duration(cookieExpireDuration)*time.Minute)
+
+		cookieCipher, err := bcrypt.GenerateFromPassword([]byte(globalCookie[0].expireTime.String()), bcrypt.DefaultCost)
+		if nil != err {
+			cookie.MaxAge = -1
+			http.SetCookie(w, cookie)
+			return fault.ApiErrSetAuthorize
+		}
+		globalCookie[0].cipher = string(cookieCipher)
+
 	}
 
-	cookie.Value = string(cookieCipher)
-	cookie.MaxAge = 10 * 60 //seconds
+	cookie.Value = globalCookie[0].cipher
+	cookie.MaxAge = cookieExpireDuration * 60 //seconds
 	http.SetCookie(w, cookie)
 	return nil
+
+
 }
 
 func WriteGlobalErrorResponse(w http.ResponseWriter, err error, log *logger.L) error {
@@ -80,7 +104,6 @@ func WriteGlobalErrorResponse(w http.ResponseWriter, err error, log *logger.L) e
 	return nil
 }
 
-var cookiePlain string
 
 func GetAndCheckCookie(w http.ResponseWriter, req *http.Request, log *logger.L) error {
 	reqCookie, err := req.Cookie(cookieName)
@@ -89,12 +112,19 @@ func GetAndCheckCookie(w http.ResponseWriter, req *http.Request, log *logger.L) 
 		return fault.ApiErrUnauthorized
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(reqCookie.Value), []byte(cookiePlain)); nil != err {
-		log.Errorf("decrypt cookie error: %v", err)
-		return fault.ApiErrChekAuthorize
+	globalCookie[0].Lock()
+	defer globalCookie[0].Unlock()
+	globalCookie[1].Lock()
+	defer globalCookie[1].Unlock()
+
+	for _, c := range globalCookie {
+		if err := bcrypt.CompareHashAndPassword([]byte(reqCookie.Value), []byte(c.expireTime.String())); nil == err {
+			return nil
+		}
 	}
 
-	return nil
+	log.Errorf("decrypt cookie error: %v", err)
+	return fault.ApiErrChekAuthorize
 }
 
 func SetCORSHeader(w http.ResponseWriter, req *http.Request) {
