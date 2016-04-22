@@ -13,13 +13,6 @@
  */
 angular.module('bitmarkMgmtApp')
     .controller('LoginCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
-        httpService.send('checkAuthenticate').then(
-            function(){
-                // already logined
-                $scope.goUrl('/');
-            },function(){}
-        );
-
         $scope.request = {
             Password: ""
         };
