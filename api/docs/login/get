@@ -1,0 +1,12 @@
+Usage: check bitmark-mgmt login status
+Path: /api/login
+Method: GET
+Return examples:
+failed:
+401
+
+success:
+{
+  "ok": true,
+  "result": null
+}

@@ -1,0 +1,78 @@
+Usage: manipulate bitmarkd service
+Path: /api/bitmarkd
+Method: POST
+Params:
+{
+  "options": "start/stop/status/info"
+}
+
+Retrun examples:
+start failed:
+{
+  "ok": false,
+  "result": "Already started bitmarkd"
+}
+
+{
+  "ok": false,
+  "result": "Failed to start bitmarkd"
+}
+
+start success:
+{
+  "ok": true,
+  "result": "start running bitmarkd"
+}
+
+stop failed
+{
+  "ok": false,
+  "result": "Already stoped bitmarkd"
+}
+
+{
+  "ok": false,
+  "result": "Failed to stop bitmarkd"
+}
+
+stop success:
+{
+  "ok": true,
+  "result": "stop running bitmarkd"
+}
+
+status failed
+status doesn't have failed response
+
+status success
+{
+  "ok": true,
+  "result": "started"
+}
+
+{
+  "ok": true,
+  "result": "stopped"
+}
+
+info failed:
+{
+  "ok": false,
+  "result": "Already stoped bitmarkd"
+}
+
+info success:
+{
+  "ok": true,
+  "result": {
+    "chain": "testing",
+    "mode": "Resynchronise",
+    "blocks": 5,
+    "peers": 0,
+    "rpcs": 1,
+    "miners": 0,
+    "pdiff": 1,
+    "pending": 0,
+    "verified": 0
+  }
+}

@@ -1,0 +1,15 @@
+Usage: login bitmark-mgmt
+Path: /api/login
+Method: POST
+Return examples:
+failed:
+{
+  "ok": false,
+  "result": "Failed to log in"
+}
+
+success:
+{
+  "ok": true,
+  "result": null
+}
