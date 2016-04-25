@@ -10,7 +10,8 @@ import (
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
-	"io/ioutil"
+	// "io/ioutil"
+	"bufio"
 	"net"
 	netrpc "net/rpc"
 	"os"
@@ -121,13 +122,30 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	bitmarkd.running = true
 	bitmarkd.process = cmd.Process
 	bitmarkd.log.Infof("process id: %d", cmd.Process.Pid)
+
 	go func() {
-		stde, err := ioutil.ReadAll(stderr)
+		// stde, err := ioutil.ReadAll(stderr)
+		// if nil != err {
+		// 	bitmarkd.log.Errorf("Error: %v", err)
+		// }
+
+		// stdo, err := ioutil.ReadAll(stdout)
+		// if nil != err {
+		// 	bitmarkd.log.Errorf("Error: %v", err)
+		// }
+
+		// bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
+		// bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
+
+		stdeReader := bufio.NewReader(stderr)
+		stde, err := stdeReader.ReadString('\n')
 		if nil != err {
 			bitmarkd.log.Errorf("Error: %v", err)
 		}
 
-		stdo, err := ioutil.ReadAll(stdout)
+		stdoReader := bufio.NewReader(stdout)
+		stdo, err := stdoReader.ReadString('\n')
+
 		if nil != err {
 			bitmarkd.log.Errorf("Error: %v", err)
 		}

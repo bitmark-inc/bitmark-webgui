@@ -45,11 +45,10 @@ func writeApiResponseAndSetCookie(w http.ResponseWriter, response *Response) err
 	return writeApiResponse(w, response)
 }
 
-
 type cookie struct {
 	sync.RWMutex
 	expireTime time.Time
-	cipher string
+	cipher     string
 }
 
 var globalCookie [2]cookie // 0 is recent cookie, 1 is previous
@@ -67,11 +66,11 @@ func setCookie(w http.ResponseWriter) error {
 	defer globalCookie[1].Unlock()
 
 	// check if globalCookie need to be updated
-	localTime := time.Now().Add(time.Duration(2)*time.Minute)
+	localTime := time.Now().Add(time.Duration(2) * time.Minute)
 	if localTime.After(globalCookie[0].expireTime) {
-	// cookie will be expired in 2 minutes
+		// cookie will be expired in 2 minutes
 		globalCookie[1].expireTime = globalCookie[0].expireTime
-		globalCookie[0].expireTime = time.Now().Add(time.Duration(cookieExpireDuration)*time.Minute)
+		globalCookie[0].expireTime = time.Now().Add(time.Duration(cookieExpireDuration) * time.Minute)
 
 		cookieCipher, err := bcrypt.GenerateFromPassword([]byte(globalCookie[0].expireTime.String()), bcrypt.DefaultCost)
 		if nil != err {
@@ -88,7 +87,6 @@ func setCookie(w http.ResponseWriter) error {
 	http.SetCookie(w, cookie)
 	return nil
 
-
 }
 
 func WriteGlobalErrorResponse(w http.ResponseWriter, err error, log *logger.L) error {
@@ -103,7 +101,6 @@ func WriteGlobalErrorResponse(w http.ResponseWriter, err error, log *logger.L) e
 
 	return nil
 }
-
 
 func GetAndCheckCookie(w http.ResponseWriter, req *http.Request, log *logger.L) error {
 	reqCookie, err := req.Cookie(cookieName)

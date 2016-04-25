@@ -4,7 +4,7 @@
 
 package utils_test
 
-import(
+import (
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
 	"testing"
 )
@@ -13,16 +13,15 @@ func TestCheckBitcoinAddress(t *testing.T) {
 	invalidBitcoinAddressArr := []string{
 		"123", //less than 26
 		"qwertasdfg123456789olijsdkvae0293j5nfjkso", // greater than 35
-		"123456789012345678901234567890@", // contains invalid character
+		"123456789012345678901234567890@",           // contains invalid character
 	}
 
 	for _, addr := range invalidBitcoinAddressArr {
-		err := 	utils.CheckBitcoinAddress(addr)
+		err := utils.CheckBitcoinAddress(addr)
 		if nil == err {
 			t.Errorf("CheckBitcoinAddress pass invalid addr: %s\n", addr)
 		}
 	}
-
 
 	validBitcoinAddressArr := []string{
 		"123456789012345678901234567890",
@@ -30,7 +29,7 @@ func TestCheckBitcoinAddress(t *testing.T) {
 	}
 
 	for _, addr := range validBitcoinAddressArr {
-		err := 	utils.CheckBitcoinAddress(addr)
+		err := utils.CheckBitcoinAddress(addr)
 		if nil != err {
 			t.Errorf("CheckBitcoinAddress unpass valid addr: %s\n", addr)
 		}
