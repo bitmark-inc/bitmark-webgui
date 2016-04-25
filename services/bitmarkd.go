@@ -5,13 +5,12 @@
 package services
 
 import (
+	"bufio"
 	"crypto/tls"
 	"github.com/bitmark-inc/bitmark-mgmt/fault"
 	"github.com/bitmark-inc/bitmark-mgmt/utils"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
-	// "io/ioutil"
-	"bufio"
 	"net"
 	netrpc "net/rpc"
 	"os"
@@ -94,6 +93,8 @@ loop:
 	close(finished)
 }
 
+var bitmarkTicker *time.Ticker
+
 func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	if bitmarkd.running {
 		return nil
@@ -124,39 +125,45 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	bitmarkd.log.Infof("process id: %d", cmd.Process.Pid)
 
 	go func() {
-		// stde, err := ioutil.ReadAll(stderr)
-		// if nil != err {
-		// 	bitmarkd.log.Errorf("Error: %v", err)
-		// }
-
-		// stdo, err := ioutil.ReadAll(stdout)
-		// if nil != err {
-		// 	bitmarkd.log.Errorf("Error: %v", err)
-		// }
-
-		// bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
-		// bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
 
 		stdeReader := bufio.NewReader(stderr)
-		stde, err := stdeReader.ReadString('\n')
-		if nil != err {
-			bitmarkd.log.Errorf("Error: %v", err)
-		}
-
 		stdoReader := bufio.NewReader(stdout)
-		stdo, err := stdoReader.ReadString('\n')
+		stderrDone := make(chan bool, 1)
+		stdoutDone := make(chan bool, 1)
 
-		if nil != err {
-			bitmarkd.log.Errorf("Error: %v", err)
-		}
+		go func() {
+			defer close(stderrDone)
+			for {
+				stde, err := stdeReader.ReadString('\n')
+				// fmt.Printf("bitmarkd stderr: %q\n", stde)
+				bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
+				if nil != err {
+					bitmarkd.log.Errorf("Error: %v", err)
+					return
+				}
+			}
+		}()
 
-		bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
-		bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
+		go func() {
+			defer close(stdoutDone)
+			for {
+				stdo, err := stdoReader.ReadString('\n')
+				// fmt.Printf("bitmarkd stdout: %q\n", stdo)
+				bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
+				if nil != err {
+					bitmarkd.log.Errorf("Error: %v", err)
+					return
+				}
+			}
+		}()
 
+		<-stderrDone
+		<-stdoutDone
 		if err := cmd.Wait(); nil != err {
 			bitmarkd.log.Errorf("Start bitmarkd failed: %v", err)
 			bitmarkd.running = false
 			bitmarkd.process = nil
+			bitmarkTicker.Stop()
 		}
 	}()
 
