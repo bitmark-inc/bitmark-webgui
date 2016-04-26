@@ -93,8 +93,6 @@ loop:
 	close(finished)
 }
 
-var bitmarkTicker *time.Ticker
-
 func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	if bitmarkd.running {
 		return nil
@@ -136,7 +134,7 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 			for {
 				stde, err := stdeReader.ReadString('\n')
 				// fmt.Printf("bitmarkd stderr: %q\n", stde)
-				bitmarkd.log.Errorf("bitmarkd stderr: %s", stde)
+				bitmarkd.log.Errorf("bitmarkd stderr: %q", stde)
 				if nil != err {
 					bitmarkd.log.Errorf("Error: %v", err)
 					return
@@ -149,7 +147,7 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 			for {
 				stdo, err := stdoReader.ReadString('\n')
 				// fmt.Printf("bitmarkd stdout: %q\n", stdo)
-				bitmarkd.log.Infof("bitmarkd stdout: %s", stdo)
+				bitmarkd.log.Infof("bitmarkd stdout: %q", stdo)
 				if nil != err {
 					bitmarkd.log.Errorf("Error: %v", err)
 					return
@@ -163,7 +161,6 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 			bitmarkd.log.Errorf("Start bitmarkd failed: %v", err)
 			bitmarkd.running = false
 			bitmarkd.process = nil
-			bitmarkTicker.Stop()
 		}
 	}()
 
