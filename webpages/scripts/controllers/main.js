@@ -29,7 +29,7 @@ angular.module('bitmarkMgmtApp')
         };
 
         var getInfoPromise;
-        var intervalTime = 5 * 1000;
+        var intervalTime = 2 * 1000;
         $scope.$on('$destroy', function(){
             console.log("cancel promise");
             $interval.cancel(getInfoPromise);
@@ -42,7 +42,6 @@ angular.module('bitmarkMgmtApp')
                     setBitmarkdDisable(false);
                     $scope.bitmarkStatus = bitmarkStatusObj.stop;
                 }else{
-                    setBitmarkdDisable(true);
                     $scope.bitmarkStatus = bitmarkStatusObj.run;
                     getBitmarkInfo();
                     getInfoPromise = $interval(getBitmarkInfo, intervalTime);
@@ -76,7 +75,6 @@ angular.module('bitmarkMgmtApp')
                     // disable bitmark start button
                     if(result.search("start running bitmarkd")>= 0){
                         $scope.bitmarkStatus = bitmarkStatusObj.run;
-                        setBitmarkdDisable(true);
                         getBitmarkInfo();
                         getInfoPromise = $interval(getBitmarkInfo, intervalTime);
                     }else{
@@ -129,6 +127,11 @@ angular.module('bitmarkMgmtApp')
                     console.log("get bitmark info");
                     $scope.error.show = false;
                     $scope.bitmarkInfo = result;
+                    if(result.mode == undefined || result.mode !== 'Normal'){
+                        allBitmarkdDisable();
+                    }else{
+                        setBitmarkdDisable(true);
+                    }
                 },
                 function(errorMsg){
                     $scope.error.show = true;

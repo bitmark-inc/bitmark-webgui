@@ -228,7 +228,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	server := &http.Server{
 		Addr:           host + ":" + port,
 		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		WriteTimeout:   5 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
