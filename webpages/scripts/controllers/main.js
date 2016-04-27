@@ -12,7 +12,7 @@
  * Controller of the bitmarkMgmtApp
  */
 angular.module('bitmarkMgmtApp')
-    .controller('MainCtrl', ['$scope', '$location', 'httpService', 'ProxyTemp', function ($scope, $location, httpService, ProxyTemp) {
+    .controller('MainCtrl', ['$scope', '$location', 'httpService', 'ProxyTemp', '$interval', function ($scope, $location, httpService, ProxyTemp, $interval) {
 
         var bitmarkStatusObj = {
             "run": "Running",
@@ -28,6 +28,12 @@ angular.module('bitmarkMgmtApp')
             msg: ""
         };
 
+        var getInfoPromise;
+        var intervalTime = 5 * 1000;
+        $scope.$on('$destroy', function(){
+            console.log("cancel promise");
+            $interval.cancel(getInfoPromise);
+        });
 
         httpService.send('statusBitmarkd').then(
             function(result){
@@ -39,10 +45,12 @@ angular.module('bitmarkMgmtApp')
                     setBitmarkdDisable(true);
                     $scope.bitmarkStatus = bitmarkStatusObj.run;
                     getBitmarkInfo();
+                    getInfoPromise = $interval(getBitmarkInfo, intervalTime);
                 }
             }, function(errorMsg){
                 $scope.error.show = true;
                 $scope.error.msg = errorMsg;
+                $interval.cancel(getInfoPromise);
             });
 
 
@@ -70,6 +78,7 @@ angular.module('bitmarkMgmtApp')
                         $scope.bitmarkStatus = bitmarkStatusObj.run;
                         setBitmarkdDisable(true);
                         getBitmarkInfo();
+                        getInfoPromise = $interval(getBitmarkInfo, intervalTime);
                     }else{
                         setBitmarkdDisable(false);
                     }
@@ -78,6 +87,7 @@ angular.module('bitmarkMgmtApp')
                     $scope.bitmarkStatus = bitmarkStatusObj.error;
                     $scope.error.show = true;
                     $scope.error.msg = errorMsg;
+                    $interval.cancel(getInfoPromise);
                 });
         };
         $scope.stopBitmark = function(){
@@ -91,6 +101,7 @@ angular.module('bitmarkMgmtApp')
                     }else{
                         setBitmarkdDisable(true);
                     }
+                    $interval.cancel(getInfoPromise);
                 }, function(errorMsg){
                     setBitmarkdDisable(true);
                     $scope.bitmarkStatus = bitmarkStatusObj.error;
@@ -115,6 +126,7 @@ angular.module('bitmarkMgmtApp')
         var getBitmarkInfo = function(){
             httpService.send("getBitmarkdInfo").then(
                 function(result){
+                    console.log("get bitmark info");
                     $scope.error.show = false;
                     $scope.bitmarkInfo = result;
                 },
@@ -123,4 +135,5 @@ angular.module('bitmarkMgmtApp')
                     $scope.error.msg = errorMsg;
                 });
         };
+
   }]);

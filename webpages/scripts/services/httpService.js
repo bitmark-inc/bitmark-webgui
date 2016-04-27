@@ -97,7 +97,9 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
                     $rootScope.$broadcast('AppAuthenticated', false);
                     $location.path('/login');
 
-                }else{
+                } else if(response.status === -1){
+                    deferred.reject("");
+                } else {
                     deferred.reject(response);
                 }
 
