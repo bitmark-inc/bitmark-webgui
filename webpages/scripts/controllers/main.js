@@ -29,7 +29,7 @@ angular.module('bitmarkMgmtApp')
         };
 
         var getInfoPromise;
-        var intervalTime = 2 * 1000;
+        var intervalTime = 6 * 1000;
         $scope.$on('$destroy', function(){
             console.log("cancel promise");
             $interval.cancel(getInfoPromise);
@@ -91,6 +91,7 @@ angular.module('bitmarkMgmtApp')
         $scope.stopBitmark = function(){
             allBitmarkdDisable();
             $scope.error.show = false;
+            $interval.cancel(getInfoPromise);
             httpService.send("stopBitmarkd").then(
                 function(result){
                     if(result.search("stop running bitmarkd")>=0) {
@@ -99,7 +100,6 @@ angular.module('bitmarkMgmtApp')
                     }else{
                         setBitmarkdDisable(true);
                     }
-                    $interval.cancel(getInfoPromise);
                 }, function(errorMsg){
                     setBitmarkdDisable(true);
                     $scope.bitmarkStatus = bitmarkStatusObj.error;
@@ -134,8 +134,10 @@ angular.module('bitmarkMgmtApp')
                     }
                 },
                 function(errorMsg){
-                    $scope.error.show = true;
-                    $scope.error.msg = errorMsg;
+                    if(errorMsg != "Failed to connect to bitmarkd") {
+                        $scope.error.show = true;
+                        $scope.error.msg = errorMsg;
+                    }
                 });
         };
 

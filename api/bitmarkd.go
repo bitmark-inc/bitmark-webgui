@@ -6,7 +6,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
@@ -82,7 +81,7 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 		if !bitmarkService.IsRunning() {
 			response.Result = bitmarkdAlreadyStopErr
 		} else {
-			if info, err := getBitmarkdInfo(bitmarkConfigFile, log); nil != err {
+			if info, err := getBitmarkdInfo(bitmarkConfigFile, log); "" != err {
 				response.Result = err
 			} else {
 				response.Ok = true
@@ -102,17 +101,17 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 	}
 }
 
-func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, error) {
+func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, string) {
 	bitmarkConfig, err := configuration.GetConfiguration(bitmarkConfigFile)
 	if nil != err {
 		log.Errorf("Failed to get bitmarkd configuration: %v", err)
-		return nil, errors.New(bitmarkdGetConfigErr)
+		return nil, bitmarkdGetConfigErr
 	}
 
 	conn, err := bitmarkService.Connect(bitmarkConfig.ClientRPC.Listen[0])
 	if nil != err {
 		log.Errorf("Failed to connect to bitmarkd: %v", err)
-		return nil, errors.New(bitmarkdConnectErr)
+		return nil, bitmarkdConnectErr
 	}
 	defer conn.Close()
 
@@ -123,8 +122,8 @@ func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, e
 	info, err := bitmarkService.GetInfo(client)
 	if nil != err {
 		log.Errorf("Failed to get bitmark info: %v", err)
-		return nil, errors.New(bitmarkdGetInfoErr)
+		return nil, bitmarkdGetInfoErr
 	}
 
-	return info, nil
+	return info, ""
 }
