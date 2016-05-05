@@ -62,15 +62,17 @@ func main() {
 					Usage: "the direcotry of web and log",
 				},
 			},
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				runSetup(c, configFile)
+				return nil
 			},
 		},
 		{
 			Name:  "start",
 			Usage: "start bitmark-mgmt",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				runStart(c, configFile)
+				return nil
 			},
 		},
 	}
