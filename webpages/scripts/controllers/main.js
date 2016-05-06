@@ -17,12 +17,13 @@ angular.module('bitmarkWebguiApp')
         var bitmarkStatusObj = {
             "run": "Running",
             "stop": "Stopped",
-            "error": "Error"
+            "error": "Error",
+            "resync": "Resynchronizing"
         };
 
         $scope.disableStart = true;
         $scope.disableStop = true;
-        $scope.bitmarkStatus = "Running";
+        $scope.bitmarkStatus = bitmarkStatusObj.resync;
         $scope.error = {
             show: false,
             msg: ""
@@ -42,7 +43,6 @@ angular.module('bitmarkWebguiApp')
                     setBitmarkdDisable(false);
                     $scope.bitmarkStatus = bitmarkStatusObj.stop;
                 }else{
-                    $scope.bitmarkStatus = bitmarkStatusObj.run;
                     getBitmarkInfo();
                     getInfoPromise = $interval(getBitmarkInfo, intervalTime);
                 }
@@ -74,7 +74,6 @@ angular.module('bitmarkWebguiApp')
                 function(result){
                     // disable bitmark start button
                     if(result.search("start running bitmarkd")>= 0){
-                        $scope.bitmarkStatus = bitmarkStatusObj.run;
                         getBitmarkInfo();
                         getInfoPromise = $interval(getBitmarkInfo, intervalTime);
                     }else{
@@ -129,8 +128,10 @@ angular.module('bitmarkWebguiApp')
                     $scope.bitmarkInfo = result;
                     if(result.mode == undefined || result.mode !== 'Normal'){
                         allBitmarkdDisable();
+                        $scope.bitmarkStatus = bitmarkStatusObj.resync;
                     }else{
                         setBitmarkdDisable(true);
+                        $scope.bitmarkStatus = bitmarkStatusObj.run;
                     }
                 },
                 function(errorMsg){
