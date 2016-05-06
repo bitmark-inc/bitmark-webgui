@@ -6,14 +6,14 @@
 
 /**
  * @ngdoc overview
- * @name bitmarkMgmtApp
+ * @name bitmarkWebguiApp
  * @description
- * # bitmarkMgmtApp
+ * # bitmarkWebguiApp
  *
  * Main module of the application.
  */
 var app = angular
-  .module('bitmarkMgmtApp', [
+  .module('bitmarkWebguiApp', [
     'ngCookies',
     'ngResource',
     'ngRoute',

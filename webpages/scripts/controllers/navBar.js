@@ -1,4 +1,4 @@
-angular.module('bitmarkMgmtApp')
+angular.module('bitmarkWebguiApp')
     .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;

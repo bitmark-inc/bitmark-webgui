@@ -6,12 +6,12 @@
 
 /**
  * @ngdoc function
- * @name bitmarkMgmtApp.controller:MainCtrl
+ * @name bitmarkWebguiApp.controller:MainCtrl
  * @description
  * # MainCtrl
- * Controller of the bitmarkMgmtApp
+ * Controller of the bitmarkWebguiApp
  */
-angular.module('bitmarkMgmtApp')
+angular.module('bitmarkWebguiApp')
     .controller('LoginCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
         $scope.request = {
             Password: ""

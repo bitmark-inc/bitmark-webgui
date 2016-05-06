@@ -6,12 +6,12 @@
 
 /**
  * @ngdoc function
- * @name bitmarkMgmtApp.controller:EditCtrl
+ * @name bitmarkWebguiApp.controller:EditCtrl
  * @description
  * # EditCtrl
- * Controller of the bitmarkMgmtApp
+ * Controller of the bitmarkWebguiApp
  */
-angular.module('bitmarkMgmtApp')
+angular.module('bitmarkWebguiApp')
     .controller('EditCtrl', ['$scope', '$location', 'httpService', 'BitmarkProxyURL', 'ProxyTemp', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp) {
         $scope.error = {
             show: false,

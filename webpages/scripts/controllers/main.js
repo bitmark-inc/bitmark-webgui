@@ -6,12 +6,12 @@
 
 /**
  * @ngdoc function
- * @name bitmarkMgmtApp.controller:MainCtrl
+ * @name bitmarkWebguiApp.controller:MainCtrl
  * @description
  * # MainCtrl
- * Controller of the bitmarkMgmtApp
+ * Controller of the bitmarkWebguiApp
  */
-angular.module('bitmarkMgmtApp')
+angular.module('bitmarkWebguiApp')
     .controller('MainCtrl', ['$scope', '$location', 'httpService', 'ProxyTemp', '$interval', function ($scope, $location, httpService, ProxyTemp, $interval) {
 
         var bitmarkStatusObj = {

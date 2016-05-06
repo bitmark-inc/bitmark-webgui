@@ -14,13 +14,13 @@ import (
 	"strings"
 )
 
-type bMgmtPasswordRequset struct {
+type bWebguiPasswordRequset struct {
 	Origin string
 	New    string
 }
 
 // POST /api/password
-func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgmtConfigFile string, password string, log *logger.L) {
+func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkWebguiConfigFile string, password string, log *logger.L) {
 
 	log.Info("POST /api/password")
 	response := &Response{
@@ -29,7 +29,7 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	var request bMgmtPasswordRequset
+	var request bWebguiPasswordRequset
 	err := decoder.Decode(&request)
 	if nil != err {
 		log.Errorf("Error:%v", err)
@@ -58,8 +58,8 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 		return
 	}
 
-	// write new password to bitmark-mgmt config file
-	input, err := ioutil.ReadFile(bitmarkMgmtConfigFile)
+	// write new password to bitmark-webgui config file
+	input, err := ioutil.ReadFile(bitmarkWebguiConfigFile)
 	if nil != err {
 		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -77,7 +77,7 @@ func SetBitmarkMgmtPassword(w http.ResponseWriter, req *http.Request, bitmarkMgm
 	}
 
 	output := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(bitmarkMgmtConfigFile, []byte(output), 0644)
+	err = ioutil.WriteFile(bitmarkWebguiConfigFile, []byte(output), 0644)
 	if nil != err {
 		log.Errorf("Error: %v", err)
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {

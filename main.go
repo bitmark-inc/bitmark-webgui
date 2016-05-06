@@ -24,7 +24,7 @@ import (
 )
 
 var GlobalConfig *configuration.Configuration
-var BitmarkMgmtConfigFile string
+var BitmarkWebguiConfigFile string
 
 var mainLog *logger.L
 
@@ -158,7 +158,7 @@ func runStart(c *cli.Context, configFile string) {
 		exitwithstatus.Message("Error: %v\n", fault.ErrNotFoundConfigFile)
 	}
 
-	BitmarkMgmtConfigFile = configFile
+	BitmarkWebguiConfigFile = configFile
 
 	// read bitmark-webgui config file
 	if configs, err := configuration.GetConfiguration(configFile); nil != err {
@@ -306,7 +306,7 @@ func handleConfig(w http.ResponseWriter, req *http.Request) {
 }
 
 func handleSetPassword(w http.ResponseWriter, req *http.Request) {
-	log := logger.New("api-bitmarkmgmt")
+	log := logger.New("api-bitmarkWebgui")
 	api.SetCORSHeader(w, req)
 
 	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
@@ -315,14 +315,14 @@ func handleSetPassword(w http.ResponseWriter, req *http.Request) {
 
 	switch req.Method {
 	case `POST`:
-		if !utils.EnsureFileExists(BitmarkMgmtConfigFile) {
+		if !utils.EnsureFileExists(BitmarkWebguiConfigFile) {
 			exitwithstatus.Message("Error: %s\n", fault.ErrNotFoundConfigFile)
 		}
-		if configs, err := configuration.GetConfiguration(BitmarkMgmtConfigFile); nil != err {
+		if configs, err := configuration.GetConfiguration(BitmarkWebguiConfigFile); nil != err {
 			exitwithstatus.Message("Error: %v\n", err)
 		} else {
 			GlobalConfig = configs
-			api.SetBitmarkMgmtPassword(w, req, BitmarkMgmtConfigFile, GlobalConfig.Password, log)
+			api.SetBitmarkWebguiPassword(w, req, BitmarkWebguiConfigFile, GlobalConfig.Password, log)
 		}
 	case `OPTIONS`:
 		return
@@ -348,7 +348,7 @@ func handleLogin(w http.ResponseWriter, req *http.Request) {
 			}
 			return
 		}
-		api.LoginBitmarkMgmt(w, req, GlobalConfig.Password, log)
+		api.LoginBitmarkWebgui(w, req, GlobalConfig.Password, log)
 	case `OPTIONS`:
 		return
 	default:
@@ -366,7 +366,7 @@ func handleLogout(w http.ResponseWriter, req *http.Request) {
 
 	switch req.Method {
 	case `POST`:
-		api.LogoutBitmarkMgmt(w, log)
+		api.LogoutBitmarkWebgui(w, log)
 	case `OPTIONS`:
 		return
 	default:

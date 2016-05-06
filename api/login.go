@@ -31,7 +31,7 @@ type loginRequset struct {
 }
 
 // POST /api/login
-func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string, log *logger.L) {
+func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, password string, log *logger.L) {
 
 	log.Info("POST /api/login")
 	response := &Response{
@@ -70,7 +70,7 @@ func LoginBitmarkMgmt(w http.ResponseWriter, req *http.Request, password string,
 }
 
 // POST /api/logout
-func LogoutBitmarkMgmt(w http.ResponseWriter, log *logger.L) {
+func LogoutBitmarkWebgui(w http.ResponseWriter, log *logger.L) {
 
 	log.Info("POST /api/logout")
 	cookie := &http.Cookie{

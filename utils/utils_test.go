@@ -5,7 +5,7 @@
 package utils_test
 
 import (
-	"github.com/bitmark-inc/bitmark-mgmt/utils"
+	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"testing"
 )
 

@@ -6,19 +6,19 @@
 
 /**
  * @ngdoc function
- * @name bitmarkMgmtApp.controller:MainCtrl
+ * @name bitmarkWebguiApp.controller:MainCtrl
  * @description
  * # MainCtrl
- * Controller of the bitmarkMgmtApp
+ * Controller of the bitmarkWebguiApp
  */
-angular.module('bitmarkMgmtApp')
+angular.module('bitmarkWebguiApp')
     .controller('SystemCtrl', ['$scope', '$http', '$location', 'httpService', function ($scope, $http, $location, httpService) {
         $scope.request = {
             Origin: "",
             New: ""
         };
         $scope.verifyPassword = "";
-        $scope.bitmarkMgmtPasswordEqual = true;
+        $scope.bitmarkWebguiPasswordEqual = true;
         $scope.errorMsg = "";
 
         $scope.save = function(){
@@ -26,7 +26,7 @@ angular.module('bitmarkMgmtApp')
                 $scope.errorMsg = "All fields should be filled";
                 return;
             }
-            httpService.send('updateBitmarkMgmtPassword', $scope.request).then(
+            httpService.send('updateBitmarkWebguiPassword', $scope.request).then(
                 function(result){
                     $scope.goUrl('/');
                 }, function(errorMsg){
@@ -41,9 +41,9 @@ angular.module('bitmarkMgmtApp')
         // check password equality
         $scope.$watchGroup(['request.New','verifyPassword'], function(){
             if (!passwordVerified($scope.request.New, $scope.verifyPassword)){
-                $scope.bitmarkMgmtPasswordEqual = false;
+                $scope.bitmarkWebguiPasswordEqual = false;
             }else{
-                $scope.bitmarkMgmtPasswordEqual = true;
+                $scope.bitmarkWebguiPasswordEqual = true;
             }
         });
 

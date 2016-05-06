@@ -14,7 +14,7 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
             method: 'POST',
             url: hostApiPath+'/config'
         },
-        updateBitmarkMgmtPassword: {
+        updateBitmarkWebguiPassword: {
             method: 'POST',
             url: hostApiPath+'/password'
         },
