@@ -12,11 +12,11 @@ set -e
 case "$1" in
   (install)
     # fresh install - remove any old logs
-    rm -f /var/lib/bitmark-mgmt/log/*
+    rm -f /var/lib/bitmark-webgui/log/*
     ;;
 
   (upgrade)
-    # stop?  systemctl stop bitmark-mgmt
+    # stop?  systemctl stop bitmark-webgui
     ;;
 
   (abort-upgrade)

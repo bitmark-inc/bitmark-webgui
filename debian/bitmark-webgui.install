@@ -1,0 +1,2 @@
+var/lib/bitmark-webgui var/lib
+bin/bitmark-webgui usr/sbin

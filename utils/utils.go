@@ -5,7 +5,7 @@
 package utils
 
 import (
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/certgen"
 	"io/ioutil"
 	"os"
@@ -15,8 +15,8 @@ import (
 
 const (
 	ServerTlsDir   = "tls"
-	ServerCertFile = "bitmark-mgmt.crt"
-	ServerKeyFile  = "bitmark-mgmt.key"
+	ServerCertFile = "bitmark-webgui.crt"
+	ServerKeyFile  = "bitmark-webgui.key"
 )
 
 // check if file exists

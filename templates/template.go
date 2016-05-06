@@ -6,7 +6,7 @@ package templates
 const (
 	/**** Configuration template ****/
 	ConfigurationTemplate = `
-# bitmark-mgmt.conf -*- mode: libucl -*-
+# bitmark-webgui.conf -*- mode: libucl -*-
 
 data_directory = "{{.DataDirectory}}"
 

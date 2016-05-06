@@ -9,13 +9,13 @@ Restart=on-failure
 User=bitmark
 Group=bitmark
 
-PIDFile=/run/bitmark-mgmt.pid
+PIDFile=/run/bitmark-webgui.pid
 
 StandardOutput=journal
 StandardError=journal
 
-WorkingDirectory=/var/lib/bitmark-mgmt
-ExecStart=/usr/sbin/bitmark-mgmt --config=/etc/bitmark-mgmt.conf start
+WorkingDirectory=/var/lib/bitmark-webgui
+ExecStart=/usr/sbin/bitmark-webgui --config=/etc/bitmark-webgui.conf start
 
 [Install]
 WantedBy=multi-user.target

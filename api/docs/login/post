@@ -1,4 +1,4 @@
-Usage: login bitmark-mgmt
+Usage: login bitmark-webgui
 Path: /api/login
 Method: POST
 Return examples:

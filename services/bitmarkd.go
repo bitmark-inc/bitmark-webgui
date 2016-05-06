@@ -7,8 +7,8 @@ package services
 import (
 	"bufio"
 	"crypto/tls"
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
-	"github.com/bitmark-inc/bitmark-mgmt/utils"
+	"github.com/bitmark-inc/bitmark-webgui/fault"
+	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net"

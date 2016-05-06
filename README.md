@@ -1,22 +1,22 @@
-# bitmark-mgmt
+# bitmark-webgui
 Configuration program for bitmarkd
 
 ```
 USAGE:
-   bitmark-mgmt [global options] command [command options] [arguments...]
+   bitmark-webgui [global options] command [command options] [arguments...]
 
 VERSION:
    1
 
 COMMANDS:
-   setup        Initialise bitmark-mgmt configuration
+   setup        Initialise bitmark-webgui configuration
      --hostname, -H               generate server certificate with the hostname [localhost]
      --data-directory, -d         the direcotry of web and log
-   start        start bitmark-mgmt
+   start        start bitmark-webgui
    help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --config, -c         *bitmark-mgmt config file
+   --config, -c         *bitmark-webgui config file
    --help, -h           show help
    --version, -v        print the version
 

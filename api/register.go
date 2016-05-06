@@ -5,7 +5,7 @@
 package api
 
 import (
-	"github.com/bitmark-inc/bitmark-mgmt/services"
+	"github.com/bitmark-inc/bitmark-webgui/services"
 )
 
 var bitmarkService *services.Bitmarkd

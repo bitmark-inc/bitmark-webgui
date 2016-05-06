@@ -6,7 +6,7 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"

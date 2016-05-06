@@ -14,12 +14,12 @@ import (
 const (
 	defaultDataDirectory     = "."
 	defaultPort              = 2150
-	defaultPassword          = "bitmark-mgmt"
+	defaultPassword          = "bitmark-webgui"
 	defaultEnableHttps       = true
 	defaultBitmarkConfigFile = "/etc/bitmarkd.conf"
 
 	defaultLogDirectory = "log"
-	defaultLogFile      = "bitmark-mgmt.log"
+	defaultLogFile      = "bitmark-webgui.log"
 	defaultLogCount     = 10          //  number of log files retained
 	defaultLogSize      = 1024 * 1024 // rotate when <logfile> exceeds this size
 )

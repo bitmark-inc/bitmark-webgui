@@ -5,11 +5,11 @@
 package main
 
 import (
-	"github.com/bitmark-inc/bitmark-mgmt/api"
-	"github.com/bitmark-inc/bitmark-mgmt/configuration"
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
-	"github.com/bitmark-inc/bitmark-mgmt/templates"
-	"github.com/bitmark-inc/bitmark-mgmt/utils"
+	"github.com/bitmark-inc/bitmark-webgui/api"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
+	"github.com/bitmark-inc/bitmark-webgui/fault"
+	"github.com/bitmark-inc/bitmark-webgui/templates"
+	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/exitwithstatus"
 	"github.com/bitmark-inc/logger"
 	"github.com/codegangsta/cli"
@@ -35,21 +35,21 @@ func main() {
 	var configFile string
 
 	app := cli.NewApp()
-	app.Name = "bitmark-mgmt"
+	app.Name = "bitmark-webgui"
 	app.Usage = "Configuration program for bitmarkd"
 	app.Version = Version()
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "config-file, c",
 			Value:       "",
-			Usage:       "*bitmark-mgmt config file",
+			Usage:       "*bitmark-webgui config file",
 			Destination: &configFile,
 		},
 	}
 	app.Commands = []cli.Command{
 		{
 			Name:  "setup",
-			Usage: "Initialise bitmark-mgmt configuration",
+			Usage: "Initialise bitmark-webgui configuration",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "hostname, H",
@@ -69,7 +69,7 @@ func main() {
 		},
 		{
 			Name:  "start",
-			Usage: "start bitmark-mgmt",
+			Usage: "start bitmark-webgui",
 			Action: func(c *cli.Context) error {
 				runStart(c, configFile)
 				return nil
@@ -120,7 +120,7 @@ func runSetup(c *cli.Context, configFile string) {
 			mainLog.Errorf("Generate config template failed: %v", err)
 			exitwithstatus.Message("Error: %v\n", err)
 		}
-		mainLog.Info("Successfully setup bitmark-mgmt configuration file")
+		mainLog.Info("Successfully setup bitmark-webgui configuration file")
 
 		// gen certificate
 		hostname := c.String("hostname")
@@ -135,7 +135,7 @@ func runSetup(c *cli.Context, configFile string) {
 			if newCreate {
 				mainLog.Infof("Generate self signed certificate for hostname: %s", hostname)
 				hostnames := []string{hostname}
-				if err := utils.MakeSelfSignedCertificate("bitmark-mgmt", cert, key, false, hostnames); nil != err {
+				if err := utils.MakeSelfSignedCertificate("bitmark-webgui", cert, key, false, hostnames); nil != err {
 					mainLog.Errorf("generate TLS file failed: %v", err)
 					exitwithstatus.Message("generate TLS file failed: %v\n", err)
 				}
@@ -160,7 +160,7 @@ func runStart(c *cli.Context, configFile string) {
 
 	BitmarkMgmtConfigFile = configFile
 
-	// read bitmark-mgmt config file
+	// read bitmark-webgui config file
 	if configs, err := configuration.GetConfiguration(configFile); nil != err {
 		exitwithstatus.Message("Error: %v\n", err)
 	} else {
@@ -244,7 +244,7 @@ func startWebServer(configs *configuration.Configuration) error {
 
 		if newCreate {
 			mainLog.Info("Generate self signed certificate...")
-			if err := utils.MakeSelfSignedCertificate("bitmark-mgmt", cert, key, false, nil); nil != err {
+			if err := utils.MakeSelfSignedCertificate("bitmark-webgui", cert, key, false, nil); nil != err {
 				return err
 			}
 		}

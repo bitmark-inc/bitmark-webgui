@@ -11,7 +11,7 @@ set -e
 
 case "$1" in
   (remove|remove-in-favour|deconfigure|deconfigure-in-favour)
-    systemctl stop bitmark-mgmt >/dev/null 2>&1 || true
+    systemctl stop bitmark-webgui >/dev/null 2>&1 || true
     ;;
 
   (upgrade|failed-upgrade)

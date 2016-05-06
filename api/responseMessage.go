@@ -12,8 +12,8 @@ const (
 	bitmarkdConfigGetErr    = `Failed to get bitmarkd config`
 	bitmarkdConfigUpdateErr = `Failed to update bitmarkd config`
 
-	// bitmarkMgmt error
-	setPasswordErr = `Failed to set up bitmark-mgmt password`
+	// bitmark-webgui error
+	setPasswordErr = `Failed to set up bitmark-webgui password`
 
 	// bitmarkd api
 	bitmarkdStartSuccess = `start running bitmarkd`

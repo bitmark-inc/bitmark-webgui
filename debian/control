@@ -1,4 +1,4 @@
-Source: bitmark-mgmt
+Source: bitmark-webgui
 Section: net
 Priority: optional
 Maintainer: Bitmark Developers <developers@bitmark.com>
@@ -11,12 +11,12 @@ Build-Depends: debhelper (>=9),
                gccgo [powerpc]
 Standards-Version: 3.9.6
 Homepage: https://bitmark.com
-Vcs-Git: git@github.com:bitmark-inc/bitmark-mgmt.git
+Vcs-Git: git@github.com:bitmark-inc/bitmark-webgui.git
 #Vcs-Browser: http://anonscm.debian.org/cgit/server-control/server-control.git
 
-Package: bitmark-mgmt
+Package: bitmark-webgui
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends:
-Description: Bitmarkd configuration program 
+Description: Bitmarkd configuration program
  This is a program for bitmarkd configuration

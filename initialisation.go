@@ -5,8 +5,8 @@
 package main
 
 import (
-	"github.com/bitmark-inc/bitmark-mgmt/api"
-	"github.com/bitmark-inc/bitmark-mgmt/services"
+	"github.com/bitmark-inc/bitmark-webgui/api"
+	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/bitmarkd/background"
 )
 

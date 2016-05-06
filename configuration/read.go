@@ -5,7 +5,7 @@
 package configuration
 
 import (
-	"github.com/bitmark-inc/bitmark-mgmt/fault"
+	"github.com/bitmark-inc/bitmark-webgui/fault"
 	libucl "github.com/bitmark-inc/go-libucl"
 	"reflect"
 )

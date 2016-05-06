@@ -1,4 +1,4 @@
-Usage: check bitmark-mgmt login status
+Usage: check bitmark-webgui login status
 Path: /api/login
 Method: GET
 Return examples:
