@@ -1,0 +1,195 @@
+<div>
+  <h3>Issue and Transfer Bitmark</h3>
+  <!-- setup section -->
+  <div class="panel panel-default">
+    <div class="panel-heading">Info</div>
+    <div class="panel-body">
+      <p>
+        <b>chain</b>
+        <label>
+          <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
+          Local
+        </label>
+        <label>
+          <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
+          Testing
+        </label>
+        <label>
+          <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
+          Bitmark
+        </label>
+      </p>
+      
+      <p>Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
+      <div>
+        <p>
+          <b>Identity Name</b>
+          testing
+        </p>
+        <p>
+          <b>Identity Description</b>
+          testing
+        </p>
+        <p>
+          <b>Identity Publickey</b>
+          testing
+        </p>
+        <p>
+          <b>Bitcoin Address</b>
+          m23g09823jvsk3Ka
+        </p>
+        <p>
+          <b>Balance</b>
+          2500 satoshi
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <uib-accordion>
+    <!-- add setup fields -->
+    <uib-accordion-group is-open="setupAccord.open">
+      <uib-accordion-heading>
+        Setup
+        <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': setupAccord.open, 'glyphicon-chevron-right': !setupAccord.open}"></i>
+      </uib-accordion-heading>
+      <form>
+        <div class="panel-body">
+          <p>
+            <b>chain</b>
+            <label>
+              <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
+              Local
+            </label>
+            <label>
+              <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
+              Testing
+            </label>
+            <label>
+              <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
+              Bitmark
+          </label>
+        </p>
+          <p>
+            <label>
+              Identity Name
+              <input type="text">
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Description
+              <textarea></textarea>
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Password
+              <input type="password">
+            </label>
+            <label>
+              Verify Identity Password
+              <input type="password">
+            </label>
+          </p>
+          <p>
+            <label>
+              Pay Password
+              <input type="password">
+            </label>
+            <label>
+              Verify Pay Password
+              <input type="password">
+            </label>
+          </p>
+        </div>
+        <button>submit</button>
+      </form>
+    </uib-accordion-group>    
+    <!-- Issue setction -->
+    <uib-accordion-group is-open="issueAccord.open">
+      <uib-accordion-heading>
+        Issue Asset
+        <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': issueAccord.open, 'glyphicon-chevron-right': !issueAccord.open}"></i>
+      </uib-accordion-heading>
+      <form>
+        <div class="panel-body">
+          <p>
+            <label>
+              Name
+              <input type="text">
+            </label>
+          </p>
+          <p>
+            <label>
+              Description
+              <textarea></textarea>
+            </label>
+          </p>
+          <p>
+            <label>
+              Fingerprint
+              <input type="text">
+            </label>
+          </p>
+          <p>
+            <label>
+              Quantity
+              <input type="number">
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Password
+              <input type="password">
+            </label>
+          </p>
+          <p>
+            <label>
+              Pay Password
+              <input type="password">
+            </label>
+          </p>        
+        </div>
+        <button>submit</button>
+      </form>
+    </uib-accordion-group>
+
+    <!-- Transfer setction -->
+    <uib-accordion-group is-open="transferAccord.open">
+      <uib-accordion-heading>
+        Transfer Bitmark
+        <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': transferAccord.open, 'glyphicon-chevron-right': !transferAccord.open}"></i>
+      </uib-accordion-heading>
+      <form>
+        <div class="panel-body">
+          <p>
+            <label>
+              Transaction Id
+              <input type="text">
+            </label>
+          </p>
+          <p>
+            <label>
+              Receiver
+              <input type="text">
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Password
+              <input type="password">
+            </label>
+          </p>
+          <p>
+            <label>
+              Pay Password
+              <input type="password">
+            </label>
+          </p>        
+        </div>
+        <button>submit</button>
+      </form>
+    </uib-accordion-group>
+  </uib-accordion>
+</div>

@@ -43,6 +43,10 @@ var app = angular
         templateUrl: 'views/edit.html',
         controller: 'EditCtrl'
       })
+      .when('/issuentransfer', {
+        templateUrl: 'views/issueNTransfer.html',
+        controller: 'IssueNTransferCtrl'
+      })
       .when('/system', {
         templateUrl: 'views/system.html',
         controller: 'SystemCtrl'
