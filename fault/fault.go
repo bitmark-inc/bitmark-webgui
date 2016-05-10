@@ -27,6 +27,7 @@ var (
 	ErrJsonParseFail                = ProcessError("Parse to json failed")
 	ErrKeyFileAlreadyExists         = ExistsError("key file already exists")
 	ErrNodeInfoRequestFail          = ProcessError("Send info request failed")
+	ErrNotFoundBinFile              = ExistsError("Bin file is not found")
 	ErrNotFoundConfigFile           = NotFoundError("Config file is not found")
 	ErrNotFoundPublicKey            = NotFoundError("PublicKey is not existed")
 	ErrNotInitialised               = NotFoundError("not initialised")

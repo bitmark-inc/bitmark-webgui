@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	defaultDataDirectory     = "."
-	defaultPort              = 2150
-	defaultPassword          = "bitmark-webgui"
-	defaultEnableHttps       = true
-	defaultBitmarkConfigFile = "/etc/bitmarkd.conf"
+	defaultDataDirectory        = "."
+	defaultPort                 = 2150
+	defaultPassword             = "bitmark-webgui"
+	defaultEnableHttps          = true
+	defaultBitmarkConfigFile    = "/etc/bitmarkd.conf"
+	defaultBitmarkPayServiceBin = "./bin/bitmarkPayService"
 
 	defaultLogDirectory = "log"
 	defaultLogFile      = "bitmark-webgui.log"
@@ -45,22 +46,24 @@ type LoggerType struct {
 }
 
 type Configuration struct {
-	DataDirectory     string     `libucl:"data_directory"`
-	Port              int        `libucl:"port"`
-	Password          string     `libucl:"password"`
-	EnableHttps       bool       `libucl:"enable_https"`
-	BitmarkConfigFile string     `libucl:"bitmark_config_file"`
-	Logging           LoggerType `libucl:"logging"`
+	DataDirectory        string     `libucl:"data_directory"`
+	Port                 int        `libucl:"port"`
+	Password             string     `libucl:"password"`
+	EnableHttps          bool       `libucl:"enable_https"`
+	BitmarkConfigFile    string     `libucl:"bitmark_config_file"`
+	BitmarkPayServiceBin string     `libucl:"bitmark_pay_service_bin"`
+	Logging              LoggerType `libucl:"logging"`
 }
 
 func GetDefaultConfiguration(dataDirectory string) (*Configuration, error) {
 	config := Configuration{
-		DataDirectory:     defaultDataDirectory,
-		Port:              defaultPort,
-		Password:          defaultPassword,
-		EnableHttps:       defaultEnableHttps,
-		BitmarkConfigFile: defaultBitmarkConfigFile,
-		Logging:           *defaultLogger,
+		DataDirectory:        defaultDataDirectory,
+		Port:                 defaultPort,
+		Password:             defaultPassword,
+		EnableHttps:          defaultEnableHttps,
+		BitmarkConfigFile:    defaultBitmarkConfigFile,
+		BitmarkPayServiceBin: defaultBitmarkPayServiceBin,
+		Logging:              *defaultLogger,
 	}
 
 	if "" != dataDirectory {

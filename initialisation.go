@@ -6,18 +6,23 @@ package main
 
 import (
 	"github.com/bitmark-inc/bitmark-webgui/api"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/bitmarkd/background"
 )
 
 var backgroundService *background.T
 var bitmarkService services.Bitmarkd
+var bitmarkPayService services.BitmarkPay
 
 // start service
-func InitialiseBackgroundService(configFile string) error {
+func InitialiseService(configs *configuration.Configuration) error {
 
-	// initialise all services
-	if err := bitmarkService.Initialise(configFile); nil != err {
+	// initialise all  services
+	if err := bitmarkService.Initialise(configs.BitmarkConfigFile); nil != err {
+		return err
+	}
+	if err := bitmarkPayService.Initialise(configs.BitmarkPayServiceBin); nil != err {
 		return err
 	}
 
@@ -28,7 +33,8 @@ func InitialiseBackgroundService(configFile string) error {
 	backgroundService = background.Start(processes, nil)
 
 	// register services to api
-	api.RegisterBitmarkd(&bitmarkService)
+	api.Register(&bitmarkService)
+	api.Register(&bitmarkPayService)
 
 	return nil
 }
@@ -37,6 +43,10 @@ func InitialiseBackgroundService(configFile string) error {
 func FinaliseBackgroundService() error {
 
 	if err := bitmarkService.Finalise(); nil != err {
+		return err
+	}
+
+	if err := bitmarkPayService.Finalise(); nil != err {
 		return err
 	}
 

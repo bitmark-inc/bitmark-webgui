@@ -14,7 +14,7 @@ port = "{{.Port}}"
 password = "{{.Password}}"
 enable_https = "{{.EnableHttps}}"
 bitmark_config_file = "{{.BitmarkConfigFile}}"
-
+bitmark_pay_service_bin = "{{.BitmarkPayServiceBin}}"
 logging {
   size = 1048576
   count = 10

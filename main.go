@@ -18,6 +18,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"text/template"
 	"time"
@@ -170,7 +171,7 @@ func runStart(c *cli.Context, configFile string) {
 		defer logger.Finalise()
 
 		// initialise services
-		if err := InitialiseBackgroundService(configs.BitmarkConfigFile); nil != err {
+		if err := InitialiseService(configs); nil != err {
 			mainLog.Criticalf("initialise background services failed: %v", err)
 			exitwithstatus.Exit(1)
 		}
@@ -226,6 +227,9 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/login", handleLogin)
 	http.HandleFunc("/api/logout", handleLogout)
 	http.HandleFunc("/api/bitmarkd", handleBitmarkd)
+	http.HandleFunc("/api/bitmarkPay/encrypt", handleBitmarkPay)
+	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
+	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
 
 	server := &http.Server{
 		Addr:           host + ":" + port,
@@ -385,6 +389,25 @@ func handleBitmarkd(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case `POST`:
 		api.Bitmarkd(w, req, GlobalConfig.BitmarkConfigFile, log)
+	case `OPTIONS`:
+		return
+	default:
+		log.Error("Error: Unknow method")
+	}
+}
+
+func handleBitmarkPay(w http.ResponseWriter, req *http.Request) {
+	log := logger.New("api-bitmarkPay")
+	api.SetCORSHeader(w, req)
+
+	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+		return
+	}
+
+	switch req.Method {
+	case `POST`:
+		reqUriArr := strings.Split(req.RequestURI, "/")
+		api.BitmarkPayEncrypt(w, req, log, reqUriArr[3])
 	case `OPTIONS`:
 		return
 	default:
