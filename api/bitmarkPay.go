@@ -26,7 +26,7 @@ func BitmarkPayEncrypt(w http.ResponseWriter, req *http.Request, log *logger.L, 
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	var request services.BitmarkPayPwdType
+	var request services.BitmarkPayType
 	err := decoder.Decode(&request)
 	if nil != err {
 		log.Errorf("Error: %v", err)

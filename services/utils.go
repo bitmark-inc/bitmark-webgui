@@ -6,6 +6,7 @@ package services
 
 import (
 	"errors"
+	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"os/exec"
@@ -46,4 +47,13 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L) ([]byte, error) 
 	}
 
 	return stdo, nil
+}
+
+func checkRequireStringParameters(params ... string) error {
+	for _, param := range params {
+		if "" == param || "0" == param {
+			return fault.ErrInvalidCommandParams
+		}
+	}
+	return nil
 }

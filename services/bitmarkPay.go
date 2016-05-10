@@ -56,56 +56,69 @@ func (bitmarkPay *BitmarkPay) Finalise() error {
 	return nil
 }
 
-type BitmarkPayPwdType struct {
-	Net       string
-	Config    string
-	Password  string
-	Txid      string
-	Addresses []string
+type BitmarkPayType struct {
+	Net       string `json:"net"`
+	Config    string `json:"config"`
+	Password  string `json:"password"`
+	Txid      string `json:"txid"`
+	Addresses []string `json:"addresses"`
 }
 
-func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayPwd BitmarkPayPwdType) ([]byte, error) {
+func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) ([]byte, error) {
+	// check config, net, password
+	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password); nil != err {
+		return nil, err
+	}
+
 	cmd := exec.Command("java", "-jar",
 		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
 		bitmarkPay.bin,
-		"--net="+bitmarkPayPwd.Net,
-		"--config="+bitmarkPayPwd.Config,
-		"--password="+bitmarkPayPwd.Password,
+		"--net="+bitmarkPayType.Net,
+		"--config="+bitmarkPayType.Config,
+		"--password="+bitmarkPayType.Password,
 		"encrypt")
 
 	return getCmdOutput(cmd, "encrypt", bitmarkPay.log)
 }
 
-func (bitmarkPay *BitmarkPay) Info(bitmarkPayPwd BitmarkPayPwdType) ([]byte, error) {
+func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error) {
+	// check config, net
+	if err:= checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net); nil != err {
+		return nil, err
+	}
 
 	cmd := exec.Command("java", "-jar",
 		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
 		bitmarkPay.bin,
-		"--net="+bitmarkPayPwd.Net,
-		"--config="+bitmarkPayPwd.Config,
+		"--net="+bitmarkPayType.Net,
+		"--config="+bitmarkPayType.Config,
 		"--json",
 		"info")
 
 	return getCmdOutput(cmd, "info", bitmarkPay.log)
 }
 
-func (bitmarkPay *BitmarkPay) Pay(bitmarkPayPwd BitmarkPayPwdType) ([]byte, error) {
+func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error) {
 	addresses := ""
-	for _, payAddress := range bitmarkPayPwd.Addresses {
+	for _, payAddress := range bitmarkPayType.Addresses {
 		addresses = addresses + " " + payAddress
+	}
+
+	// check config, net, password, txid, addresses
+	if err:= checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password, bitmarkPayType.Txid, addresses); nil != err {
+		return nil, err
 	}
 
 	cmd := exec.Command("java", "-jar",
 		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
 		bitmarkPay.bin,
-		"--net="+bitmarkPayPwd.Net,
-		"--config="+bitmarkPayPwd.Config,
-		"--password="+bitmarkPayPwd.Password,
+		"--net="+bitmarkPayType.Net,
+		"--config="+bitmarkPayType.Config,
+		"--password="+bitmarkPayType.Password,
 		"pay",
-		bitmarkPayPwd.Txid,
+		bitmarkPayType.Txid,
 		addresses,
 	)
 
 	return getCmdOutput(cmd, "pay", bitmarkPay.log)
-
 }

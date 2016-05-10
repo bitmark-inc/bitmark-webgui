@@ -23,6 +23,7 @@ var (
 	ErrCertificateFileAlreadyExists = ExistsError("certificate file already exists")
 	ErrConfigFileExited             = ExistsError("Config file is existed")
 	ErrInvalidCommandType           = InvalidError("invalid command type")
+	ErrInvalidCommandParams         = InvalidError("invalid command type")
 	ErrInvalidLoggerChannel         = InvalidError("invalid logger channel")
 	ErrInvalidStructPointer         = InvalidError("invalid struct pointer")
 	ErrJsonParseFail                = ProcessError("Parse to json failed")

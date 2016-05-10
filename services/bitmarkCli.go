@@ -58,6 +58,10 @@ type BitmarkCliSetupType struct {
 }
 
 func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType) ([]byte, error) {
+	if err:= checkRequireStringParameters(bitmarkCliSetup.Config, bitmarkCliSetup.Identity, bitmarkCliSetup.Password, bitmarkCliSetup.Network, bitmarkCliSetup.Connect, bitmarkCliSetup.Description); nil != err {
+		return nil, err
+	}
+
 	cmd := exec.Command("bitmark-cli",
 		"--config", bitmarkCliSetup.Config,
 		"--identity", bitmarkCliSetup.Identity,
@@ -82,6 +86,10 @@ type BitmarkCliIssueType struct {
 
 func (bitmarkCli *BitmarkCli) Issue(bitmarkCliIssue BitmarkCliIssueType) ([]byte, error) {
 	quantity := strconv.Itoa(bitmarkCliIssue.Quantity)
+	if err:= checkRequireStringParameters(bitmarkCliIssue.Config, bitmarkCliIssue.Identity, bitmarkCliIssue.Password, bitmarkCliIssue.Asset, bitmarkCliIssue.Description, bitmarkCliIssue.Fingerprint, quantity); nil != err {
+		return nil, err
+	}
+
 	cmd := exec.Command("bitmark-cli",
 		"--config", bitmarkCliIssue.Config,
 		"--identity", bitmarkCliIssue.Identity,
@@ -104,6 +112,10 @@ type BitmarkCliTransferType struct {
 }
 
 func (bitmarkCli *BitmarkCli) Transfer(bitmarkCliTransfer BitmarkCliTransferType) ([]byte, error) {
+	if err:= checkRequireStringParameters(bitmarkCliTransfer.Config, bitmarkCliTransfer.Identity, bitmarkCliTransfer.Password, bitmarkCliTransfer.Txid, bitmarkCliTransfer.Receiver); nil != err {
+		return nil, err
+	}
+
 	cmd := exec.Command("bitmark-cli",
 		"--config", bitmarkCliTransfer.Config,
 		"--identity", bitmarkCliTransfer.Identity,
