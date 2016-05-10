@@ -57,10 +57,10 @@ func (bitmarkPay *BitmarkPay) Finalise() error {
 }
 
 type BitmarkPayType struct {
-	Net       string `json:"net"`
-	Config    string `json:"config"`
-	Password  string `json:"password"`
-	Txid      string `json:"txid"`
+	Net       string   `json:"net"`
+	Config    string   `json:"config"`
+	Password  string   `json:"password"`
+	Txid      string   `json:"txid"`
 	Addresses []string `json:"addresses"`
 }
 
@@ -83,7 +83,7 @@ func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) ([]byte, er
 
 func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error) {
 	// check config, net
-	if err:= checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net); nil != err {
+	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net); nil != err {
 		return nil, err
 	}
 
@@ -105,7 +105,7 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error)
 	}
 
 	// check config, net, password, txid, addresses
-	if err:= checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password, bitmarkPayType.Txid, addresses); nil != err {
+	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password, bitmarkPayType.Txid, addresses); nil != err {
 		return nil, err
 	}
 

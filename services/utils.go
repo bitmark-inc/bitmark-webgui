@@ -49,7 +49,7 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L) ([]byte, error) 
 	return stdo, nil
 }
 
-func checkRequireStringParameters(params ... string) error {
+func checkRequireStringParameters(params ...string) error {
 	for _, param := range params {
 		if "" == param || "0" == param {
 			return fault.ErrInvalidCommandParams
