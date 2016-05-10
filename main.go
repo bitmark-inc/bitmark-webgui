@@ -231,6 +231,10 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
 
+	http.HandleFunc("/api/bitmarkCli/setup", handleBitmarkCli)
+	http.HandleFunc("/api/bitmarkCli/issue", handleBitmarkCli)
+	http.HandleFunc("/api/bitmarkCli/transfer", handleBitmarkCli)
+
 	server := &http.Server{
 		Addr:           host + ":" + port,
 		ReadTimeout:    10 * time.Second,
@@ -408,6 +412,25 @@ func handleBitmarkPay(w http.ResponseWriter, req *http.Request) {
 	case `POST`:
 		reqUriArr := strings.Split(req.RequestURI, "/")
 		api.BitmarkPayEncrypt(w, req, log, reqUriArr[3])
+	case `OPTIONS`:
+		return
+	default:
+		log.Error("Error: Unknow method")
+	}
+}
+
+func handleBitmarkCli(w http.ResponseWriter, req *http.Request) {
+	log := logger.New("api-bitmarkCli")
+	api.SetCORSHeader(w, req)
+
+	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+		return
+	}
+
+	switch req.Method {
+	case `POST`:
+		reqUriArr := strings.Split(req.RequestURI, "/")
+		api.BitmarkCliExec(w, req, log, reqUriArr[3])
 	case `OPTIONS`:
 		return
 	default:

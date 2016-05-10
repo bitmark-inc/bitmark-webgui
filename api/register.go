@@ -10,6 +10,7 @@ import (
 
 var bitmarkService *services.Bitmarkd
 var bitmarkPayService *services.BitmarkPay
+var bitmarkCliService *services.BitmarkCli
 
 func Register(service interface{}) {
 	switch service.(type) {
@@ -17,5 +18,7 @@ func Register(service interface{}) {
 		bitmarkService = service.(*services.Bitmarkd)
 	case *services.BitmarkPay:
 		bitmarkPayService = service.(*services.BitmarkPay)
+	case *services.BitmarkCli:
+		bitmarkCliService = service.(*services.BitmarkCli)
 	}
 }

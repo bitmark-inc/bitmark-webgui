@@ -5,11 +5,9 @@
 package services
 
 import (
-	"errors"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/logger"
-	"io/ioutil"
 	"os/exec"
 	"sync"
 )
@@ -75,7 +73,7 @@ func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayPwd BitmarkPayPwdType) ([]byte, 
 		"--password="+bitmarkPayPwd.Password,
 		"encrypt")
 
-	return bitmarkPay.getCmdOutput(cmd, "encrypt")
+	return getCmdOutput(cmd, "encrypt", bitmarkPay.log)
 }
 
 func (bitmarkPay *BitmarkPay) Info(bitmarkPayPwd BitmarkPayPwdType) ([]byte, error) {
@@ -88,7 +86,7 @@ func (bitmarkPay *BitmarkPay) Info(bitmarkPayPwd BitmarkPayPwdType) ([]byte, err
 		"--json",
 		"info")
 
-	return bitmarkPay.getCmdOutput(cmd, "info")
+	return getCmdOutput(cmd, "info", bitmarkPay.log)
 }
 
 func (bitmarkPay *BitmarkPay) Pay(bitmarkPayPwd BitmarkPayPwdType) ([]byte, error) {
@@ -108,43 +106,6 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayPwd BitmarkPayPwdType) ([]byte, erro
 		addresses,
 	)
 
-	return bitmarkPay.getCmdOutput(cmd, "pay")
+	return getCmdOutput(cmd, "pay", bitmarkPay.log)
 
-}
-
-func (bitmarkPay *BitmarkPay) getCmdOutput(cmd *exec.Cmd, cmdType string) ([]byte, error) {
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		bitmarkPay.log.Errorf("Error: %v", err)
-	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		bitmarkPay.log.Errorf("Error: %v", err)
-	}
-	if err := cmd.Start(); nil != err {
-		return nil, err
-	}
-
-	stde, err := ioutil.ReadAll(stderr)
-	if nil != err {
-		bitmarkPay.log.Errorf("Error: %v", err)
-	}
-
-	stdo, err := ioutil.ReadAll(stdout)
-	if nil != err {
-		bitmarkPay.log.Errorf("Error: %v", err)
-	}
-
-	bitmarkPay.log.Errorf("bitmarkPay %s stderr: %s", cmdType, stde)
-	bitmarkPay.log.Infof("bitmarkPay %s stdout: %s", cmdType, stdo)
-	if len(stde) != 0 {
-		return nil, errors.New(string(stde))
-	}
-
-	if err := cmd.Wait(); nil != err {
-		bitmarkPay.log.Errorf("bitmarkPay %s failed: %v", cmdType, err)
-		return nil, err
-	}
-
-	return stdo, nil
 }

@@ -6,11 +6,9 @@ package api
 
 import (
 	"encoding/json"
-	// "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
 	"net/http"
-	// "net/rpc/jsonrpc"
 )
 
 type BitmarkPayInfoResponse struct {
