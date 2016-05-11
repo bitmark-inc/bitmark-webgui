@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	cookieName = "bitmark-webgui"
+	CookieName = "bitmark-webgui"
 )
 
 type Response struct {
@@ -56,7 +56,7 @@ var cookieExpireDuration = 10
 
 func setCookie(w http.ResponseWriter) error {
 	cookie := &http.Cookie{
-		Name:   cookieName,
+		Name:   CookieName,
 		Secure: true,
 	}
 
@@ -103,7 +103,7 @@ func WriteGlobalErrorResponse(w http.ResponseWriter, err error, log *logger.L) e
 }
 
 func GetAndCheckCookie(w http.ResponseWriter, req *http.Request, log *logger.L) error {
-	reqCookie, err := req.Cookie(cookieName)
+	reqCookie, err := req.Cookie(CookieName)
 	if nil != err {
 		log.Errorf("request cookie error: %v", err)
 		return fault.ApiErrUnauthorized
@@ -115,7 +115,10 @@ func GetAndCheckCookie(w http.ResponseWriter, req *http.Request, log *logger.L) 
 	defer globalCookie[1].Unlock()
 
 	for _, c := range globalCookie {
+		log.Infof("decrypt cookie: %s", c.cipher)
+		log.Infof("request cookie: %s", reqCookie.Value)
 		if err := bcrypt.CompareHashAndPassword([]byte(reqCookie.Value), []byte(c.expireTime.String())); nil == err {
+			log.Infof("pass cookie")
 			return nil
 		}
 	}

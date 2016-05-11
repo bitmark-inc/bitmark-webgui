@@ -4,88 +4,87 @@
   <div class="panel panel-default">
     <div class="panel-heading">Info</div>
     <div class="panel-body">
-      <p>
-        <b>chain</b>
-        <label>
-          <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
-          Local
-        </label>
-        <label>
-          <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
-          Testing
-        </label>
-        <label>
-          <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
-          Bitmark
-        </label>
-      </p>
-      
-      <p>Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
-      <div>
+      <p ng-show="showSetup">Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
+      <div ng-show="!showSetup">
+        <p>
+          <b>Chain</b>
+          {{bitmarCliConfig.Network}}
+        </p>
+        <p>
+          <b>Connect</b>
+          {{bitmarCliConfig.Connect}}
+        </p>
         <p>
           <b>Identity Name</b>
-          testing
+          {{bitmarCliConfig.Identities[0].Name}}
         </p>
         <p>
           <b>Identity Description</b>
-          testing
+          {{bitmarCliConfig.Identities[0].Description}}
         </p>
         <p>
           <b>Identity Publickey</b>
-          testing
+          {{bitmarCliConfig.Identities[0].Public_key}}
         </p>
-        <p>
-          <b>Bitcoin Address</b>
-          m23g09823jvsk3Ka
+        <p ng-show="bitmarkPayError != nil">
+          {{bitmarkPayError}}
         </p>
-        <p>
-          <b>Balance</b>
-          2500 satoshi
-        </p>
+        <div ng-show="bitmarkPayError == nil">
+          <p>
+            <b>Bitcoin Address</b>
+            {{bitmarkPayConfig.Address}}
+          </p>
+          <p>
+            <b>Estimated Balance</b>
+            {{bitmarkPayConfig.Estimated_balance}}
+          </p>
+          <p>
+            <b>Available Balance</b>
+            {{bitmarkPayConfig.Available_balance}}
+          </p>
+        </div>
       </div>
     </div>
   </div>
 
   <uib-accordion>
     <!-- add setup fields -->
-    <uib-accordion-group is-open="setupAccord.open">
+    <uib-accordion-group is-open="setupAccord.open" ng-show="showSetup">
       <uib-accordion-heading>
         Setup
         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': setupAccord.open, 'glyphicon-chevron-right': !setupAccord.open}"></i>
       </uib-accordion-heading>
+      <div ng-show="setupError != ''">
+        {{setupError}}
+      </div>
       <form>
         <div class="panel-body">
           <p>
-            <b>chain</b>
+            <b>Chain</b>
+            {{bitmarkChain}}
+          </p>
+          <p>
             <label>
-              <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
-              Local
+              Connect
+              <input type="text" ng-model="bitmarkCliSetupConfig.Connect">
             </label>
-            <label>
-              <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
-              Testing
-            </label>
-            <label>
-              <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
-              Bitmark
-          </label>
-        </p>
+          </p>
           <p>
             <label>
               Identity Name
-              <input type="text">
+              <input type="text" ng-model="bitmarkCliSetupConfig.Identity">
             </label>
           </p>
           <p>
             <label>
               Identity Description
-              <textarea></textarea>
+              <textarea ng-model="bitmarkCliSetupConfig.Description"></textarea>
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password">
+              <input type="password" ng-model="bitmarkCliSetupConfig.Password">
             </label>
             <label>
               Verify Identity Password
@@ -95,7 +94,7 @@
           <p>
             <label>
               Pay Password
-              <input type="password">
+              <input type="password" ng-model="bitmarkPayEncryptConfig.Password">
             </label>
             <label>
               Verify Pay Password
@@ -103,7 +102,7 @@
             </label>
           </p>
         </div>
-        <button>submit</button>
+        <button ng-click="submitSetup()">submit</button>
       </form>
     </uib-accordion-group>    
     <!-- Issue setction -->

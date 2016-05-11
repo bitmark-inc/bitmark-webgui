@@ -19,6 +19,7 @@ var app = angular
     'ngRoute',
     'ui.bootstrap'
   ])
+        .value("BitmarkChain", "testing")
         .constant("BitmarkProxyURL", {
             "testing": "https://spoon.test.bitmark.com:17555/rpc-call",
             "bitmark": "https://spoon.live.bitmark.com:17555/rpc-call"
@@ -29,6 +30,16 @@ var app = angular
             URL: "",
             Fee: "0.0002",
             Address: ""
+        })
+        .constant("BitmarkCliConfig", {
+            "testing": "/home/bitmark/config/bitmark-cli/bitmark-cli-TESTING.conf",
+            "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf",
+            "local": "/home/bitmark/config/bitmark-cli/bitmark-cli-LOCAL.conf"
+        })
+        .constant("BitmarkPayConfig", {
+            "testing": "/home/bitmark/config/bitmark-pay/bitmark-pay-TESTING.conf",
+            "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.conf",
+            "local": "/home/bitmark/config/bitmark-pay/bitmark-pay-LOCAL.conf"
         })
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;

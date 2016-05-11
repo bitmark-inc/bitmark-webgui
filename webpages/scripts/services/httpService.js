@@ -57,6 +57,34 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
             data:{
                 option: "info"
             }
+        },
+        getBitmarkCliInfo: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkCli/info'
+        },
+        setupBitmarkCli: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkCli/setup'
+        },
+        issueBitmark: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkCli/issue'
+        },
+        transferBitmark: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkCli/transfer'
+        },
+        setupBitmarkPay: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkPay/encrypt'
+        },
+        getBitmarkPayInfo: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkPay/info'
+        },
+        payBitmark: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkPay/pay'
         }
     };
 

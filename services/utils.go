@@ -35,14 +35,14 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L) ([]byte, error) 
 		log.Errorf("Error: %v", err)
 	}
 
-	log.Errorf("bitmarkPay %s stderr: %s", cmdType, stde)
-	log.Infof("bitmarkPay %s stdout: %s", cmdType, stdo)
+	log.Errorf("%s %s stderr: %s", cmd.Path, cmdType, stde)
+	log.Infof("%s %s stdout: %s", cmd.Path, cmdType, stdo)
 	if len(stde) != 0 {
 		return nil, errors.New(string(stde))
 	}
 
 	if err := cmd.Wait(); nil != err {
-		log.Errorf("bitmarkPay %s failed: %v", cmdType, err)
+		log.Errorf("%s %s failed: %v", cmd.Path, cmdType, err)
 		return nil, err
 	}
 

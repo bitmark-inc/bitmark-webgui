@@ -145,25 +145,3 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 		log.Errorf("Error: %v", err)
 	}
 }
-
-// func parseRequest(req *http.Request, command string) (interface{}, error) {
-// 	decoder := json.NewDecoder(req.Body)
-// 	var request interface{}
-// 	switch command {
-// 	case "setup":
-// 		request = services.BitmarkCliSetupType{}
-// 	case "issue":
-// 		request = services.BitmarkCliIssueType{}
-// 	case "transfer":
-// 		request = services.BitmarkCliTransferType{}
-// 	default:
-// 		return nil, fault.ErrInvalidCommandType
-// 	}
-
-// 	err := decoder.Decode(&request)
-// 	if nil != err {
-// 		return nil, err
-// 	}
-
-// 	return request, nil
-// }

@@ -227,6 +227,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/login", handleLogin)
 	http.HandleFunc("/api/logout", handleLogout)
 	http.HandleFunc("/api/bitmarkd", handleBitmarkd)
+
 	http.HandleFunc("/api/bitmarkPay/encrypt", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
@@ -262,6 +263,16 @@ func startWebServer(configs *configuration.Configuration) error {
 			return err
 		}
 	} else {
+		// turn Signals into channel messages
+		ch := make(chan os.Signal)
+		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+		go func(){
+			sig := <-ch
+			mainLog.Infof("received signal: %v", sig)
+		}()
+
+
+
 		mainLog.Info("Starting http server...")
 		if err := server.ListenAndServe(); nil != err {
 			return err
@@ -281,6 +292,12 @@ func checkAuthorization(w http.ResponseWriter, req *http.Request, writeHeader bo
 	if GlobalConfig.EnableHttps {
 		if err := api.GetAndCheckCookie(w, req, log); nil != err {
 			log.Errorf("Error: %v", err)
+			cookie := &http.Cookie{
+				Name:   api.CookieName,
+				Secure: true,
+				MaxAge: -1,
+			}
+			http.SetCookie(w, cookie)
 			if writeHeader {
 				w.WriteHeader(http.StatusUnauthorized)
 			}

@@ -74,7 +74,7 @@ func LogoutBitmarkWebgui(w http.ResponseWriter, log *logger.L) {
 
 	log.Info("POST /api/logout")
 	cookie := &http.Cookie{
-		Name:   cookieName,
+		Name:   CookieName,
 		Secure: true,
 		MaxAge: -1,
 	}
