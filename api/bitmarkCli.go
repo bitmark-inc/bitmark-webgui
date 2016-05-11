@@ -9,6 +9,19 @@ import (
 	"net/http"
 )
 
+type BitmarkIdentityType struct {
+	Name               string           `libucl:"name"`
+	Description        string           `libucl:"description"`
+	Public_key         string           `libucl:"public_key"`
+}
+
+type BitmarkCliInfoResponse struct {
+	Default_identity string         `libucl:"default_identity"`
+	Network          string         `libucl:"network"`
+	Connect          string         `libucl:"connect"`
+	Identities       []BitmarkIdentityType `libucl:"identities"`
+}
+
 type BitmarkCliIssueResponse struct {
 	AssetId        string               `json:"assetId"`
 	IssueIds       []string             `json:"issueIds"`
@@ -29,6 +42,31 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	}
 
 	switch command {
+	case "info":
+		var request services.BitmarkCliInfoType
+		decoder := json.NewDecoder(req.Body)
+		err := decoder.Decode(&request)
+		if nil != err {
+			log.Errorf("Error: %v", err)
+			response.Result = "bitmark-cli request parsing error"
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
+		}
+
+		output, err := bitmarkCliService.Info(request)
+		if nil != err {
+			response.Result = "bitmark-cli info error"
+		} else {
+			var jsonInfo BitmarkCliInfoResponse
+			if err := json.Unmarshal(output, &jsonInfo); nil != err {
+				log.Errorf("Error: %v", err)
+			} else {
+				response.Ok = true
+				response.Result = jsonInfo
+			}
+		}
 	case "setup":
 		var request services.BitmarkCliSetupType
 		decoder := json.NewDecoder(req.Body)

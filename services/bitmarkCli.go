@@ -48,6 +48,22 @@ func (bitmarkCli *BitmarkCli) Finalise() error {
 	return nil
 }
 
+type BitmarkCliInfoType struct {
+	Config      string `json:"config"`
+}
+
+func (bitmarkCli * BitmarkCli) Info(bitmarkCliInfo BitmarkCliInfoType) ([]byte, error) {
+	if err := checkRequireStringParameters(bitmarkCliInfo.Config); nil != err {
+		return nil, err
+	}
+
+	cmd := exec.Command("bitmark-cli",
+		"--config", bitmarkCliInfo.Config,
+		"info",)
+
+	return getCmdOutput(cmd, "setup", bitmarkCli.log)
+}
+
 type BitmarkCliSetupType struct {
 	Config      string `json:"config"`
 	Identity    string `json:"identity"`
