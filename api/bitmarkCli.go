@@ -4,33 +4,37 @@ import (
 	"encoding/json"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/services"
-	"github.com/bitmark-inc/bitmarkd/block"
 	"github.com/bitmark-inc/logger"
 	"net/http"
 )
 
 type BitmarkIdentityType struct {
-	Name               string           `libucl:"name"`
-	Description        string           `libucl:"description"`
-	Public_key         string           `libucl:"public_key"`
+	Name        string `libucl:"name"`
+	Description string `libucl:"description"`
+	Public_key  string `libucl:"public_key"`
 }
 
 type BitmarkCliInfoResponse struct {
-	Default_identity string         `libucl:"default_identity"`
-	Network          string         `libucl:"network"`
-	Connect          string         `libucl:"connect"`
+	Default_identity string                `libucl:"default_identity"`
+	Network          string                `libucl:"network"`
+	Connect          string                `libucl:"connect"`
 	Identities       []BitmarkIdentityType `libucl:"identities"`
 }
 
+type BitmarkPaymentAddress struct {
+	Currency string `json:"currency"`
+	Address  string `json:"address"`
+}
+
 type BitmarkCliIssueResponse struct {
-	AssetId        string               `json:"assetId"`
-	IssueIds       []string             `json:"issueIds"`
-	PaymentAddress []block.MinerAddress `json:"paymentAddress"`
+	AssetId        string                  `json:"assetId"`
+	IssueIds       []string                `json:"issueIds"`
+	PaymentAddress []BitmarkPaymentAddress `json:"paymentAddress"`
 }
 
 type BitmarkCliTransferResponse struct {
-	TransferId     string               `json: transferId`
-	PaymentAddress []block.MinerAddress `json:"paymentAddress"`
+	TransferId     string                  `json: transferId`
+	PaymentAddress []BitmarkPaymentAddress `json:"paymentAddress"`
 }
 
 //POST /api/bitmarkCli/*
