@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginCtrl', ['$scope', '$location', 'httpService', function ($scope, $location, httpService) {
+    .controller('LoginCtrl', ['$scope', '$location', '$cookies', 'httpService', function ($scope, $location, $cookies, httpService) {
         $scope.request = {
             Password: ""
         };
@@ -23,6 +23,8 @@ angular.module('bitmarkWebguiApp')
                 $scope.errorMsg = "Please enter password";
                 return;
             }
+            // Clean cookie first
+            $cookies.remove('bitmark-webgui');
             httpService.send('login', $scope.request).then(
                 function(result){
                     $scope.$emit('Authenticated', true);

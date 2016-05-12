@@ -111,46 +111,70 @@
         Issue Asset
         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': issueAccord.open, 'glyphicon-chevron-right': !issueAccord.open}"></i>
       </uib-accordion-heading>
+
+      <!-- submit success alert -->
+      <uib-alert type="{{issueResult.type}}" close="clearIssueResult()" ng-if="issueResult.msg != ''">
+        <div>
+          <b>{{issueResult.msg}}</b>
+          <table ng-show="issueResult.cliResult != null">
+            <tr>
+              <th>txid</th>
+              <th>currency</th>
+              <th>address</th>
+            </tt>
+            <tr ng-repeat="index in issueResult.cliResult.IssueIds track by $index">
+              <td>{{issueResult.cliResult.IssueIds[$index]}}</td>
+              <td>{{issueResult.cliResult.PaymentAddress[$index].Currency}}</td>
+              <td>{{issueResult.cliResult.PaymentAddress[$index].Address}}</td>
+            </tr>
+          </table>      
+        </div>
+      </uib-alert>
+        
+      <div ng-show="issueError != ''">
+        {{issueError}}
+      </div>
+
       <form>
         <div class="panel-body">
           <p>
             <label>
               Name
-              <input type="text">
+              <input type="text" ng-model="bitmarkCliIssueConfig.Asset">
             </label>
           </p>
           <p>
             <label>
               Description
-              <textarea></textarea>
+              <textarea ng-model="bitmarkCliIssueConfig.Description"></textarea>
             </label>
           </p>
           <p>
             <label>
               Fingerprint
-              <input type="text">
+              <input type="text" ng-model="bitmarkCliIssueConfig.Fingerprint">
             </label>
           </p>
           <p>
             <label>
               Quantity
-              <input type="number">
+              <input type="number" ng-model="bitmarkCliIssueConfig.Quantity">
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password">
+              <input type="password" ng-model="bitmarkCliIssueConfig.Password">
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <input type="password">
+              <input type="password" ng-model="bitmarkPayIssueConfig.Password">
             </label>
           </p>        
         </div>
-        <button>submit</button>
+        <button ng-click="submitIssueTest()">submit</button>
       </form>
     </uib-accordion-group>
 

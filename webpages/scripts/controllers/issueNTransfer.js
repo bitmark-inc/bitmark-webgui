@@ -38,15 +38,16 @@ angular.module('bitmarkWebguiApp')
                             }, function(result){
                                 $scope.bitmarkPayError = result;
                             });
-            },function(result){
-                // need to setup bitmark-cli
-                $scope.showSetup = true;
-            }
+                },function(result){
+                    // need to setup bitmark-cli
+                    $scope.showSetup = true;
+                }
             );
         };
 
         getInfo();
-        // default config
+
+        // default setup config
         $scope.bitmarkCliSetupConfig = {
             Config: bitmarkCliConfigFile,
 	    Identity: "",
@@ -84,5 +85,93 @@ angular.module('bitmarkWebguiApp')
                     $scope.setupError = cliResult;
                 });
         };
+
+        // default issue config
+        $scope.bitmarkCliIssueConfig = {
+            Config: bitmarkCliConfigFile,
+            Identity:"",
+            Password:"",
+            Asset:"",
+            Description:"",
+            Fingerprint:"",
+            Quantity:1
+        };
+
+        $scope.bitmarkPayIssueConfig = {
+            Config: bitmarkPayConfigFile,
+	    Password: "",
+	    Net:  BitmarkChain,
+            Txid: "",
+	    Address: ""
+        };
+
+        $scope.issueResult = {
+            type:"danger",
+            msg: "",
+            cliResult: null
+        };
+
+        $scope.clearIssueResult = function() {
+            $scope.issueResult = {
+                type:"danger",
+                msg: "",
+                cliResult: null
+            };
+        };
+
+        $scope.submitIssue = function(){
+
+            $scope.clearIssueResult();
+            httpService.send("issueBitmark", $scope.bitmarkCliIssueConfig).then(
+                function(cliResult){
+                    // issue success, pay the tx
+                    // check bitmarkPay net config
+                    if($scope.bitmarkPayIssueConfig.Net == "local" ){
+                        $scope.bitmarkPayIssueConfig.Net = "local_bitcoin_reg";
+                    }
+
+                    // TODO: set pay config txid, address
+                    httpService.send("payBitmark", $scope.bitmarkPayIssueConfig).then(function(payResult){
+                        // pay sucess
+                        $scope.issueResult.type = "success";
+                        $scope.issueResult.msg = "Pay success!";
+                        $scope.issueResult.cliResult = cliResult;
+
+                        // clean bitmarkCliIssueConfig
+                        $scope.bitmarkCliIssueConfig = {
+                            Identity:"",
+                            Password:"",
+                            Asset:"",
+                            Description:"",
+                            Fingerprint:"",
+                            Quantity:1
+                        };
+                    }, function(payResultErr){
+                        $scope.issueResult.type = "danger";
+                        $scope.issueResult.msg = "Issue bitmark success but Payment Error!";
+                    });
+                }, function(cliResultErr){
+                    $scope.issueResult.type = "danger";
+                    $scope.issueResult.msg = "Issue bitmark Error!";
+                });
+        };
+
+        // transfer config
+        $scope.bitmarkCliTransferConfig = {
+            Config: bitmarkCliConfigFile,
+            Identity: "",
+            Password: "",
+            Txid: "",
+            Receiver: ""
+        };
+
+        $scope.bitmarkPayTransferConfig = {
+	    Net: BitmarkChain,
+	    Config: bitmarkPayConfigFile,
+	    Password: "",
+	    Txid: "",
+	    Addresses: null
+        };
+
 
   }]);

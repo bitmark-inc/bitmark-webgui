@@ -68,7 +68,7 @@ func setCookie(w http.ResponseWriter) error {
 	// check if globalCookie need to be updated
 	localTime := time.Now().Add(time.Duration(2) * time.Minute)
 	if localTime.After(globalCookie[0].expireTime) {
-		// cookie will be expired in 2 minutes
+		// cookie will be expired in 10 minutes
 		globalCookie[1].expireTime = globalCookie[0].expireTime
 		globalCookie[0].expireTime = time.Now().Add(time.Duration(cookieExpireDuration) * time.Minute)
 
