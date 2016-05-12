@@ -239,8 +239,8 @@ func startWebServer(configs *configuration.Configuration) error {
 
 	server := &http.Server{
 		Addr:           host + ":" + port,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    20 * time.Second,
+		WriteTimeout:   20 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
@@ -266,12 +266,10 @@ func startWebServer(configs *configuration.Configuration) error {
 		// turn Signals into channel messages
 		ch := make(chan os.Signal)
 		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-		go func(){
+		go func() {
 			sig := <-ch
 			mainLog.Infof("received signal: %v", sig)
 		}()
-
-
 
 		mainLog.Info("Starting http server...")
 		if err := server.ListenAndServe(); nil != err {
