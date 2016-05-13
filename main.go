@@ -237,6 +237,11 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitmarkCli/issue", handleBitmarkCli)
 	http.HandleFunc("/api/bitmarkCli/transfer", handleBitmarkCli)
 
+	http.HandleFunc("/api/onestep/status", handleOnestep)
+	http.HandleFunc("/api/onestep/setup", handleOnestep)
+	http.HandleFunc("/api/onestep/issue", handleOnestep)
+	http.HandleFunc("/api/onestep/transfer", handleOnestep)
+
 	server := &http.Server{
 		Addr:           host + ":" + port,
 		ReadTimeout:    20 * time.Second,
@@ -447,6 +452,25 @@ func handleBitmarkCli(w http.ResponseWriter, req *http.Request) {
 	case `POST`:
 		reqUriArr := strings.Split(req.RequestURI, "/")
 		api.BitmarkCliExec(w, req, log, reqUriArr[3])
+	case `OPTIONS`:
+		return
+	default:
+		log.Error("Error: Unknow method")
+	}
+}
+
+func handleOnestep(w http.ResponseWriter, req *http.Request) {
+	log := logger.New("api-onestep")
+	api.SetCORSHeader(w, req)
+
+	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+		return
+	}
+
+	switch req.Method {
+	case `POST`:
+		reqUriArr := strings.Split(req.RequestURI, "/")
+		api.OnestepExec(w, req, log, reqUriArr[3])
 	case `OPTIONS`:
 		return
 	default:

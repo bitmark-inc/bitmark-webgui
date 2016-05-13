@@ -50,6 +50,7 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L) ([]byte, error) 
 }
 
 func checkRequireStringParameters(params ...string) error {
+
 	for _, param := range params {
 		if "" == param || "0" == param {
 			return fault.ErrInvalidCommandParams

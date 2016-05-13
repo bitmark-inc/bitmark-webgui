@@ -12,78 +12,70 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('IssueNTransferCtrl', ['$scope', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", "BitmarkChain", function ($scope, httpService, BitmarkCliConfig, BitmarkPayConfig, BitmarkChain) {
+    .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", "BitmarkChain", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig, BitmarkChain) {
         $scope.showSetup = false;
         $scope.bitmarkChain = BitmarkChain;
 
         // get config file by chan type
         // var bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
         // var bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
-        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-TESTING.conf";
+        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
         var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
 
         var getInfo = function(){
-            httpService.send("getBitmarkCliInfo",{
-                config:bitmarkCliConfigFile
-            }).then(
-                function(cliResult){
-                    // get bitmarkPay info
-                    httpService.send("getBitmarkPayInfo", {
-                    net:BitmarkChain,
-                        config: bitmarkPayConfigFile}).then(
-                            function(payResult){
-                                $scope.bitmarCliConfig = cliResult;
-                                $scope.bitmarkPayConfig = payResult;
-                                $scope.showSetup = false;
-                            }, function(result){
-                                $scope.bitmarkPayError = result;
-                            });
-                },function(result){
-                    // need to setup bitmark-cli
+            httpService.send("onestepStatus",{
+                cli_config: bitmarkCliConfigFile,
+                network: BitmarkChain,
+                pay_config: bitmarkPayConfigFile
+            }).then(function(result){
+                $scope.onestepStatusResult = result;
+                $scope.showSetup = false;
+            }, function(result){
+                if( result == "Failed to get bitmark-cli info") {
                     $scope.showSetup = true;
+                } else {
+                    $scope.bitmarkPayError = result;
                 }
-            );
+
+            });
         };
 
         getInfo();
 
+        $scope.clearErrAlert = function(type) {
+            switch(type) {
+            case "status":
+                $scope.bitmarkPayError = null;
+            case "issue":
+                $scope.issueResult = null;
+            default:
+            }
+        };
+
         // default setup config
-        $scope.bitmarkCliSetupConfig = {
-            Config: bitmarkCliConfigFile,
-	    Identity: "",
-	    Password: "",
-	    Network:  BitmarkChain,
-	    Connect: "",
-	    Description: ""
+        $scope.bitmarkSetupConfig = {
+            network:  BitmarkChain,
+            cli_config: bitmarkCliConfigFile,
+            pay_config: bitmarkPayConfigFile,
+            connect: "",
+	    identity: "",
+            description: "",
+	    cli_password: "",
+            pay_password: ""
         };
-        $scope.bitmarkPayEncryptConfig = {
-            Config: bitmarkPayConfigFile,
-	    Password: "",
-	    Net:  BitmarkChain
-        };
+
 
         $scope.submitSetup = function(){
-            // check bitmarkPay net config
-            if($scope.bitmarkPayEncryptConfig.Net == "local"){
-                $scope.bitmarkPayEncryptConfig.Net = "local_bitcoin_reg";
-            }
-
             $scope.setupError = '';
-            httpService.send("setupBitmarkCli", $scope.bitmarkCliSetupConfig).then(
-                function(cliResult){
-                    // setupBitmarkCli success
-                    httpService.send("setupBitmarkPay",$scope.bitmarkPayEncryptConfig).
-                        then(function(payResult){
-                            // setupBitmarkPay success
-                            getInfo();
-                        }, function(payResult){
-                            // setupBitmarkPay fail
-                            $scope.setupError = payResult;
-                        });
-                }, function(cliResult){
-                    // setupBitmarkCli fail
-                    $scope.setupError = cliResult;
-                });
+            httpService.send("onestepSetup", $scope.bitmarkSetupConfig).then(function(result){
+                $scope.showSetup = false;
+                //wait for 10 seconds to sync the bitcoin
+                $timeout(function(){
+                    getInfo();
+                }, 10*1000);
+            }, function(error){
+                $scope.setupError = cliResult;
+            });
         };
 
         // default issue config
@@ -111,13 +103,15 @@ angular.module('bitmarkWebguiApp')
             cliResult: null
         };
 
-        $scope.clearIssueResult = function() {
-            $scope.issueResult = {
-                type:"danger",
-                msg: "",
-                cliResult: null
-            };
-        };
+
+
+        // $scope.clearIssueResult = function() {
+        //     $scope.issueResult = {
+        //         type:"danger",
+        //         msg: "",
+        //         cliResult: null
+        //     };
+        // };
 
         $scope.submitIssue = function(){
 

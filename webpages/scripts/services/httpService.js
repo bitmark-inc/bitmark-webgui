@@ -85,7 +85,16 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
         payBitmark: {
             method: 'POST',
             url: hostApiPath+'/bitmarkPay/pay'
+        },
+        onestepStatus: {
+            method: 'POST',
+            url: hostApiPath+'/onestep/status'
+        },
+        onestepSetup: {
+            method: 'POST',
+            url: hostApiPath+'/onestep/setup'
         }
+
     };
 
     return {

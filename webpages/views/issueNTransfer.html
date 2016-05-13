@@ -6,43 +6,41 @@
     <div class="panel-body">
       <p ng-show="showSetup">Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
       <div ng-show="!showSetup">
+        <uib-alert type="danger" close="clearErrAlert('status')" ng-if="bitmarkPayError != null">
+          {{bitmarkPayError}}
+        </uib-alert>
         <p>
           <b>Chain</b>
-          {{bitmarCliConfig.Network}}
+          {{onestepStatusResult.network}}
         </p>
         <p>
           <b>Connect</b>
-          {{bitmarCliConfig.Connect}}
+          {{onestepStatusResult.connect}}
         </p>
         <p>
           <b>Identity Name</b>
-          {{bitmarCliConfig.Identities[0].Name}}
+          {{onestepStatusResult.identities[0].name}}
         </p>
         <p>
           <b>Identity Description</b>
-          {{bitmarCliConfig.Identities[0].Description}}
+          {{onestepStatusResult.identities[0].description}}
         </p>
         <p>
           <b>Identity Publickey</b>
-          {{bitmarCliConfig.Identities[0].Public_key}}
+          {{onestepStatusResult.identities[0].public_key}}
         </p>
-        <p ng-show="bitmarkPayError != nil">
-          {{bitmarkPayError}}
+        <p>
+          <b>Bitcoin Address</b>
+          {{onestepStatusResult.address}}
         </p>
-        <div ng-show="bitmarkPayError == nil">
-          <p>
-            <b>Bitcoin Address</b>
-            {{bitmarkPayConfig.Address}}
-          </p>
-          <p>
-            <b>Estimated Balance</b>
-            {{bitmarkPayConfig.Estimated_balance}}
-          </p>
-          <p>
-            <b>Available Balance</b>
-            {{bitmarkPayConfig.Available_balance}}
-          </p>
-        </div>
+        <p>
+          <b>Estimated Balance</b>
+          {{onestepStatusResult.estimated_balance}}
+        </p>
+        <p>
+          <b>Available Balance</b>
+          {{onestepStatusResult.available_balance}}
+        </p>
       </div>
     </div>
   </div>
@@ -66,45 +64,37 @@
           <p>
             <label>
               Connect
-              <input type="text" ng-model="bitmarkCliSetupConfig.Connect">
+              <input type="text" ng-model="bitmarkSetupConfig.connect">
             </label>
           </p>
           <p>
             <label>
               Identity Name
-              <input type="text" ng-model="bitmarkCliSetupConfig.Identity">
+              <input type="text" ng-model="bitmarkSetupConfig.identity">
             </label>
           </p>
           <p>
             <label>
               Identity Description
-              <textarea ng-model="bitmarkCliSetupConfig.Description"></textarea>
+              <textarea ng-model="bitmarkSetupConfig.description"></textarea>
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password" ng-model="bitmarkCliSetupConfig.Password">
-            </label>
-            <label>
-              Verify Identity Password
-              <input type="password">
+              <password-set password="bitmarkSetupConfig.cli_password"></password-set>
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <input type="password" ng-model="bitmarkPayEncryptConfig.Password">
-            </label>
-            <label>
-              Verify Pay Password
-              <input type="password">
+              <password-set password="bitmarkSetupConfig.pay_password"></password-set>
             </label>
           </p>
         </div>
         <button ng-click="submitSetup()">submit</button>
       </form>
-    </uib-accordion-group>    
+    </uib-accordion-group>
     <!-- Issue setction -->
     <uib-accordion-group is-open="issueAccord.open">
       <uib-accordion-heading>
@@ -113,7 +103,7 @@
       </uib-accordion-heading>
 
       <!-- submit success alert -->
-      <uib-alert type="{{issueResult.type}}" close="clearIssueResult()" ng-if="issueResult.msg != ''">
+      <uib-alert type="{{issueResult.type}}" close="clearErrResult('issue')" ng-if="issueResult.msg != ''">
         <div>
           <b>{{issueResult.msg}}</b>
           <table ng-show="issueResult.cliResult != null">

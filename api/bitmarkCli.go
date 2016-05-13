@@ -8,12 +8,6 @@ import (
 	"net/http"
 )
 
-type BitmarkIdentityType struct {
-	Name        string `libucl:"name"`
-	Description string `libucl:"description"`
-	Public_key  string `libucl:"public_key"`
-}
-
 type BitmarkCliInfoResponse struct {
 	Default_identity string                `libucl:"default_identity"`
 	Network          string                `libucl:"network"`

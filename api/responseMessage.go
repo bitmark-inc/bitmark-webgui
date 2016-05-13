@@ -31,4 +31,7 @@ const (
 	bitmarkdGetConfigErr    = `Failed to get bitamrkd configuration`
 	// login
 	loginErr = `Failed to log in`
+
+	// onestep
+	onestepCliInfoErr = `Failed to get bitmark-cli info`
 )
