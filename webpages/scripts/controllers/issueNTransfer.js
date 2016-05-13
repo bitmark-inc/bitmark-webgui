@@ -48,6 +48,8 @@ angular.module('bitmarkWebguiApp')
                 $scope.bitmarkPayError = null;
             case "issue":
                 $scope.issueResult = null;
+            case "transfer":
+                $scope.transferResult = null;
             default:
             }
         };
@@ -120,21 +122,39 @@ angular.module('bitmarkWebguiApp')
         };
 
         // transfer config
-        $scope.bitmarkCliTransferConfig = {
-            Config: bitmarkCliConfigFile,
-            Identity: "",
-            Password: "",
-            Txid: "",
-            Receiver: ""
+        $scope.bitmarkTransferConfig = {
+            network:  BitmarkChain,
+            cli_config: bitmarkCliConfigFile,
+            pay_config: bitmarkPayConfigFile,
+            identity:"",
+            txid:"",
+            cli_password:"",
+            pay_password:""
         };
 
-        $scope.bitmarkPayTransferConfig = {
-	    Net: BitmarkChain,
-	    Config: bitmarkPayConfigFile,
-	    Password: "",
-	    Txid: "",
-	    Addresses: null
-        };
+        $scope.submitTransfer = function(){
+            $scope.clearErrAlert('transfer');
+            $scope.transferResult = {
+                type:"danger",
+                msg: "",
+                cliResult: null
+            };
+            $scope.bitmarkTransferConfig.identity = $scope.onestepStatusResult.identities[0].name;
 
+            httpService.send("onestepTransfer", $scope.bitmarkTransferConfig).then(
+                function(result){
+                    $scope.transferResult.type = "success";
+                    $scope.transferResult.msg = "Pay success!";
+                    $scope.transferResult.cliResult = result;
+                }, function(errResult){
+                    $scope.transferResult.type = "danger";
+                    if(errResult.cli_result != null) {
+                        $scope.transferResult.msg = "Pay failed";
+                        $scope.transferResult.cliResult = errResult.cli_result;
+                    } else{
+                        $scope.transferResult.msg = errResult;
+                    }
+                });
+        };
 
   }]);

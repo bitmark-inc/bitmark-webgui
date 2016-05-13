@@ -97,6 +97,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
         onestepIssue: {
             method: 'POST',
             url: hostApiPath+'/onestep/issue'
+        },
+        onestepTransfer: {
+            method: 'POST',
+            url: hostApiPath+'/onestep/transfer'
         }
 
     };

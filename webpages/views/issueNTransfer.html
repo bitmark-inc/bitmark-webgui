@@ -106,7 +106,7 @@
       <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null">
         <b>{{issueResult.msg}}</b>
         <div ng-show="issueResult.cliResult != null">
-          <spanp ng-repeat="index in issueResult.cliResult.issueIds track by $index">
+          <span ng-repeat="index in issueResult.cliResult.issueIds track by $index">
             <div>
               <b>
                 {{$index+1}}
@@ -130,7 +130,7 @@
               <b>address</b>
               {{issueResult.cliResult.paymentAddress[0].address}}
             </div>
-          </p>
+          </span>
         </div>
       </uib-alert>
 
@@ -183,34 +183,54 @@
         Transfer Bitmark
         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': transferAccord.open, 'glyphicon-chevron-right': !transferAccord.open}"></i>
       </uib-accordion-heading>
+
+      <!--  alert -->
+      <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null">
+        <b>{{transferResult.msg}}</b>
+        <div ng-show="transferResult.cliResult != null">
+          <div>
+            <b>txid</b>
+            {{transferResult.cliResult.issueIds[$index]}}
+          </div>
+          <div>
+            <b>currency</b>
+            {{transferResult.cliResult.paymentAddress[0].currency}}
+          </div>
+          <div>
+            <b>address</b>
+            {{transferResult.cliResult.paymentAddress[0].address}}
+          </div>
+        </div>
+      </uib-alert>
+      
       <form>
         <div class="panel-body">
           <p>
             <label>
               Transaction Id
-              <input type="text">
+              <input type="text" ng-model="bitmarkTransferConfig.txid">
             </label>
           </p>
           <p>
             <label>
               Receiver
-              <input type="text">
+              <input type="text" ng-model="bitmarkTransferConfig.receiver">
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password">
+              <input type="password" ng-model="bitmarkTransferConfig.cli_password">
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <input type="password">
+              <input type="password" ng-model="bitmarkTransferConfig.pay_password">
             </label>
           </p>        
         </div>
-        <button>submit</button>
+        <button ng-click="submitTransfer()">submit</button>
       </form>
     </uib-accordion-group>
   </uib-accordion>
