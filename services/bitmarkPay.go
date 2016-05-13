@@ -9,8 +9,8 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/logger"
 	"os/exec"
-	"sync"
 	"strings"
+	"sync"
 )
 
 type BitmarkPay struct {

@@ -17,10 +17,10 @@ angular.module('bitmarkWebguiApp')
         $scope.bitmarkChain = BitmarkChain;
 
         // get config file by chan type
-        // var bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
-        // var bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
-        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
-        var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
+        var bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
+        var bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
+        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
+        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
 
         var getInfo = function(){
             httpService.send("onestepStatus",{
