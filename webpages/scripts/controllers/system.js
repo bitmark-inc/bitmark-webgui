@@ -37,20 +37,4 @@ angular.module('bitmarkWebguiApp')
         $scope.goUrl = function(path){
             $location.path(path);
         };
-
-        // check password equality
-        $scope.$watchGroup(['request.New','verifyPassword'], function(){
-            if (!passwordVerified($scope.request.New, $scope.verifyPassword)){
-                $scope.bitmarkWebguiPasswordEqual = false;
-            }else{
-                $scope.bitmarkWebguiPasswordEqual = true;
-            }
-        });
-
-        function passwordVerified(password, verifyPassword){
-            if(password != "" && password != verifyPassword){
-              return false;
-            }
-            return true;
-        };
   }]);

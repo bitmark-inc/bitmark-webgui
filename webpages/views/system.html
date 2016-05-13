@@ -11,14 +11,8 @@
       <input type="password" ng-model="request.Origin">
       
       <p><b>New Password (8~16 Characters)</b></p>
-      <table>
-        <tr>
-          <td><input type="password" ng-model="request.New"></td>
-          <td ng-if="request.New.length > 0"><b>verify</b></td>
-          <td ng-show="request.New.length > 0"><input type="password" ng-model="verifyPassword"></td>
-          <td ng-show="!bitmarkWebguiPasswordEqual">not equal</td>
-        </tr>
-      </table>
+      <password-set password="request.New"></password-set>
+      {{password}}
     </div>
     <div class="panel-footer"><button ng-click="save()">save</button></div>    
   </div>
