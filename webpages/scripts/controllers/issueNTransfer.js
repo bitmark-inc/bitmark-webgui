@@ -79,74 +79,43 @@ angular.module('bitmarkWebguiApp')
         };
 
         // default issue config
-        $scope.bitmarkCliIssueConfig = {
-            Config: bitmarkCliConfigFile,
-            Identity:"",
-            Password:"",
-            Asset:"",
-            Description:"",
-            Fingerprint:"",
-            Quantity:1
+        $scope.bitmarkIssueConfig = {
+            network:  BitmarkChain,
+            cli_config: bitmarkCliConfigFile,
+            pay_config: bitmarkPayConfigFile,
+            identity:"",
+            asset:"",
+            description:"",
+            fingerprint:"",
+            quantity:1,
+            cli_password:"",
+            pay_password:""
         };
-
-        $scope.bitmarkPayIssueConfig = {
-            Config: bitmarkPayConfigFile,
-	    Password: "",
-	    Net:  BitmarkChain,
-            Txid: "",
-	    Address: ""
-        };
-
-        $scope.issueResult = {
-            type:"danger",
-            msg: "",
-            cliResult: null
-        };
-
-
-
-        // $scope.clearIssueResult = function() {
-        //     $scope.issueResult = {
-        //         type:"danger",
-        //         msg: "",
-        //         cliResult: null
-        //     };
-        // };
 
         $scope.submitIssue = function(){
-
-            $scope.clearIssueResult();
-            httpService.send("issueBitmark", $scope.bitmarkCliIssueConfig).then(
-                function(cliResult){
-                    // issue success, pay the tx
-                    // check bitmarkPay net config
-                    if($scope.bitmarkPayIssueConfig.Net == "local" ){
-                        $scope.bitmarkPayIssueConfig.Net = "local_bitcoin_reg";
-                    }
-
-                    // TODO: set pay config txid, address
-                    httpService.send("payBitmark", $scope.bitmarkPayIssueConfig).then(function(payResult){
-                        // pay sucess
-                        $scope.issueResult.type = "success";
-                        $scope.issueResult.msg = "Pay success!";
-                        $scope.issueResult.cliResult = cliResult;
-
-                        // clean bitmarkCliIssueConfig
-                        $scope.bitmarkCliIssueConfig = {
-                            Identity:"",
-                            Password:"",
-                            Asset:"",
-                            Description:"",
-                            Fingerprint:"",
-                            Quantity:1
-                        };
-                    }, function(payResultErr){
-                        $scope.issueResult.type = "danger";
-                        $scope.issueResult.msg = "Issue bitmark success but Payment Error!";
-                    });
-                }, function(cliResultErr){
+            $scope.clearErrAlert('issue');
+            $scope.issueResult = {
+                type:"danger",
+                msg: "",
+                failStart: null,
+                cliResult: null
+            };
+            $scope.bitmarkIssueConfig.identity = $scope.onestepStatusResult.identities[0].name;
+            httpService.send("onestepIssue", $scope.bitmarkIssueConfig).then(
+                function(result){
+                    $scope.issueResult.type = "success";
+                    $scope.issueResult.msg = "Pay success!";
+                    $scope.issueResult.cliResult = result;
+                },
+                function(errResult){
                     $scope.issueResult.type = "danger";
-                    $scope.issueResult.msg = "Issue bitmark Error!";
+                    if(errResult.cli_result != null) {
+                        $scope.issueResult.msg = "Pay failed";
+                        $scope.issueResult.failStart = errResult.fail_start;
+                        $scope.issueResult.cliResult = errResult.cli_result;
+                    } else{
+                        $scope.issueResult.msg = errResult;
+                    }
                 });
         };
 

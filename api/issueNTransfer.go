@@ -41,6 +41,23 @@ type OnestepSetupRequest struct {
 	PayPassword  string   `json:"pay_password"`
 }
 
+type OnestepIssueRequest struct {
+	Network string `json:"network"`
+	CliConfig      string `json:"cli_config"`
+	PayConfig string `json:"pay_config"`
+	Identity    string `json:"identity"`
+	Asset       string `json:"asset"`
+	Description string `json:"description"`
+	Fingerprint string `json:"fingerprint"`
+	Quantity    int    `json:"quantity"`
+	CliPassword    string `json:"cli_password"`
+	PayPassword  string   `json:"pay_password"`
+}
+
+type OnestepIssueFailResponse struct {
+	CliResult BitmarkCliIssueResponse `json:"cli_result"`
+	FailStart int `json:"fail_start"`
+}
 
 // POST /api/onestep/status, setup, issue, transfer
 func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string){
@@ -50,6 +67,7 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 	oneStepRequest := map[string] func() onestepRequest {
 		"status": func() onestepRequest {return &OnestepStatusRequest{}},
 		"setup": func() onestepRequest {return &OnestepSetupRequest{}},
+		"issue": func() onestepRequest {return &OnestepIssueRequest{}},
 	}
 	request := oneStepRequest[command]()
 	decoder := json.NewDecoder(req.Body)
@@ -73,6 +91,9 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 	case *OnestepSetupRequest:
 		realRequest := request.(*OnestepSetupRequest)
 		execOnestepSetup(w, *realRequest, log)
+	case *OnestepIssueRequest:
+		realRequest := request.(*OnestepIssueRequest)
+		execOnestepIssue(w, *realRequest, log)
 	}
 }
 
@@ -186,6 +207,77 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 	// return success response
 	response.Ok = true
 	response.Result = "Success"
+	if err := writeApiResponseAndSetCookie(w, response); nil != err {
+		log.Errorf("Error: %v", err)
+	}
+}
+
+func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, log *logger.L){
+	response := &Response{
+		Ok:     false,
+		Result: nil,
+	}
+
+	// bitmark-cli issue
+	cliRequest := services.BitmarkCliIssueType{
+		Config: request.CliConfig,
+		Identity: request.Identity,
+		Password:request.CliPassword,
+		Asset: request.Asset,
+		Description: request.Description,
+		Fingerprint: request.Fingerprint,
+		Quantity: request.Quantity,
+	}
+
+	cliOutput, err := bitmarkCliService.Issue(cliRequest)
+	if nil != err {
+		response.Result = "bitmark-cli issue error"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	var cliIssueResponse BitmarkCliIssueResponse
+	if err := json.Unmarshal(cliOutput, &cliIssueResponse); nil != err {
+		log.Errorf("Error: %v", err)
+		response.Result = "bitmark-cli issue success, but parsing fail."
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	// bitmark-pay txid address
+	payRequest := services.BitmarkPayType{
+		Net: request.Network,
+		Config: request.PayConfig,
+		Password: request.PayPassword,
+		Addresses: []string{cliIssueResponse.PaymentAddress[0].Address},
+	}
+	if payRequest.Net == "local" {
+		payRequest.Net = "local_bitcoin_reg"
+	}
+
+	for i, issueId := range cliIssueResponse.IssueIds {
+		log.Tracef("pay issueId: %s", issueId)
+		payRequest.Txid = issueId
+		if _, err := bitmarkPayService.Pay(payRequest); nil != err{
+			failResponse := OnestepIssueFailResponse {
+				FailStart: i,
+				CliResult:cliIssueResponse,
+			}
+			response.Result = failResponse
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
+		}
+	}
+
+	// return success response
+	response.Ok = true
+	response.Result = cliIssueResponse
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}

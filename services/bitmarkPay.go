@@ -10,6 +10,7 @@ import (
 	"github.com/bitmark-inc/logger"
 	"os/exec"
 	"sync"
+	"strings"
 )
 
 type BitmarkPay struct {
@@ -99,16 +100,15 @@ func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error
 }
 
 func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error) {
-	addresses := ""
-	for _, payAddress := range bitmarkPayType.Addresses {
-		addresses = addresses + " " + payAddress
-	}
+	addresses := strings.Join(bitmarkPayType.Addresses, " ")
 
 	// check config, net, password, txid, addresses
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password, bitmarkPayType.Txid, addresses); nil != err {
 		return nil, err
 	}
 
+	bitmarkPay.log.Tracef("txid: %s", bitmarkPayType.Txid)
+	bitmarkPay.log.Tracef("addresses: %s", addresses)
 	cmd := exec.Command("java", "-jar",
 		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
 		bitmarkPay.bin,

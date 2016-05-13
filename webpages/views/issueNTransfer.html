@@ -102,69 +102,78 @@
         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': issueAccord.open, 'glyphicon-chevron-right': !issueAccord.open}"></i>
       </uib-accordion-heading>
 
-      <!-- submit success alert -->
-      <uib-alert type="{{issueResult.type}}" close="clearErrResult('issue')" ng-if="issueResult.msg != ''">
-        <div>
-          <b>{{issueResult.msg}}</b>
-          <table ng-show="issueResult.cliResult != null">
-            <tr>
-              <th>txid</th>
-              <th>currency</th>
-              <th>address</th>
-            </tt>
-            <tr ng-repeat="index in issueResult.cliResult.IssueIds track by $index">
-              <td>{{issueResult.cliResult.IssueIds[$index]}}</td>
-              <td>{{issueResult.cliResult.PaymentAddress[$index].Currency}}</td>
-              <td>{{issueResult.cliResult.PaymentAddress[$index].Address}}</td>
-            </tr>
-          </table>      
+      <!--  alert -->
+      <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null">
+        <b>{{issueResult.msg}}</b>
+        <div ng-show="issueResult.cliResult != null">
+          <spanp ng-repeat="index in issueResult.cliResult.issueIds track by $index">
+            <div>
+              <b>
+                {{$index+1}}
+                <span ng-if="issueResult.failStart != null && $index >= issueResult.failStart">
+                  Pay Failed
+                </span>
+                <span ng-if="issueResult.failStart == null || $index < issueResult.failStart">
+                  Pay Success
+                </span>
+              </b>
+            </div>
+            <div>
+              <b>txid</b>
+              {{issueResult.cliResult.issueIds[$index]}}
+            </div>
+            <div>
+              <b>currency</b>
+              {{issueResult.cliResult.paymentAddress[0].currency}}
+            </div>
+            <div>
+              <b>address</b>
+              {{issueResult.cliResult.paymentAddress[0].address}}
+            </div>
+          </p>
         </div>
       </uib-alert>
-        
-      <div ng-show="issueError != ''">
-        {{issueError}}
-      </div>
 
       <form>
         <div class="panel-body">
           <p>
             <label>
               Name
-              <input type="text" ng-model="bitmarkCliIssueConfig.Asset">
+              <input type="text" ng-model="bitmarkIssueConfig.asset">
             </label>
           </p>
           <p>
             <label>
               Description
-              <textarea ng-model="bitmarkCliIssueConfig.Description"></textarea>
+              <textarea ng-model="bitmarkIssueConfig.description"></textarea>
             </label>
           </p>
           <p>
             <label>
               Fingerprint
-              <input type="text" ng-model="bitmarkCliIssueConfig.Fingerprint">
+              <input type="text" ng-model="bitmarkIssueConfig.fingerprint">
             </label>
           </p>
           <p>
             <label>
               Quantity
-              <input type="number" ng-model="bitmarkCliIssueConfig.Quantity">
+              <input type="number" ng-model="bitmarkIssueConfig.quantity">
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password" ng-model="bitmarkCliIssueConfig.Password">
+              <input type="password" ng-model="bitmarkIssueConfig.cli_password">
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <input type="password" ng-model="bitmarkPayIssueConfig.Password">
+              <input type="password" ng-model="bitmarkIssueConfig.pay_password">
             </label>
           </p>        
         </div>
-        <button ng-click="submitIssueTest()">submit</button>
+        <button ng-click="submitIssue()">submit</button>
       </form>
     </uib-accordion-group>
 
