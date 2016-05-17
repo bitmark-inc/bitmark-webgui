@@ -36,9 +36,9 @@ var app = angular
             "local": "/home/bitmark/config/bitmark-cli/bitmark-cli-LOCAL.conf"
         })
         .constant("BitmarkPayConfig", {
-            "testing": "/home/bitmark/config/bitmark-pay/bitmark-pay-TESTING.conf",
-            "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.conf",
-            "local": "/home/bitmark/config/bitmark-pay/bitmark-pay-LOCAL.conf"
+            "testing": "/home/bitmark/config/bitmark-pay/bitmark-pay-TESTING.xml",
+            "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.xml",
+            "local": "/home/bitmark/config/bitmark-pay/bitmark-pay-LOCAL.xml"
         })
         .config(function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.withCredentials = true;
