@@ -76,7 +76,7 @@ angular.module('bitmarkWebguiApp')
             getInfo();
         };
 
-        var getInfo = function(bitmarkCliConfigFile, bitmarkPayConfigFile){
+        var getInfo = function(){
             httpService.send("onestepStatus",{
                 cli_config: bitmarkCliConfigFile,
                 network: $scope.bitmarkChain,
