@@ -27,7 +27,7 @@ angular.module('bitmarkWebguiApp')
                 '<td ng-if="password.length > 0">'+
                 '<b>verify</b></td>'+
                 '<td ng-show="password.length > 0">'+
-                '<input type="password" ng-model="verifyPassword" name="passwordSet"></td>'+
+                '<input type="password" ng-model="verifyPassword"></td>'+
                 '<td ng-show="!result">not equal</td>'+
                 '</tr>'+
                 '</table>'+
