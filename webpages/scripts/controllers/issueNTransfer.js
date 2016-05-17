@@ -13,12 +13,12 @@
  */
 angular.module('bitmarkWebguiApp')
     .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig) {
+        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
+        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
+
         var BitmarkChain = "";
-        // get config file by chan type
-        // var bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
-        // var bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
-        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
-        var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
+        var bitmarkCliConfigFile = "";
+        var bitmarkPayConfigFile = "";
 
         $scope.init = function(){
             httpService.send('getBitmarkConfig').then(
@@ -26,6 +26,7 @@ angular.module('bitmarkWebguiApp')
                     BitmarkChain = result.Chain;
                     $scope.showSetup = false;
                     $scope.bitmarkChain = BitmarkChain;
+                    // get config file by chan type
                     bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
                     bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
                     getInfo();

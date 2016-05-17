@@ -20,7 +20,7 @@ angular.module('bitmarkWebguiApp')
       file: '=file',
       fingerprint: '=fingerprint'
     },
-    template: '<input type="file" name="file"/>',
+    template: '<input type="file" name="file" required/>',
     link: function( scope, elm, attrs ) {
       var genFingerprint = function(file){
 

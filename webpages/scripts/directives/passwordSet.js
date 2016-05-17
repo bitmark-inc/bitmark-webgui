@@ -22,7 +22,7 @@ angular.module('bitmarkWebguiApp')
             },
             template: '<table>'+
                 '<tr>'+
-                '<td><input type="password" ng-model="password"></td>'+
+                '<td><input type="password" ng-model="password" required></td>'+
                 '<td ng-if="password.length > 0">'+
                 '<b>verify</b></td>'+
                 '<td ng-show="password.length > 0">'+

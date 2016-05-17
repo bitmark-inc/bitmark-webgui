@@ -64,19 +64,19 @@
           <p>
             <label>
               Connect
-              <input type="text" ng-model="bitmarkSetupConfig.connect">
+              <input type="text" ng-model="bitmarkSetupConfig.connect" required>
             </label>
           </p>
           <p>
             <label>
               Identity Name
-              <input type="text" ng-model="bitmarkSetupConfig.identity">
+              <input type="text" ng-model="bitmarkSetupConfig.identity" required>
             </label>
           </p>
           <p>
             <label>
               Identity Description
-              <textarea ng-model="bitmarkSetupConfig.description"></textarea>
+              <textarea ng-model="bitmarkSetupConfig.description" required></textarea>
             </label>
           </p>
           <p>
@@ -141,13 +141,13 @@
           <p>
             <label>
               Name
-              <input type="text" ng-model="bitmarkIssueConfig.asset">
+              <input type="text" ng-model="bitmarkIssueConfig.asset" required>
             </label>
           </p>
           <p>
             <label>
               Description
-              <textarea ng-model="bitmarkIssueConfig.description"></textarea>
+              <textarea ng-model="bitmarkIssueConfig.description" required></textarea>
             </label>
           </p>
           <p>
@@ -161,19 +161,19 @@
           <p>
             <label>
               Quantity
-              <input type="number" ng-model="bitmarkIssueConfig.quantity">
+              <input type="number" ng-model="bitmarkIssueConfig.quantity" required>
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password" ng-model="bitmarkIssueConfig.cli_password">
+              <input type="password" ng-model="bitmarkIssueConfig.cli_password" required>
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <input type="password" ng-model="bitmarkIssueConfig.pay_password">
+              <input type="password" ng-model="bitmarkIssueConfig.pay_password" required>
             </label>
           </p>        
         </div>
@@ -212,25 +212,25 @@
           <p>
             <label>
               Transaction Id
-              <input type="text" ng-model="bitmarkTransferConfig.txid">
+              <input type="text" ng-model="bitmarkTransferConfig.txid" required>
             </label>
           </p>
           <p>
             <label>
               Receiver
-              <input type="text" ng-model="bitmarkTransferConfig.receiver">
+              <input type="text" ng-model="bitmarkTransferConfig.receiver" required>
             </label>
           </p>
           <p>
             <label>
               Identity Password
-              <input type="password" ng-model="bitmarkTransferConfig.cli_password">
+              <input type="password" ng-model="bitmarkTransferConfig.cli_password" required>
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <input type="password" ng-model="bitmarkTransferConfig.pay_password">
+              <input type="password" ng-model="bitmarkTransferConfig.pay_password" required>
             </label>
           </p>        
         </div>
