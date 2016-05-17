@@ -19,7 +19,6 @@ var app = angular
     'ngRoute',
     'ui.bootstrap'
   ])
-        .value("BitmarkChain", "testing")
         .constant("BitmarkProxyURL", {
             "testing": "https://spoon.test.bitmark.com:17555/rpc-call",
             "bitmark": "https://spoon.live.bitmark.com:17555/rpc-call"

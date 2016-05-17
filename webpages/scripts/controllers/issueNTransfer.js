@@ -12,15 +12,27 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", "BitmarkChain", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig, BitmarkChain) {
-        $scope.showSetup = false;
-        $scope.bitmarkChain = BitmarkChain;
-
+    .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig) {
+        var BitmarkChain = "";
         // get config file by chan type
-        var bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
-        var bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
-        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
-        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
+        // var bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
+        // var bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
+        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
+        var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
+
+        $scope.init = function(){
+            httpService.send('getBitmarkConfig').then(
+                function(result){
+                    BitmarkChain = result.Chain;
+                    $scope.showSetup = false;
+                    $scope.bitmarkChain = BitmarkChain;
+                    bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
+                    bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
+                    getInfo();
+                }, function(errorMsg){
+                });
+        };
+
 
         var getInfo = function(){
             httpService.send("onestepStatus",{
@@ -40,7 +52,6 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
-        getInfo();
 
         $scope.clearErrAlert = function(type) {
             switch(type) {

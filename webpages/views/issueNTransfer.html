@@ -1,4 +1,4 @@
-<div>
+<div ng-init="init()">
   <h3>Issue and Transfer Bitmark</h3>
   <!-- setup section -->
   <div class="panel panel-default">
@@ -47,10 +47,10 @@
 
   <uib-accordion>
     <!-- add setup fields -->
-    <uib-accordion-group is-open="setupAccord.open" ng-show="showSetup">
+    <uib-accordion-group is-open="true" ng-show="showSetup">
       <uib-accordion-heading>
         Setup
-        <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': setupAccord.open, 'glyphicon-chevron-right': !setupAccord.open}"></i>
+        <i class="pull-right glyphicon"></i>
       </uib-accordion-heading>
       <div ng-show="setupError != ''">
         {{setupError}}
@@ -95,8 +95,10 @@
         <button ng-click="submitSetup()">submit</button>
       </form>
     </uib-accordion-group>
+
+    
     <!-- Issue setction -->
-    <uib-accordion-group is-open="issueAccord.open">
+    <uib-accordion-group is-open="issueAccord.open" ng-show="!showSetup">
       <uib-accordion-heading>
         Issue Asset
         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': issueAccord.open, 'glyphicon-chevron-right': !issueAccord.open}"></i>
@@ -149,11 +151,13 @@
             </label>
           </p>
           <p>
+            <fingerprint-input file="file" fingerprint="bitmarkIssueConfig.fingerprint"></fingerprint-input>
             <label>
               Fingerprint
-              <input type="text" ng-model="bitmarkIssueConfig.fingerprint">
+              {{bitmarkIssueConfig.fingerprint}}
             </label>
           </p>
+          
           <p>
             <label>
               Quantity
@@ -178,7 +182,7 @@
     </uib-accordion-group>
 
     <!-- Transfer setction -->
-    <uib-accordion-group is-open="transferAccord.open">
+    <uib-accordion-group is-open="transferAccord.open" ng-show="!showSetup">
       <uib-accordion-heading>
         Transfer Bitmark
         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': transferAccord.open, 'glyphicon-chevron-right': !transferAccord.open}"></i>
