@@ -17,12 +17,12 @@ angular.module('bitmarkWebguiApp')
             Origin: "",
             New: ""
         };
-        $scope.verifyPassword = "";
+        $scope.verifyPassword = true;
         $scope.bitmarkWebguiPasswordEqual = true;
         $scope.errorMsg = "";
 
         $scope.save = function(){
-            if($scope.request.Origin == "" || $scope.request.New == ""){
+            if($scope.request.Origin == "" || $scope.request.New == "" || !$scope.verifyPassword){
                 $scope.errorMsg = "All fields should be filled";
                 return;
             }

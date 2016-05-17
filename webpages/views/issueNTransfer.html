@@ -45,17 +45,16 @@
     </div>
   </div>
 
-  <uib-accordion>
-    <!-- add setup fields -->
-    <uib-accordion-group is-open="true" ng-show="showSetup">
-      <uib-accordion-heading>
-        Setup
-        <i class="pull-right glyphicon"></i>
-      </uib-accordion-heading>
+  <!-- add setup fields -->
+  <div class="panel panel-default" ng-show="showSetup">
+    <div class="panel-heading">
+      Setup
+    </div>
+    <div clsaa="panel-body">
       <div ng-show="setupError != ''">
         {{setupError}}
       </div>
-      <form>
+      <form name="setupForm">
         <div class="panel-body">
           <p>
             <b>Chain</b>
@@ -82,19 +81,20 @@
           <p>
             <label>
               Identity Password
-              <password-set password="bitmarkSetupConfig.cli_password"></password-set>
+              <password-set password="bitmarkSetupConfig.cli_password" result="cliPasswordResult"></password-set>
             </label>
           </p>
           <p>
             <label>
               Pay Password
-              <password-set password="bitmarkSetupConfig.pay_password"></password-set>
+              <password-set password="bitmarkSetupConfig.pay_password" result="payPasswordResult"></password-set>
             </label>
           </p>
         </div>
         <button ng-click="submitSetup()">submit</button>
       </form>
-    </uib-accordion-group>
+    </div>
+  </div>
 
     
     <!-- Issue setction -->

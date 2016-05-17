@@ -11,7 +11,7 @@
       <input type="password" ng-model="request.Origin">
       
       <p><b>New Password (8~16 Characters)</b></p>
-      <password-set password="request.New"></password-set>
+      <password-set password="request.New" result="verifyPassword"></password-set>
       {{password}}
     </div>
     <div class="panel-footer"><button ng-click="save()">save</button></div>    

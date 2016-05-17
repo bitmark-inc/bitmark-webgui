@@ -35,6 +35,8 @@ angular.module('bitmarkWebguiApp')
             bitmarkPayConfigFile = BitmarkPayConfig[$scope.bitmarkChain];
 
             // default setup config
+            $scope.payPasswordResult = true;
+            $scope.cliPasswordResult = true;
             $scope.bitmarkSetupConfig = {
                 network:  $scope.bitmarkChain,
                 cli_config: bitmarkCliConfigFile,
@@ -108,6 +110,9 @@ angular.module('bitmarkWebguiApp')
 
         $scope.submitSetup = function(){
             $scope.setupError = '';
+            if($scope.setupForm.$invalid || !$scope.payPasswordResult || !$scope.cliPasswordResult) {
+                return;
+            }
 
             httpService.send("onestepSetup", $scope.bitmarkSetupConfig).then(function(result){
                 $scope.showSetup = false;

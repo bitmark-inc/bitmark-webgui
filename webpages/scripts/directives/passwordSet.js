@@ -18,7 +18,8 @@ angular.module('bitmarkWebguiApp')
             replace : true,
             transclude : true,
             scope : {
-                password : '=password'
+                password : '=password',
+                result: '=result'
             },
             template: '<table>'+
                 '<tr>'+
@@ -26,8 +27,8 @@ angular.module('bitmarkWebguiApp')
                 '<td ng-if="password.length > 0">'+
                 '<b>verify</b></td>'+
                 '<td ng-show="password.length > 0">'+
-                '<input type="password" ng-model="verifyPassword"></td>'+
-                '<td ng-show="!passwordEqual">not equal</td>'+
+                '<input type="password" ng-model="verifyPassword" name="passwordSet"></td>'+
+                '<td ng-show="!result">not equal</td>'+
                 '</tr>'+
                 '</table>'+
                 '{{password}}'+
@@ -35,12 +36,14 @@ angular.module('bitmarkWebguiApp')
             link: function(scope, element, attrs){
                 // check password equality
                 scope.verifyPassword = "";
+                scope.result = true;
                 scope.$watchGroup(['password','verifyPassword'], function(){
-                    if (!passwordVerified(scope.password, scope.verifyPassword)){
-                        scope.passwordEqual = false;
-                    }else{
-                        scope.passwordEqual = true;
-                    }
+                    scope.result = passwordVerified(scope.password, scope.verifyPassword);
+                    // if (!passwordVerified(scope.password, scope.verifyPassword)){
+                    //     scope.result = false;
+                    // }else{
+                    //     scope.result = true;
+                    // }
                 });
 
                 function passwordVerified(password, verifyPassword){
