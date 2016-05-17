@@ -15,30 +15,69 @@ angular.module('bitmarkWebguiApp')
     .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig) {
         // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
         // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
-
-        var BitmarkChain = "";
         var bitmarkCliConfigFile = "";
         var bitmarkPayConfigFile = "";
 
         $scope.init = function(){
             httpService.send('getBitmarkConfig').then(
                 function(result){
-                    BitmarkChain = result.Chain;
-                    $scope.showSetup = false;
-                    $scope.bitmarkChain = BitmarkChain;
-                    // get config file by chan type
-                    bitmarkCliConfigFile = BitmarkCliConfig[BitmarkChain];
-                    bitmarkPayConfigFile = BitmarkPayConfig[BitmarkChain];
-                    getInfo();
+                    localInit(result.Chain);
                 }, function(errorMsg){
                 });
         };
 
 
-        var getInfo = function(){
+        var localInit = function(bitmarkChain){
+            $scope.showSetup = false;
+            $scope.bitmarkChain = bitmarkChain;
+            // get config file by chan type
+            bitmarkCliConfigFile = BitmarkCliConfig[$scope.bitmarkChain];
+            bitmarkPayConfigFile = BitmarkPayConfig[$scope.bitmarkChain];
+
+            // default setup config
+            $scope.bitmarkSetupConfig = {
+                network:  $scope.bitmarkChain,
+                cli_config: bitmarkCliConfigFile,
+                pay_config: bitmarkPayConfigFile,
+                connect: "",
+	        identity: "",
+                description: "",
+	        cli_password: "",
+                pay_password: ""
+            };
+
+            // default issue config
+            $scope.bitmarkIssueConfig = {
+                network:  $scope.bitmarkChain,
+                cli_config: bitmarkCliConfigFile,
+                pay_config: bitmarkPayConfigFile,
+                identity:"",
+                asset:"",
+                description:"",
+                fingerprint:"",
+                quantity:1,
+                cli_password:"",
+                pay_password:""
+            };
+
+            // transfer config
+            $scope.bitmarkTransferConfig = {
+                network:  $scope.bitmarkChain,
+                cli_config: bitmarkCliConfigFile,
+                pay_config: bitmarkPayConfigFile,
+                identity:"",
+                txid:"",
+                cli_password:"",
+                pay_password:""
+            };
+
+            getInfo();
+        };
+
+        var getInfo = function(bitmarkCliConfigFile, bitmarkPayConfigFile){
             httpService.send("onestepStatus",{
                 cli_config: bitmarkCliConfigFile,
-                network: BitmarkChain,
+                network: $scope.bitmarkChain,
                 pay_config: bitmarkPayConfigFile
             }).then(function(result){
                 $scope.onestepStatusResult = result;
@@ -66,21 +105,10 @@ angular.module('bitmarkWebguiApp')
             }
         };
 
-        // default setup config
-        $scope.bitmarkSetupConfig = {
-            network:  BitmarkChain,
-            cli_config: bitmarkCliConfigFile,
-            pay_config: bitmarkPayConfigFile,
-            connect: "",
-	    identity: "",
-            description: "",
-	    cli_password: "",
-            pay_password: ""
-        };
-
 
         $scope.submitSetup = function(){
             $scope.setupError = '';
+
             httpService.send("onestepSetup", $scope.bitmarkSetupConfig).then(function(result){
                 $scope.showSetup = false;
                 //wait for 10 seconds to sync the bitcoin
@@ -90,20 +118,6 @@ angular.module('bitmarkWebguiApp')
             }, function(error){
                 $scope.setupError = cliResult;
             });
-        };
-
-        // default issue config
-        $scope.bitmarkIssueConfig = {
-            network:  BitmarkChain,
-            cli_config: bitmarkCliConfigFile,
-            pay_config: bitmarkPayConfigFile,
-            identity:"",
-            asset:"",
-            description:"",
-            fingerprint:"",
-            quantity:1,
-            cli_password:"",
-            pay_password:""
         };
 
         $scope.submitIssue = function(){
@@ -133,16 +147,6 @@ angular.module('bitmarkWebguiApp')
                 });
         };
 
-        // transfer config
-        $scope.bitmarkTransferConfig = {
-            network:  BitmarkChain,
-            cli_config: bitmarkCliConfigFile,
-            pay_config: bitmarkPayConfigFile,
-            identity:"",
-            txid:"",
-            cli_password:"",
-            pay_password:""
-        };
 
         $scope.submitTransfer = function(){
             $scope.clearErrAlert('transfer');
