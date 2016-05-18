@@ -253,29 +253,31 @@ func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, log *l
 	}
 
 	// bitmark-pay txid address
-	payRequest := services.BitmarkPayType{
-		Net:       request.Network,
-		Config:    request.PayConfig,
-		Password:  request.PayPassword,
-		Addresses: []string{cliIssueResponse.PaymentAddress[0].Address},
-	}
-	if payRequest.Net == "local" {
-		payRequest.Net = "local_bitcoin_reg"
-	}
+	if nil != cliIssueResponse.PaymentAddress {
+		payRequest := services.BitmarkPayType{
+			Net:       request.Network,
+			Config:    request.PayConfig,
+			Password:  request.PayPassword,
+			Addresses: []string{cliIssueResponse.PaymentAddress[0].Address},
+		}
+		if payRequest.Net == "local" {
+			payRequest.Net = "local_bitcoin_reg"
+		}
 
-	for i, issueId := range cliIssueResponse.IssueIds {
-		log.Tracef("pay issueId: %s", issueId)
-		payRequest.Txid = issueId
-		if _, err := bitmarkPayService.Pay(payRequest); nil != err {
-			failResponse := OnestepIssueFailResponse{
-				FailStart: i,
-				CliResult: cliIssueResponse,
+		for i, issueId := range cliIssueResponse.IssueIds {
+			log.Tracef("pay issueId: %s", issueId)
+			payRequest.Txid = issueId
+			if _, err := bitmarkPayService.Pay(payRequest); nil != err {
+				failResponse := OnestepIssueFailResponse{
+					FailStart: i,
+					CliResult: cliIssueResponse,
+				}
+				response.Result = failResponse
+				if err := writeApiResponseAndSetCookie(w, response); nil != err {
+					log.Errorf("Error: %v", err)
+				}
+				return
 			}
-			response.Result = failResponse
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
-			return
 		}
 	}
 
@@ -337,26 +339,28 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 	}
 
 	// bitmark-pay
-	payRequest := services.BitmarkPayType{
-		Net:       request.Network,
-		Config:    request.PayConfig,
-		Password:  request.PayPassword,
-		Addresses: []string{cliTransfer.PaymentAddress[0].Address},
-		Txid:      cliTransfer.TransferId,
-	}
-	if payRequest.Net == "local" {
-		payRequest.Net = "local_bitcoin_reg"
-	}
+	if nil != cliTransfer.PaymentAddress {
+		payRequest := services.BitmarkPayType{
+			Net:       request.Network,
+			Config:    request.PayConfig,
+			Password:  request.PayPassword,
+			Addresses: []string{cliTransfer.PaymentAddress[0].Address},
+			Txid:      cliTransfer.TransferId,
+		}
+		if payRequest.Net == "local" {
+			payRequest.Net = "local_bitcoin_reg"
+		}
 
-	if _, err := bitmarkPayService.Pay(payRequest); nil != err {
-		failResponse := OnestepTransferFailResponse{
-			CliResult: cliTransfer,
+		if _, err := bitmarkPayService.Pay(payRequest); nil != err {
+			failResponse := OnestepTransferFailResponse{
+				CliResult: cliTransfer,
+			}
+			response.Result = failResponse
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
 		}
-		response.Result = failResponse
-		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			log.Errorf("Error: %v", err)
-		}
-		return
 	}
 
 	// return success response
