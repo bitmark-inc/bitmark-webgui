@@ -13,8 +13,9 @@
  */
 angular.module('bitmarkWebguiApp')
     .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig) {
-        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config";
-        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml";
+        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
+        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
+
         var bitmarkCliConfigFile = "";
         var bitmarkPayConfigFile = "";
 
@@ -110,9 +111,6 @@ angular.module('bitmarkWebguiApp')
 
         $scope.submitSetup = function(){
             $scope.setupError = '';
-            if($scope.setupForm.$invalid || !$scope.payPasswordResult || !$scope.cliPasswordResult) {
-                return;
-            }
 
             httpService.send("onestepSetup", $scope.bitmarkSetupConfig).then(function(result){
                 $scope.showSetup = false;

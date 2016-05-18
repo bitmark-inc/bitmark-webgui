@@ -91,7 +91,7 @@
             </label>
           </p>
         </div>
-        <button ng-click="submitSetup()" ng-disabled="setupForm.$invalid">submit</button>
+        <button ng-click="submitSetup()" ng-disabled="setupForm.$invalid || !cliPasswordResult || !payPasswordResult">submit</button>
       </form>
     </div>
   </div>
