@@ -107,7 +107,7 @@
       <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null">
         <b>{{issueResult.msg}}</b>
         <div ng-show="issueResult.cliResult != null">
-          <span ng-repeat="index in issueResult.cliResult.issueIds track by $index">
+          <span ng-repeat="index in issueResult.cliResult.issue_ids track by $index">
             <div>
               <b>
                 {{$index+1}}
@@ -121,15 +121,15 @@
             </div>
             <div>
               <b>txid</b>
-              {{issueResult.cliResult.issueIds[$index]}}
+              {{issueResult.cliResult.issue_ids[$index]}}
             </div>
             <div>
               <b>currency</b>
-              {{issueResult.cliResult.paymentAddress[0].currency}}
+              {{issueResult.cliResult.payment_address[0].currency}}
             </div>
             <div>
               <b>address</b>
-              {{issueResult.cliResult.paymentAddress[0].address}}
+              {{issueResult.cliResult.payment_address[0].address}}
             </div>
           </span>
         </div>
@@ -194,15 +194,15 @@
       <div ng-show="transferResult.cliResult != null">
         <div>
           <b>txid</b>
-          {{transferResult.cliResult.issueIds[$index]}}
+          {{transferResult.cliResult.transfer_id}}
         </div>
         <div>
           <b>currency</b>
-          {{transferResult.cliResult.paymentAddress[0].currency}}
+          {{transferResult.cliResult.payment_address[0].currency}}
         </div>
           <div>
             <b>address</b>
-            {{transferResult.cliResult.paymentAddress[0].address}}
+            {{transferResult.cliResult.payment_address[0].address}}
           </div>
       </div>
       </uib-alert>

@@ -21,14 +21,14 @@ type BitmarkPaymentAddress struct {
 }
 
 type BitmarkCliIssueResponse struct {
-	AssetId        string                  `json:"assetId"`
-	IssueIds       []string                `json:"issueIds"`
-	PaymentAddress []BitmarkPaymentAddress `json:"paymentAddress"`
+	AssetId        string                  `json:"asset_id"`
+	IssueIds       []string                `json:"issue_ids"`
+	PaymentAddress []BitmarkPaymentAddress `json:"payment_address"`
 }
 
 type BitmarkCliTransferResponse struct {
-	TransferId     string                  `json: transferId`
-	PaymentAddress []BitmarkPaymentAddress `json:"paymentAddress"`
+	TransferId     string                  `json:"transfer_id"`
+	PaymentAddress []BitmarkPaymentAddress `json:"payment_address"`
 }
 
 //POST /api/bitmarkCli/*
