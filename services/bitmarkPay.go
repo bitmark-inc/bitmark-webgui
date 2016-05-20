@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 )
 
 type BitmarkPay struct {
@@ -18,6 +19,7 @@ type BitmarkPay struct {
 	initialised bool
 	bin         string
 	log         *logger.L
+	command *exec.Cmd
 }
 
 func (bitmarkPay *BitmarkPay) Initialise(binFile string) error {
@@ -53,6 +55,12 @@ func (bitmarkPay *BitmarkPay) Finalise() error {
 		return fault.ErrNotInitialised
 	}
 
+	if nil != bitmarkPay.command {
+		if err := bitmarkPay.Kill(); nil != err {
+			return err
+		}
+	}
+
 	bitmarkPay.initialised = false
 	return nil
 }
@@ -66,11 +74,18 @@ type BitmarkPayType struct {
 }
 
 func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) ([]byte, error) {
+	//check command process is not running
+	oldCmd := bitmarkPay.command
+	if nil != oldCmd && nil == oldCmd.ProcessState {
+		return nil, fault.ErrBitmarkPayIsRunning
+	}
+
 	// check config, net, password
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password); nil != err {
 		return nil, err
 	}
 
+	// check cmd process is finish
 	cmd := exec.Command("java", "-jar",
 		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
 		bitmarkPay.bin,
@@ -79,10 +94,17 @@ func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) ([]byte, er
 		"--password="+bitmarkPayType.Password,
 		"encrypt")
 
+	bitmarkPay.command = cmd
 	return getCmdOutput(cmd, "encrypt", bitmarkPay.log)
 }
 
 func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error) {
+	//check command process is not running
+	oldCmd := bitmarkPay.command
+	if nil != oldCmd && nil == oldCmd.ProcessState {
+		return nil, fault.ErrBitmarkPayIsRunning
+	}
+
 	// check config, net
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net); nil != err {
 		return nil, err
@@ -96,13 +118,19 @@ func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error
 		"--json",
 		"info")
 
+	bitmarkPay.command = cmd
 	return getCmdOutput(cmd, "info", bitmarkPay.log)
 }
 
 func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error) {
-	addresses := strings.Join(bitmarkPayType.Addresses, " ")
+	//check command process is not running
+	oldCmd := bitmarkPay.command
+	if nil != oldCmd && nil == oldCmd.ProcessState {
+		return nil, fault.ErrBitmarkPayIsRunning
+	}
 
 	// check config, net, password, txid, addresses
+	addresses := strings.Join(bitmarkPayType.Addresses, " ")
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password, bitmarkPayType.Txid, addresses); nil != err {
 		return nil, err
 	}
@@ -120,5 +148,43 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error)
 		addresses,
 	)
 
+
+	bitmarkPay.command = cmd
 	return getCmdOutput(cmd, "pay", bitmarkPay.log)
+}
+
+func (bitmarkPay *BitmarkPay) Status() string{
+	cmd := bitmarkPay.command
+	if nil != cmd{
+		if  nil != cmd.ProcessState {
+			if cmd.ProcessState.Exited() {
+				if cmd.ProcessState.Success(){
+					return "success"
+				}
+				return "fail"
+			}else {
+				return cmd.ProcessState.String()
+			}
+		} else{
+			return "running"
+		}
+
+
+	}
+	return "stopped"
+}
+
+func (bitmarkPay *BitmarkPay) Kill() error {
+	cmd := bitmarkPay.command
+	if nil != cmd {
+		bitmarkPay.log.Debugf("killing process: %d", cmd.Process.Pid)
+
+		err := cmd.Process.Signal(syscall.SIGINT)
+		if nil != err {
+			bitmarkPay.log.Errorf("Failed to Kill process: %d", cmd.Process.Pid)
+			return err
+		}
+	}
+	bitmarkPay.command = nil
+	return nil
 }

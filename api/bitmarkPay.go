@@ -25,15 +25,20 @@ func BitmarkPayEncrypt(w http.ResponseWriter, req *http.Request, log *logger.L, 
 		Result: nil,
 	}
 
-	decoder := json.NewDecoder(req.Body)
+	var decoder *json.Decoder
 	var request services.BitmarkPayType
-	err := decoder.Decode(&request)
-	if nil != err {
-		log.Errorf("Error: %v", err)
-		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+
+	if "status" != command {
+		decoder = json.NewDecoder(req.Body)
+		err := decoder.Decode(&request)
+		if nil != err {
 			log.Errorf("Error: %v", err)
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
 		}
-		return
+
 	}
 
 	switch command {
@@ -53,7 +58,7 @@ func BitmarkPayEncrypt(w http.ResponseWriter, req *http.Request, log *logger.L, 
 		}
 
 	case "pay":
-		_, err = bitmarkPayService.Pay(request)
+		_, err := bitmarkPayService.Pay(request)
 		if nil != err {
 			response.Result = "bitmark-pay pay error"
 		} else {
@@ -61,14 +66,19 @@ func BitmarkPayEncrypt(w http.ResponseWriter, req *http.Request, log *logger.L, 
 			response.Result = "Success"
 		}
 	case "encrypt":
-		_, err = bitmarkPayService.Encrypt(request)
+		_, err := bitmarkPayService.Encrypt(request)
 		if nil != err {
 			response.Result = "bitmark-pay encrypt error"
 		} else {
 			response.Ok = true
 			response.Result = "Success"
 		}
+	case "status":
+		status := bitmarkPayService.Status()
+		response.Ok = true
+		response.Result = status
 	}
+
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)

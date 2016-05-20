@@ -113,6 +113,11 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 
 	payOutput, err := bitmarkPayService.Info(payRequest)
 	if nil != err {
+		log.Errorf("Error:%v", err)
+		if err := bitmarkPayService.Kill(); nil != err {
+			log.Errorf("Error:%v", err)
+		}
+		log.Info("process killed !!!")
 		response.Result = "bitmark-pay info error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
