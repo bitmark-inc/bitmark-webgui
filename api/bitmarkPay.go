@@ -18,6 +18,10 @@ type BitmarkPayInfoResponse struct {
 }
 
 // POST /api/bitmarkPay/info, pay, encrypt, status, result
+// for info, pay, encrypt. They are calling bitmark-pay, will return a job hash,
+// use status to know if the job is still running, when the status shows success, fail, stopped,
+// use the job hash and result api to get the result
+// if the result is nil, it means the async job failed.
 func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command string) {
 	log.Infof("POST /api/bitmarkPay/%s", command)
 	response := &Response{
@@ -80,8 +84,6 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 		if nil != err {
 			response.Result = "bitmark-pay result error"
 		} else {
-			log.Infof("job hash: %s", request.JobHash)
-			log.Infof("type: %s", bitmarkPayService.GetBitmarkPayJobType(request.JobHash))
 			if bitmarkPayService.GetBitmarkPayJobType(request.JobHash) == "info" {
 				var jsonInfo BitmarkPayInfoResponse
 				if err := json.Unmarshal(output, &jsonInfo); nil != err {

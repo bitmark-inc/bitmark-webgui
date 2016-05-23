@@ -22,7 +22,6 @@ type BitmarkPay struct {
 	bin         string
 	log         *logger.L
 	asyncJob    BitmarkPayJob
-	// command *exec.Cmd
 }
 
 type BitmarkPayJob struct {
@@ -213,7 +212,12 @@ func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) er
 	go func() {
 		if result, err := getCmdOutput(cmd, cmdType, bitmarkPay.log); nil != err {
 			bitmarkPay.log.Errorf("job fail: %s", bitmarkPay.asyncJob.hash)
+			bitmarkPay.asyncJob.result = nil
 		} else {
+			// make sure result is no nil, otherwise the api will consider the result command is failed
+			if nil == result {
+				result = []byte("")
+			}
 			bitmarkPay.asyncJob.result = result
 		}
 	}()
@@ -239,6 +243,10 @@ func (bitmarkPay *BitmarkPay) GetBitmarkPayJobResult(bitmarkPayType BitmarkPayTy
 
 	if bitmarkPay.Status() == "running" {
 		return nil, fault.ErrInvalidAccessBitmarkPayJobResult
+	}
+
+	if nil == bitmarkPay.asyncJob.result {
+		return nil, fault.ErrExecBitmarkPayJob
 	}
 
 	return bitmarkPay.asyncJob.result, nil

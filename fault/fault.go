@@ -23,6 +23,7 @@ var (
 	ErrBitmarkPayIsRunning              = InvalidError("Bitmark-pay is running")
 	ErrCertificateFileAlreadyExists     = ExistsError("certificate file already exists")
 	ErrConfigFileExited                 = ExistsError("Config file is existed")
+	ErrExecBitmarkPayJob                = ProcessError("Failed to execute bitmark pay job ")
 	ErrInvalidAccessBitmarkPayJobResult = InvalidError("invalid access bitmark-pay job result")
 	ErrInvalidCommandType               = InvalidError("invalid command type")
 	ErrInvalidCommandParams             = InvalidError("invalid command type")
