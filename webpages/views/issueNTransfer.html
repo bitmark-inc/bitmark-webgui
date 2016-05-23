@@ -11,35 +11,35 @@
         </uib-alert>
         <p>
           <b>Chain</b>
-          {{onestepStatusResult.network}}
+          {{onestepStatusResult.cli_result.network}}
         </p>
         <p>
           <b>Connect</b>
-          {{onestepStatusResult.connect}}
+          {{onestepStatusResult.cli_result.connect}}
         </p>
         <p>
           <b>Identity Name</b>
-          {{onestepStatusResult.identities[0].name}}
+          {{onestepStatusResult.cli_result.identities[0].name}}
         </p>
         <p>
           <b>Identity Description</b>
-          {{onestepStatusResult.identities[0].description}}
+          {{onestepStatusResult.cli_result.identities[0].description}}
         </p>
         <p>
           <b>Identity Publickey</b>
-          {{onestepStatusResult.identities[0].public_key}}
+          {{onestepStatusResult.cli_result.identities[0].public_key}}
         </p>
         <p>
           <b>Bitcoin Address</b>
-          {{onestepStatusResult.address}}
+          {{onestepStatusResult.pay_result.address}}
         </p>
         <p>
           <b>Estimated Balance</b>
-          {{onestepStatusResult.estimated_balance}}
+          {{onestepStatusResult.pay_result.estimated_balance}}
         </p>
         <p>
           <b>Available Balance</b>
-          {{onestepStatusResult.available_balance}}
+          {{onestepStatusResult.pay_result.available_balance}}
         </p>
       </div>
     </div>

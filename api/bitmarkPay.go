@@ -12,75 +12,109 @@ import (
 )
 
 type BitmarkPayInfoResponse struct {
-	Address           string
-	Estimated_balance float32
-	Available_balance float32
+	Address          string  `json:"address"`
+	EstimatedBalance float64 `json:"estimated_balance"`
+	AvailableBalance float64 `json:"available_balance"`
 }
 
-// POST /api/bitmarkPay/*
-func BitmarkPayEncrypt(w http.ResponseWriter, req *http.Request, log *logger.L, command string) {
-	log.Info("POST /api/bitmarkPay/encrypt")
+// POST /api/bitmarkPay/info, pay, encrypt, status, result
+func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command string) {
+	log.Infof("POST /api/bitmarkPay/%s", command)
 	response := &Response{
 		Ok:     false,
 		Result: nil,
 	}
 
-	var decoder *json.Decoder
-	var request services.BitmarkPayType
-
-	if "status" != command {
-		decoder = json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
+	switch command {
+	case "info":
+		request := bitmarkPayParseRequest(w, req, response, log)
+		if nil == request {
 			return
 		}
 
-	}
-
-	switch command {
-	case "info":
-		output, err := bitmarkPayService.Info(request)
+		err := bitmarkPayService.Info(*request)
 		if nil != err {
 			response.Result = "bitmark-pay info error"
 		} else {
-
-			var jsonInfo BitmarkPayInfoResponse
-			if err := json.Unmarshal(output, &jsonInfo); nil != err {
-				log.Errorf("Error: %v", err)
-			} else {
-				response.Ok = true
-				response.Result = jsonInfo
-			}
+			response.Ok = true
+			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 		}
 
 	case "pay":
-		_, err := bitmarkPayService.Pay(request)
+		request := bitmarkPayParseRequest(w, req, response, log)
+		if nil == request {
+			return
+		}
+
+		err := bitmarkPayService.Pay(*request)
 		if nil != err {
 			response.Result = "bitmark-pay pay error"
 		} else {
 			response.Ok = true
-			response.Result = "Success"
+			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 		}
 	case "encrypt":
-		_, err := bitmarkPayService.Encrypt(request)
+		request := bitmarkPayParseRequest(w, req, response, log)
+		if nil == request {
+			return
+		}
+
+		err := bitmarkPayService.Encrypt(*request)
 		if nil != err {
 			response.Result = "bitmark-pay encrypt error"
 		} else {
 			response.Ok = true
-			response.Result = "Success"
+			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 		}
 	case "status":
 		status := bitmarkPayService.Status()
 		response.Ok = true
 		response.Result = status
-	}
+	case "result":
+		request := bitmarkPayParseRequest(w, req, response, log)
+		if nil == request {
+			return
+		}
 
+		output, err := bitmarkPayService.GetBitmarkPayJobResult(*request)
+		if nil != err {
+			response.Result = "bitmark-pay result error"
+		} else {
+			log.Infof("job hash: %s", request.JobHash)
+			log.Infof("type: %s", bitmarkPayService.GetBitmarkPayJobType(request.JobHash))
+			if bitmarkPayService.GetBitmarkPayJobType(request.JobHash) == "info" {
+				var jsonInfo BitmarkPayInfoResponse
+				if err := json.Unmarshal(output, &jsonInfo); nil != err {
+					log.Errorf("Error: %v", err)
+				} else {
+					response.Ok = true
+					response.Result = jsonInfo
+				}
+			} else {
+				response.Ok = true
+				response.Result = "success"
+			}
+		}
+	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}
+}
+
+func bitmarkPayParseRequest(w http.ResponseWriter, req *http.Request, response *Response, log *logger.L) *services.BitmarkPayType {
+	var decoder *json.Decoder
+	var request services.BitmarkPayType
+
+	decoder = json.NewDecoder(req.Body)
+	err := decoder.Decode(&request)
+	if nil != err {
+		log.Errorf("Error: %v", err)
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return nil
+	}
+
+	return &request
 }

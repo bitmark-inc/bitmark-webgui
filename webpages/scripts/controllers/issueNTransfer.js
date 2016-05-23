@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('IssueNTransferCtrl', ['$scope', '$timeout', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", function ($scope, $timeout, httpService, BitmarkCliConfig, BitmarkPayConfig) {
+    .controller('IssueNTransferCtrl', ['$scope', '$timeout', '$interval', 'httpService', "BitmarkCliConfig", "BitmarkPayConfig", function ($scope, $timeout, $interval, httpService, BitmarkCliConfig, BitmarkPayConfig) {
         // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
         // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
 
@@ -77,14 +77,37 @@ angular.module('bitmarkWebguiApp')
             getInfo();
         };
 
+        var infoPayPromise;
         var getInfo = function(){
             httpService.send("onestepStatus",{
                 cli_config: bitmarkCliConfigFile,
                 network: $scope.bitmarkChain,
                 pay_config: bitmarkPayConfigFile
-            }).then(function(result){
-                $scope.onestepStatusResult = result;
-                $scope.showSetup = false;
+            }).then(function(infoResult){
+                if(infoPayPromise != null ){
+                    $interval.cancel(infoPayPromise);
+                }
+
+                infoPayPromise = $interval(function(){
+                    httpService.send("getBitmarkPayStatus").then(
+                        function(statusResult){
+                            if(statusResult == "success"){
+                                $interval.cancel(infoPayPromise);
+                                infoPayPromise = null;
+                                httpService.send("getBitmarkPayResult", {"job_hash":infoResult.job_hash}).then(function(payResult){
+                                    $scope.onestepStatusResult = infoResult;
+                                    $scope.onestepStatusResult.pay_result = payResult;
+                                    $scope.showSetup = false;
+                                },function(payErr){
+                                    $scope.bitmarkPayError = payErr;
+                                    $interval.cancel(infoPayPromise);
+                                    infoPayPromise = null;
+                                });
+                            } else {
+                                // TODO: see if statusResult is running..
+                            }
+                        }, function(statusErr){});
+                }, 3*1000);
             }, function(result){
                 if( result == "Failed to get bitmark-cli info") {
                     $scope.showSetup = true;
@@ -94,7 +117,6 @@ angular.module('bitmarkWebguiApp')
 
             });
         };
-
 
         $scope.clearErrAlert = function(type) {
             switch(type) {
@@ -113,9 +135,9 @@ angular.module('bitmarkWebguiApp')
             $scope.setupError = '';
 
             httpService.send("onestepSetup", $scope.bitmarkSetupConfig).then(function(result){
-                $scope.showSetup = false;
                 //wait for 10 seconds to sync the bitcoin
                 $timeout(function(){
+                    $scope.showSetup = false;
                     getInfo();
                 }, 10*1000);
             }, function(error){
@@ -175,5 +197,11 @@ angular.module('bitmarkWebguiApp')
                     }
                 });
         };
+
+        $scope.$on("$destroy", function(){
+            if(infoPayPromise != null ){
+                $interval.cancel(infoPayPromise);
+            }
+        });
 
   }]);

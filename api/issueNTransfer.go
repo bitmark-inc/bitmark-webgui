@@ -64,12 +64,8 @@ type BitmarkIdentityType struct {
 }
 
 type OnestepStatusResponse struct {
-	Network          string                `json:"network"`
-	Connect          string                `json:"connect"`
-	Identities       []BitmarkIdentityType `json:"identities"`
-	Address          string                `json:"address"`
-	EstimatedBalance float64               `json:"estimated_balance"`
-	AvailableBalance float64               `json:"available_balance"`
+	CliResult BitmarkCliInfoResponse `json:"cli_result"`
+	JobHash   string                 `json:"job_hash"`
 }
 
 func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log *logger.L) {
@@ -79,7 +75,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 	}
 
 	var statusResponse OnestepStatusResponse
-
+	var cliResponse BitmarkCliInfoResponse
 	// get bitmark-cli info
 	cliRequest := services.BitmarkCliInfoType{
 		Config: request.CliConfig,
@@ -92,7 +88,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 		}
 		return
 	} else {
-		if err := json.Unmarshal(cliOutput, &statusResponse); nil != err {
+		if err := json.Unmarshal(cliOutput, &cliResponse); nil != err {
 			log.Errorf("Error: %v", err)
 			response.Result = "bitmarkOnestep status response parsing error"
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -111,30 +107,19 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 		payRequest.Net = "local_bitcoin_reg"
 	}
 
-	payOutput, err := bitmarkPayService.Info(payRequest)
+	err = bitmarkPayService.Info(payRequest)
 	if nil != err {
-		log.Errorf("Error:%v", err)
-		if err := bitmarkPayService.Kill(); nil != err {
-			log.Errorf("Error:%v", err)
-		}
-		log.Info("process killed !!!")
 		response.Result = "bitmark-pay info error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
 		return
-	} else {
-		if err := json.Unmarshal(payOutput, &statusResponse); nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmarkOnestep status response parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
-			return
-		}
 	}
 
 	// return success response
+	log.Infof("bitmarkPay info done: %s", bitmarkPayService.GetBitmarkPayJobHash())
+	statusResponse.CliResult = cliResponse
+	statusResponse.JobHash = bitmarkPayService.GetBitmarkPayJobHash()
 	response.Ok = true
 	response.Result = statusResponse
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -186,7 +171,7 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 	if payRequest.Net == "local" {
 		payRequest.Net = "local_bitcoin_reg"
 	}
-	_, err = bitmarkPayService.Encrypt(payRequest)
+	err = bitmarkPayService.Encrypt(payRequest)
 	if nil != err {
 		response.Result = "bitmark-pay encrypt error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -197,7 +182,7 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 
 	// return success response
 	response.Ok = true
-	response.Result = "Success"
+	response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}
@@ -219,6 +204,11 @@ type OnestepIssueRequest struct {
 type OnestepIssueFailResponse struct {
 	CliResult BitmarkCliIssueResponse `json:"cli_result"`
 	FailStart int                     `json:"fail_start"`
+}
+
+type OnestepIssueResponse struct {
+	CliResult BitmarkCliIssueResponse `json:"cli_result"`
+	JobHash   string                  `json:"job_hash"`
 }
 
 func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, log *logger.L) {
@@ -269,26 +259,46 @@ func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, log *l
 			payRequest.Net = "local_bitcoin_reg"
 		}
 
-		for i, issueId := range cliIssueResponse.IssueIds {
-			log.Tracef("pay issueId: %s", issueId)
-			payRequest.Txid = issueId
-			if _, err := bitmarkPayService.Pay(payRequest); nil != err {
-				failResponse := OnestepIssueFailResponse{
-					FailStart: i,
-					CliResult: cliIssueResponse,
-				}
-				response.Result = failResponse
-				if err := writeApiResponseAndSetCookie(w, response); nil != err {
-					log.Errorf("Error: %v", err)
-				}
-				return
+		// Will be modified soon..
+		issueId := cliIssueResponse.IssueIds[0]
+		log.Tracef("pay issueId: %s", issueId)
+		payRequest.Txid = issueId
+		if err := bitmarkPayService.Pay(payRequest); nil != err {
+			failResponse := OnestepIssueFailResponse{
+				FailStart: 0,
+				CliResult: cliIssueResponse,
 			}
+			response.Result = failResponse
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
 		}
+
+		// for i, issueId := range cliIssueResponse.IssueIds {
+		// 	log.Tracef("pay issueId: %s", issueId)
+		// 	payRequest.Txid = issueId
+		// 	if err := bitmarkPayService.Pay(payRequest); nil != err {
+		// 		failResponse := OnestepIssueFailResponse{
+		// 			FailStart: i,
+		// 			CliResult: cliIssueResponse,
+		// 		}
+		// 		response.Result = failResponse
+		// 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+		// 			log.Errorf("Error: %v", err)
+		// 		}
+		// 		return
+		// 	}
+		// }
 	}
 
 	// return success response
+	issueResponse := OnestepIssueResponse{
+		CliResult: cliIssueResponse,
+		JobHash:   bitmarkPayService.GetBitmarkPayJobHash(),
+	}
 	response.Ok = true
-	response.Result = cliIssueResponse
+	response.Result = issueResponse
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}
@@ -307,6 +317,11 @@ type OnestepTransferRequest struct {
 
 type OnestepTransferFailResponse struct {
 	CliResult BitmarkCliTransferResponse `json:"cli_result"`
+}
+
+type OnestepTransferResponse struct {
+	CliResult BitmarkCliTransferResponse `json:"cli_result"`
+	JobHash   string                     `json:"job_hash"`
 }
 
 func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, log *logger.L) {
@@ -356,7 +371,7 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 			payRequest.Net = "local_bitcoin_reg"
 		}
 
-		if _, err := bitmarkPayService.Pay(payRequest); nil != err {
+		if err := bitmarkPayService.Pay(payRequest); nil != err {
 			failResponse := OnestepTransferFailResponse{
 				CliResult: cliTransfer,
 			}
@@ -369,8 +384,12 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 	}
 
 	// return success response
+	transferResponse := OnestepTransferResponse{
+		CliResult: cliTransfer,
+		JobHash:   bitmarkPayService.GetBitmarkPayJobHash(),
+	}
 	response.Ok = true
-	response.Result = cliTransfer
+	response.Result = transferResponse
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}

@@ -5,6 +5,7 @@
 package services
 
 import (
+	"encoding/hex"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/logger"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
 
 type BitmarkPay struct {
@@ -19,7 +21,15 @@ type BitmarkPay struct {
 	initialised bool
 	bin         string
 	log         *logger.L
+	asyncJob    BitmarkPayJob
+	// command *exec.Cmd
+}
+
+type BitmarkPayJob struct {
+	hash    string
 	command *exec.Cmd
+	cmdType string
+	result  []byte
 }
 
 func (bitmarkPay *BitmarkPay) Initialise(binFile string) error {
@@ -55,7 +65,7 @@ func (bitmarkPay *BitmarkPay) Finalise() error {
 		return fault.ErrNotInitialised
 	}
 
-	if nil != bitmarkPay.command {
+	if nil != bitmarkPay.asyncJob.command {
 		if err := bitmarkPay.Kill(); nil != err {
 			return err
 		}
@@ -71,18 +81,19 @@ type BitmarkPayType struct {
 	Password  string   `json:"password"`
 	Txid      string   `json:"txid"`
 	Addresses []string `json:"addresses"`
+	JobHash   string   `json:"job_hash"`
 }
 
-func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) ([]byte, error) {
+func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) error {
 	//check command process is not running
-	oldCmd := bitmarkPay.command
+	oldCmd := bitmarkPay.asyncJob.command
 	if nil != oldCmd && nil == oldCmd.ProcessState {
-		return nil, fault.ErrBitmarkPayIsRunning
+		return fault.ErrBitmarkPayIsRunning
 	}
 
 	// check config, net, password
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password); nil != err {
-		return nil, err
+		return err
 	}
 
 	// check cmd process is finish
@@ -94,20 +105,19 @@ func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) ([]byte, er
 		"--password="+bitmarkPayType.Password,
 		"encrypt")
 
-	bitmarkPay.command = cmd
-	return getCmdOutput(cmd, "encrypt", bitmarkPay.log)
+	return bitmarkPay.runBitmarkPayJob(cmd, "encrypt")
 }
 
-func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error) {
+func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) error {
 	//check command process is not running
-	oldCmd := bitmarkPay.command
+	oldCmd := bitmarkPay.asyncJob.command
 	if nil != oldCmd && nil == oldCmd.ProcessState {
-		return nil, fault.ErrBitmarkPayIsRunning
+		return fault.ErrBitmarkPayIsRunning
 	}
 
 	// check config, net
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net); nil != err {
-		return nil, err
+		return err
 	}
 
 	cmd := exec.Command("java", "-jar",
@@ -118,21 +128,20 @@ func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) ([]byte, error
 		"--json",
 		"info")
 
-	bitmarkPay.command = cmd
-	return getCmdOutput(cmd, "info", bitmarkPay.log)
+	return bitmarkPay.runBitmarkPayJob(cmd, "info")
 }
 
-func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error) {
+func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
 	//check command process is not running
-	oldCmd := bitmarkPay.command
+	oldCmd := bitmarkPay.asyncJob.command
 	if nil != oldCmd && nil == oldCmd.ProcessState {
-		return nil, fault.ErrBitmarkPayIsRunning
+		return fault.ErrBitmarkPayIsRunning
 	}
 
 	// check config, net, password, txid, addresses
 	addresses := strings.Join(bitmarkPayType.Addresses, " ")
 	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password, bitmarkPayType.Txid, addresses); nil != err {
-		return nil, err
+		return err
 	}
 
 	bitmarkPay.log.Tracef("txid: %s", bitmarkPayType.Txid)
@@ -148,34 +157,31 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) ([]byte, error)
 		addresses,
 	)
 
-
-	bitmarkPay.command = cmd
-	return getCmdOutput(cmd, "pay", bitmarkPay.log)
+	return bitmarkPay.runBitmarkPayJob(cmd, "pay")
 }
 
-func (bitmarkPay *BitmarkPay) Status() string{
-	cmd := bitmarkPay.command
-	if nil != cmd{
-		if  nil != cmd.ProcessState {
+func (bitmarkPay *BitmarkPay) Status() string {
+	cmd := bitmarkPay.asyncJob.command
+	if nil != cmd {
+		if nil != cmd.ProcessState {
 			if cmd.ProcessState.Exited() {
-				if cmd.ProcessState.Success(){
+				if cmd.ProcessState.Success() {
 					return "success"
 				}
 				return "fail"
-			}else {
+			} else {
 				return cmd.ProcessState.String()
 			}
-		} else{
+		} else {
 			return "running"
 		}
-
 
 	}
 	return "stopped"
 }
 
 func (bitmarkPay *BitmarkPay) Kill() error {
-	cmd := bitmarkPay.command
+	cmd := bitmarkPay.asyncJob.command
 	if nil != cmd {
 		bitmarkPay.log.Debugf("killing process: %d", cmd.Process.Pid)
 
@@ -185,6 +191,59 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 			return err
 		}
 	}
-	bitmarkPay.command = nil
+
+	bitmarkPay.asyncJob.hash = ""
+	bitmarkPay.asyncJob.command = nil
+	bitmarkPay.asyncJob.cmdType = ""
+	bitmarkPay.asyncJob.result = nil
 	return nil
+}
+
+func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) error {
+	byteHash, err := time.Now().MarshalText()
+	if nil != err {
+		return err
+	}
+
+	hash := hex.EncodeToString(byteHash)
+	bitmarkPay.asyncJob.hash = hash
+	bitmarkPay.asyncJob.command = cmd
+	bitmarkPay.asyncJob.cmdType = cmdType
+
+	go func() {
+		if result, err := getCmdOutput(cmd, cmdType, bitmarkPay.log); nil != err {
+			bitmarkPay.log.Errorf("job fail: %s", bitmarkPay.asyncJob.hash)
+		} else {
+			bitmarkPay.asyncJob.result = result
+		}
+	}()
+
+	return nil
+
+}
+
+func (bitmarkPay *BitmarkPay) GetBitmarkPayJobHash() string {
+	return bitmarkPay.asyncJob.hash
+}
+
+func (bitmarkPay *BitmarkPay) GetBitmarkPayJobResult(bitmarkPayType BitmarkPayType) ([]byte, error) {
+
+	// check config, net, password
+	if err := checkRequireStringParameters(bitmarkPayType.JobHash); nil != err {
+		return nil, err
+	}
+
+	if bitmarkPayType.JobHash != bitmarkPay.asyncJob.hash {
+		return nil, fault.ErrNotFoundBitmarkPayJob
+	}
+
+	if bitmarkPay.Status() == "running" {
+		return nil, fault.ErrInvalidAccessBitmarkPayJobResult
+	}
+
+	return bitmarkPay.asyncJob.result, nil
+}
+
+func (bitmarkPay *BitmarkPay) GetBitmarkPayJobType(hashString string) string {
+	return bitmarkPay.asyncJob.cmdType
 }

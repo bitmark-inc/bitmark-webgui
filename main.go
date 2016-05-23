@@ -232,6 +232,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/status", handleBitmarkPay)
+	http.HandleFunc("/api/bitmarkPay/result", handleBitmarkPay)
 
 	http.HandleFunc("/api/bitmarkCli/info", handleBitmarkCli)
 	http.HandleFunc("/api/bitmarkCli/setup", handleBitmarkCli)
@@ -433,7 +434,7 @@ func handleBitmarkPay(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case `POST`:
 		reqUriArr := strings.Split(req.RequestURI, "/")
-		api.BitmarkPayEncrypt(w, req, log, reqUriArr[3])
+		api.BitmarkPay(w, req, log, reqUriArr[3])
 	case `OPTIONS`:
 		return
 	default:

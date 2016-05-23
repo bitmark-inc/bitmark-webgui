@@ -9,10 +9,10 @@ import (
 )
 
 type BitmarkCliInfoResponse struct {
-	Default_identity string                `libucl:"default_identity"`
-	Network          string                `libucl:"network"`
-	Connect          string                `libucl:"connect"`
-	Identities       []BitmarkIdentityType `libucl:"identities"`
+	Default_identity string                `json:"default_identity"`
+	Network          string                `json:"network"`
+	Connect          string                `json:"connect"`
+	Identities       []BitmarkIdentityType `json:"identities"`
 }
 
 type BitmarkPaymentAddress struct {
