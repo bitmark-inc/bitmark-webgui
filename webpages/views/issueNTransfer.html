@@ -9,6 +9,11 @@
         <uib-alert type="danger" close="clearErrAlert('status')" ng-if="bitmarkPayError != null">
           {{bitmarkPayError}}
         </uib-alert>
+        <uib-alert type="warning"  ng-show="bitmarkPayStatusAlert.show">
+          {{bitmarkPayStatusAlert.msg}}
+          <button ng-click="killBitmarkPayStatusProcess(true)">Yes</button>
+          <button ng-click="killBitmarkPayStatusProcess(false)">Later</button>
+        </uib-alert>
         <p>
           <b>Chain</b>
           {{onestepStatusResult.cli_result.network}}
@@ -107,7 +112,7 @@
       <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null">
         <b>{{issueResult.msg}}</b>
         <div ng-show="issueResult.cliResult != null">
-          <span ng-repeat="index in issueResult.cliResult.issue_ids track by $index">
+          <span ng-repeat="index in issueResult.cliResult.issueIds track by $index">
             <div>
               <b>
                 {{$index+1}}
@@ -121,15 +126,15 @@
             </div>
             <div>
               <b>txid</b>
-              {{issueResult.cliResult.issue_ids[$index]}}
+              {{issueResult.cliResult.issueIds[$index]}}
             </div>
             <div>
               <b>currency</b>
-              {{issueResult.cliResult.payment_address[0].currency}}
+              {{issueResult.cliResult.paymentAddress[0].currency}}
             </div>
             <div>
               <b>address</b>
-              {{issueResult.cliResult.payment_address[0].address}}
+              {{issueResult.cliResult.paymentAddress[0].address}}
             </div>
           </span>
         </div>
@@ -194,15 +199,15 @@
       <div ng-show="transferResult.cliResult != null">
         <div>
           <b>txid</b>
-          {{transferResult.cliResult.transfer_id}}
+          {{transferResult.cliResult.transferId}}
         </div>
         <div>
           <b>currency</b>
-          {{transferResult.cliResult.payment_address[0].currency}}
+          {{transferResult.cliResult.paymentAddress[0].currency}}
         </div>
           <div>
             <b>address</b>
-            {{transferResult.cliResult.payment_address[0].address}}
+            {{transferResult.cliResult.paymentAddress[0].address}}
           </div>
       </div>
       </uib-alert>

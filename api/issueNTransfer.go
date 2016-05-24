@@ -109,7 +109,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 
 	err = bitmarkPayService.Info(payRequest)
 	if nil != err {
-		response.Result = "bitmark-pay info error"
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -261,7 +261,7 @@ func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, log *l
 
 		// Will be modified soon..
 		issueId := cliIssueResponse.IssueIds[0]
-		log.Tracef("pay issueId: %s", issueId)
+		log.Infof("pay issueId: %s", issueId)
 		payRequest.Txid = issueId
 		if err := bitmarkPayService.Pay(payRequest); nil != err {
 			failResponse := OnestepIssueFailResponse{

@@ -111,6 +111,7 @@ func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) error {
 	//check command process is not running
 	oldCmd := bitmarkPay.asyncJob.command
 	if nil != oldCmd && nil == oldCmd.ProcessState {
+		bitmarkPay.log.Infof("asyncJob: %v", bitmarkPay.asyncJob)
 		return fault.ErrBitmarkPayIsRunning
 	}
 
@@ -180,9 +181,10 @@ func (bitmarkPay *BitmarkPay) Status() string {
 }
 
 func (bitmarkPay *BitmarkPay) Kill() error {
+
 	cmd := bitmarkPay.asyncJob.command
 	if nil != cmd {
-		bitmarkPay.log.Debugf("killing process: %d", cmd.Process.Pid)
+		bitmarkPay.log.Infof("killing process: %d", cmd.Process.Pid)
 
 		err := cmd.Process.Signal(syscall.SIGINT)
 		if nil != err {
@@ -227,6 +229,7 @@ func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) er
 }
 
 func (bitmarkPay *BitmarkPay) GetBitmarkPayJobHash() string {
+	bitmarkPay.log.Infof("async job: %v", bitmarkPay.asyncJob)
 	return bitmarkPay.asyncJob.hash
 }
 

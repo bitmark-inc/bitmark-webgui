@@ -120,3 +120,56 @@ func bitmarkPayParseRequest(w http.ResponseWriter, req *http.Request, response *
 
 	return &request
 }
+
+// Get /api/bitmarkPay
+func BitmarkPayJobHash(w http.ResponseWriter, req *http.Request, log *logger.L) {
+	log.Infof("GET /api/bitmarkPay")
+
+	response := &Response{
+		Ok:     true,
+		Result: bitmarkPayService.GetBitmarkPayJobHash(),
+	}
+
+	if err := writeApiResponseAndSetCookie(w, response); nil != err {
+		log.Errorf("Error: %v", err)
+	}
+}
+
+// DELETE /api/bitmarkPay
+func BitmarkPayKill(w http.ResponseWriter, req *http.Request, log *logger.L) {
+	log.Infof("DELETE /api/bitmarkPay")
+	response := &Response{
+		Ok:     false,
+		Result: nil,
+	}
+
+	request := bitmarkPayParseRequest(w, req, response, log)
+	if nil == request {
+		response.Result = "invalid request"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	if request.JobHash != bitmarkPayService.GetBitmarkPayJobHash() {
+		response.Result = "invalid job hash"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	log.Infof("Delete job hash: %s", request.JobHash)
+	err := bitmarkPayService.Kill()
+	if nil != err {
+		response.Result = err
+	} else {
+		response.Ok = true
+		response.Result = "process killed"
+	}
+
+	if err := writeApiResponseAndSetCookie(w, response); nil != err {
+		log.Errorf("Error: %v", err)
+	}
+}
