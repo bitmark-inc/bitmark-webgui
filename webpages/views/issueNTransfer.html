@@ -1,5 +1,8 @@
 <div ng-init="init()">
   <h3>Issue and Transfer Bitmark</h3>
+  <div style="background: rgba(222, 222, 222, 0.2); width:700px; height:375px; position:absolute; top:180px; left:inherit; z-index:100;" ng-show="showWaiting">
+    <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+  </div>
   <!-- setup section -->
   <div class="panel panel-default">
     <div class="panel-heading">Info</div>
@@ -103,7 +106,7 @@
 
 
   <!-- Issue setction -->
-  <div class="panel panel-default" ng-show="!showSetup">
+  <div class="panel panel-default" ng-show="!showSetup && bitmarkCliInfoSuccess">
     <div class="panel-heading">
       Issue Asset
     </div>
@@ -187,7 +190,7 @@
 
 
   <!-- Transfer setction -->
-  <div class="panel panel-default" ng-show="!showSetup">
+  <div class="panel panel-default" ng-show="!showSetup && bitmarkCliInfoSuccess">
     <div class="panel-heading">
       Transfer Bitmark
     </div>

@@ -243,7 +243,6 @@ func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) er
 }
 
 func (bitmarkPay *BitmarkPay) GetBitmarkPayJobHash() string {
-	bitmarkPay.log.Infof("async job: %v", bitmarkPay.asyncJob)
 	return bitmarkPay.asyncJob.hash
 }
 
