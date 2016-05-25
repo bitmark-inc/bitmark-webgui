@@ -83,7 +83,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			response.Result = "bitmark-cli setup error"
 		} else {
 			response.Ok = true
-			response.Result = "Success"
+			response.Result = "success"
 		}
 	case "issue":
 		var request services.BitmarkCliIssueType

@@ -1,0 +1,135 @@
+Usage: get bitmarkCli info
+Path: /api/bitamrkCli/info
+Method: POST
+Params example:
+{
+  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":{
+      "default_identity": "test",
+      "network": "local",
+      "connecnt": "127.0.0.1:2130",
+      "identities": [
+        {
+          "name": "test",
+          "description": "test desc",
+          "public_key": "10198347afalkjdhfa234hljadf"
+        },
+      ]
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-cli info error"
+}
+
+====================================================================
+
+Usage: setup bitmarkCli
+Path: /api/bitamrkCli/setup
+Method: POST
+Params example:
+{
+  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "identity": "identity name",
+  "password": "12345678",
+  "network": "local_bitcoin_reg",
+  "connect": "127.0.0.1:2130",
+  "description": "identity desc"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": "success"
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-cli setup error"
+}
+
+====================================================================
+
+Usage: issue bitmark
+Path: /api/bitamrkCli/issue
+Method: POST
+Params example:
+{
+  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "identity": "identity name",
+  "password": "12345678",
+  "asset": "asset name",
+  "description": "asset desc",
+  "fingerprint": "asset fg",
+  "quantity": 1
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    "assetId": "2q0987gskjsfgs",
+    "issueIds": [
+      "13414365",
+      "sq4087sgk"
+    ],
+    "paymentAddress": [
+      {
+        "currency": "bitcoin",
+        "address": "bitcoin pay addr"
+      },
+    ]
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-cli issue error"
+}
+
+====================================================================
+
+Usage: transfer bitmark
+Path: /api/bitamrkCli/transfer
+Method: POST
+Params example:
+{
+  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "identity": "test",
+  "password": "12345678",
+  "txid": "bitmakr transaction id",
+  "receiver": "receiver public key"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    "transferId": "q498ufdasiop",
+    "paymentAddress": [
+      {
+        "currency": "bitcoin",
+        "address": "bitcoin pay addr"
+      },
+    ]
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-cli issue error"
+}

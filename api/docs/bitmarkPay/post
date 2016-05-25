@@ -1,0 +1,126 @@
+Usage: get bitmarkPay info
+Path: /api/bitamrkPay/info
+Method: POST
+Params example:
+{
+  "config":"/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "net":"local"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":"109315235lkj123o9135" // bitmark-pay job hash
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-pay info error" // bitmark-pay job hash
+}
+
+====================================================================
+
+Usage: pay transactions by bitmarkPay
+Path: /api/bitamrkPay/pay
+Method: POST
+Params example:
+{
+  "config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "net": "local",
+  "password": "1231234",
+  "txid": "m120rwt1aeopiu3250",
+  "addresses": ["bitcoin address1", "addr2"]
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":"109315235lkj123o9135" // bitmark-pay job hash
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-pay pay error" // bitmark-pay job hash
+}
+
+====================================================================
+
+Usage: encrypt bitcoin wallet by bitmarkPay
+Path: /api/bitamrkPay/encrypt
+Method: POST
+Params example:
+{
+  "config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "net": "local",
+  "password": "1231234"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":"109315235lkj123o9135" // bitmark-pay job hash
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-pay encrypt error" // bitmark-pay job hash
+}
+
+====================================================================
+
+Usage: get bitmark-pay process status
+Path: /api/bitamrkPay/status
+Method: POST
+Params example:
+{
+
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":"success/fail/running/stopped"
+}
+
+fail:
+no fail response
+
+====================================================================
+
+Usage: get bitmark-pay result
+Path: /api/bitamrkPay/result
+Method: POST
+Params example:
+{
+  "job_hash": "124sdq38971240"
+}
+
+Return examples:
+pay/encrypt success:
+{
+  "ok":"true"
+  "result": "success"
+}
+
+info success:
+{
+  "ok":"true"
+  "result": {
+    "address": "bitcoin addr",
+    "estimated_balance": "0",
+    "available_balance": "0"
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"error reason"
+}

@@ -1,0 +1,20 @@
+Usage: kill bitmark-pay process
+Path: /api/bitamrkPay
+Method: DELETE
+Params example:
+{
+  "job_hash": "124sdq38971240"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":"success"
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"error reason"
+}

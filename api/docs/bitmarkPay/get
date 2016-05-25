@@ -1,0 +1,10 @@
+Usage: get bitmark-pay process job hash
+Path: /api/bitamrkPay
+Method: GET
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result":job hash"
+}

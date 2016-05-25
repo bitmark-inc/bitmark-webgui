@@ -173,6 +173,8 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 	}
 	err = bitmarkPayService.Encrypt(payRequest)
 	if nil != err {
+		// TODO: delete cli config
+
 		response.Result = "bitmark-pay encrypt error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
@@ -259,7 +261,7 @@ func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, log *l
 			payRequest.Net = "local_bitcoin_reg"
 		}
 
-		// Will be modified soon..
+		// TODO: Will be modified soon..
 		issueId := cliIssueResponse.IssueIds[0]
 		log.Infof("pay issueId: %s", issueId)
 		payRequest.Txid = issueId

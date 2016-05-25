@@ -1,0 +1,154 @@
+Usage: get bitmark-cli and bitmark-pay info
+Path: /api/onestep/status
+Method: POST
+Params example:
+{
+  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "network": "local"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    "cli_result": {
+      "default_identity": "test",
+      "network": "local",
+      "connecnt": "127.0.0.1:2130",
+      "identities": [
+        {
+          "name": "test",
+          "description": "test desc",
+          "public_key": "10198347afalkjdhfa234hljadf"
+        },
+      ]
+    },
+    "job_hash": "job hash"
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"error reason"
+}
+
+====================================================================
+
+Usage: setup bitmark-cli and encrypt bitmark-pay
+Path: /api/onestep/setup
+Method: POST
+Params example:
+{
+  "network": "local",
+  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "connect": "127.0.0.1:2130"
+  "identity": "test",
+  "description": "test desc",
+  "cli_password": "10198347afalkjdhfa234hljadf"
+  "pay_password": "adekljh23987fa"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": "aqepriouq2340897" // job_hash of bitmark-pay
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"error reason"
+}
+
+====================================================================
+
+Usage: issue and pay bitmark
+Path: /api/onestep/issue
+Method: POST
+Params example:
+{
+  "network": "local",
+  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "identity": "test",
+  "asset": "asset name",
+  "description": "asset desc",
+  "fingerprint": "asset fg",
+  "quantity": 1,
+  "cli_password": "10198347afalkjdhfa234hljadf"
+  "pay_password": "adekljh23987fa"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    "cli_result": {
+      "assetId": "2q0987gskjsfgs",
+      "issueIds": [
+        "13414365",
+        "sq4087sgk"
+      ],
+      "paymentAddress": [
+        {
+          "currency": "bitcoin",
+          "address": "bitcoin pay addr"
+        },
+      ]
+    },
+    "job_hash": "job hash" // for bitmark-pay job
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"error reason"
+}
+
+====================================================================
+
+Usage: transfer and pay bitmark
+Path: /api/onestep/transfer
+Method: POST
+Params example:
+{
+  "network": "local",
+  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+  "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
+  "identity": "test",
+  "txid": "bitmakr transaction id",
+  "receiver": "receiver public key"
+  "cli_password": "10198347afalkjdhfa234hljadf"
+  "pay_password": "adekljh23987fa"
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    "cli_result": {
+      "transferId": "q498ufdasiop",
+      "paymentAddress": [
+        {
+          "currency": "bitcoin",
+          "address": "bitcoin pay addr"
+        },
+      ]
+    },
+    "job_hash": "job hash" // for bitmark-pay job
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"error reason"
+}
