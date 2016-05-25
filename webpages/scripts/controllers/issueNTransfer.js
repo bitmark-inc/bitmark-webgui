@@ -144,9 +144,21 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
+        var killPromise;
         var killBitmarkPayStatusProcess = function(jobHash){
             httpService.send('stopBitmarkPayProcess', {"job_hash": jobHash}).then(function(result){
-                $scope.bitmarkPayStatusAlert.show = false;
+                $interval.cancel(killPromise);
+                killPromise = $interval(function(){
+                    httpService.send("getBitmarkPayStatus").then(function(payStatus){
+                        if(payStatus == "stopped"){
+                            $interval.cancel(killPromise);
+                            $scope.bitmarkPayStatusAlert.show = false;
+                        }else {
+                            // TODO: disable buttons
+                        }
+                    }, function(payStatusErr){});
+                }, 3*1000);
+
             }, function(err){
                 $scope.bitmarkPayStatusAlert.show = true;
                 $scope.bitmarkPayStatusAlert.msg = err;
@@ -293,11 +305,10 @@ angular.module('bitmarkWebguiApp')
         };
 
         $scope.$on("$destroy", function(){
-            if(infoPayPromise != null ){
-                $interval.cancel(infoPayPromise);
-            }
+            $interval.cancel(infoPayPromise);
             $interval.cancle(issuePromise);
             $interval.cancle(transferPromise);
+            $interval.cancel(killPromise);
         });
 
   }]);

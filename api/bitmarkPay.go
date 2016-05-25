@@ -166,7 +166,7 @@ func BitmarkPayKill(w http.ResponseWriter, req *http.Request, log *logger.L) {
 		response.Result = err
 	} else {
 		response.Ok = true
-		response.Result = "process killed"
+		response.Result = "success"
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {

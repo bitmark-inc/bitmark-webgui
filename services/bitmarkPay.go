@@ -193,10 +193,24 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 		}
 	}
 
-	bitmarkPay.asyncJob.hash = ""
-	bitmarkPay.asyncJob.command = nil
-	bitmarkPay.asyncJob.cmdType = ""
-	bitmarkPay.asyncJob.result = nil
+	go func() {
+		// waiting for process killing done and set the variable to nil
+	loop:
+		for {
+			select {
+			case <-time.After(3 * time.Second):
+				if nil != cmd.ProcessState {
+					bitmarkPay.log.Infof("get signal: %s", cmd.ProcessState.String())
+					break loop
+				}
+			}
+		}
+		bitmarkPay.asyncJob.hash = ""
+		bitmarkPay.asyncJob.command = nil
+		bitmarkPay.asyncJob.cmdType = ""
+		bitmarkPay.asyncJob.result = nil
+	}()
+
 	return nil
 }
 
@@ -235,7 +249,7 @@ func (bitmarkPay *BitmarkPay) GetBitmarkPayJobHash() string {
 
 func (bitmarkPay *BitmarkPay) GetBitmarkPayJobResult(bitmarkPayType BitmarkPayType) ([]byte, error) {
 
-	// check config, net, password
+	// check jobhash
 	if err := checkRequireStringParameters(bitmarkPayType.JobHash); nil != err {
 		return nil, err
 	}
