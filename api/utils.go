@@ -58,6 +58,7 @@ func setCookie(w http.ResponseWriter) error {
 	cookie := &http.Cookie{
 		Name:   CookieName,
 		Secure: true,
+		Path: "/api/",
 	}
 
 	globalCookie[0].Lock()
