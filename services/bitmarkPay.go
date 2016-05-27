@@ -86,6 +86,7 @@ type BitmarkPayType struct {
 func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) error {
 	//check command process is not running
 	oldCmd := bitmarkPay.asyncJob.command
+
 	if nil != oldCmd && nil == oldCmd.ProcessState {
 		return fault.ErrBitmarkPayIsRunning
 	}
@@ -198,7 +199,7 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 	loop:
 		for {
 			select {
-			case <-time.After(3 * time.Second):
+			case <-time.After(1 * time.Second):
 				if nil != cmd.ProcessState {
 					bitmarkPay.log.Infof("get signal: %s", cmd.ProcessState.String())
 					break loop
