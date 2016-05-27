@@ -84,7 +84,9 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 		if nil != err {
 			response.Result = "bitmark-pay result error"
 		} else {
-			if bitmarkPayService.GetBitmarkPayJobType(request.JobHash) == "info" {
+			jobType :=  bitmarkPayService.GetBitmarkPayJobType(request.JobHash)
+			switch jobType {
+			case "info":
 				var jsonInfo BitmarkPayInfoResponse
 				if err := json.Unmarshal(output, &jsonInfo); nil != err {
 					log.Errorf("Error: %v", err)
@@ -92,9 +94,10 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 					response.Ok = true
 					response.Result = jsonInfo
 				}
-			} else {
+			default:
 				response.Ok = true
 				response.Result = "success"
+
 			}
 		}
 	}

@@ -173,8 +173,6 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 	}
 	err = bitmarkPayService.Encrypt(payRequest)
 	if nil != err {
-		// TODO: delete cli config
-
 		response.Result = "bitmark-pay encrypt error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)

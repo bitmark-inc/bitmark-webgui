@@ -3,7 +3,64 @@
   <div style="background: rgba(222, 222, 222, 0.2); width:700px; height:375px; position:absolute; top:180px; left:inherit; z-index:100;" ng-show="showWaiting">
     <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
   </div>
+
   <!-- setup section -->
+  <div class="panel panel-default" ng-show="showSetup">
+    <div class="panel-heading">
+      Setup
+    </div>
+    <div clsaa="panel-body">
+      <uib-alert type="warning"  ng-show="setupAlert.show">
+        {{setupAlert.msg}}
+        <button ng-click="killBitmarkPayStatusProcess(true)">Yes</button>
+        <button ng-click="killBitmarkPayStatusProcess(false)">Later</button>
+      </uib-alert>
+      <div ng-show="setupError != ''">
+        {{setupError}}
+      </div>
+      <form name="setupForm">
+        <div class="panel-body">
+          <p>
+            <b>Chain</b>
+            {{bitmarkChain}}
+          </p>
+          <p>
+            <label>
+              Connect
+              <input type="text" ng-model="bitmarkSetupConfig.connect" required>
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Name
+              <input type="text" ng-model="bitmarkSetupConfig.identity" required>
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Description
+              <textarea ng-model="bitmarkSetupConfig.description" required></textarea>
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Password
+              <password-set password="bitmarkSetupConfig.cli_password" result="cliPasswordResult"></password-set>
+            </label>
+          </p>
+          <p>
+            <label>
+              Pay Password
+              <password-set password="bitmarkSetupConfig.pay_password" result="payPasswordResult"></password-set>
+            </label>
+          </p>
+        </div>
+        <button ng-click="submitSetup()" ng-disabled="setupForm.$invalid || !cliPasswordResult || !payPasswordResult">submit</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- info section -->
   <div class="panel panel-default">
     <div class="panel-heading">Info</div>
     <div class="panel-body">
@@ -52,58 +109,6 @@
       </div>
     </div>
   </div>
-
-  <!-- add setup fields -->
-  <div class="panel panel-default" ng-show="showSetup">
-    <div class="panel-heading">
-      Setup
-    </div>
-    <div clsaa="panel-body">
-      <div ng-show="setupError != ''">
-        {{setupError}}
-      </div>
-      <form name="setupForm">
-        <div class="panel-body">
-          <p>
-            <b>Chain</b>
-            {{bitmarkChain}}
-          </p>
-          <p>
-            <label>
-              Connect
-              <input type="text" ng-model="bitmarkSetupConfig.connect" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Identity Name
-              <input type="text" ng-model="bitmarkSetupConfig.identity" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Identity Description
-              <textarea ng-model="bitmarkSetupConfig.description" required></textarea>
-            </label>
-          </p>
-          <p>
-            <label>
-              Identity Password
-              <password-set password="bitmarkSetupConfig.cli_password" result="cliPasswordResult"></password-set>
-            </label>
-          </p>
-          <p>
-            <label>
-              Pay Password
-              <password-set password="bitmarkSetupConfig.pay_password" result="payPasswordResult"></password-set>
-            </label>
-          </p>
-        </div>
-        <button ng-click="submitSetup()" ng-disabled="setupForm.$invalid || !cliPasswordResult || !payPasswordResult">submit</button>
-      </form>
-    </div>
-  </div>
-
 
   <!-- Issue setction -->
   <div class="panel panel-default" ng-show="!showSetup && bitmarkCliInfoSuccess">

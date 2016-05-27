@@ -80,6 +80,11 @@ angular.module('bitmarkWebguiApp')
                 show: false,
                 msg: ""
             };
+
+            $scope.setupAlert = {
+                show: false,
+                msg: ""
+            };
             getInfo();
         };
 
@@ -210,17 +215,59 @@ angular.module('bitmarkWebguiApp')
             }
         };
 
+        var setupPromise;
+        var setupWaitingTime = 10; // 10s
+        var pollSetupCount = 0;
+
         $scope.submitSetup = function(){
             $scope.setupError = '';
+            var net = $scope.bitmarkSetupConfig.network;
+            if(net == "local") {
+                net = "local_bitcoin_reg";
+            }
 
-            httpService.send("onestepSetup", $scope.bitmarkSetupConfig).then(function(result){
-                //wait for 10 seconds to sync the bitcoin
-                $timeout(function(){
-                    $scope.showSetup = false;
-                    getInfo();
-                }, 10*1000);
-            }, function(error){
-                $scope.setupError = cliResult;
+            httpService.send("setupBitmarkPay", {
+                net: net,
+                config: $scope.bitmarkSetupConfig.pay_config,
+                password: $scope.bitmarkSetupConfig.pay_password
+            }).then(function(setupPayJobHash){
+                $interval.cancel(setupPromise);
+                setupPromise = $interval(function(){
+                    pollSetupCount++;
+                    if(pollSetupCount*3 > waitingTime && !$scope.setupAlert.show){
+                        $scope.setupAlert.msg = "The bitmark-pay seems running for a long time, please check your bitcoin and bitmark-pay configuration. Would you like to stop the process?";
+                        $scope.showWaiting = false;
+                        $scope.setupAlert.show = true;
+                    }
+
+                    httpService.send("getBitmarkPayStatus", {
+                        job_hash: setupPayJobHash
+                    }).then(function(payStatusResult){
+                        if(payStatusResult == "success") {
+                            // when bitmark-pay setup success, do bitmark-cli setup
+                            $interval.cancel(setupPromise);
+                            httpService.send('setupBitmarkCli', {
+                                config: $scope.bitmarkSetupConfig.cli_config,
+                                identity: $scope.bitmarkSetupConfig.identity,
+                                password: $scope.bitmarkSetupConfig.cli_password,
+                                network: $scope.bitmarkSetupConfig.network,
+                                connect: $scope.bitmarkSetupConfig.connect,
+                                description: $scope.bitmarkSetupConfig.description
+                            }).then(function(setupCliResult){
+                                $scope.showSetup = false;
+                                getInfo();
+                            }, function(setupCliErr){
+                                $scope.setupError = setupCliErr;
+                            });
+                        }else{
+                            // TODO:show kill bitmark-pay alert
+
+                        }
+                    });
+                }, 3*1000);
+
+            }, function(setupBitmarkPayErr){
+                $scope.setupError = setupBitmarkPayErr;
             });
         };
 
