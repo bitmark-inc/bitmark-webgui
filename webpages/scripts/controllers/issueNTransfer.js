@@ -182,13 +182,10 @@ angular.module('bitmarkWebguiApp')
 
         $scope.clearErrAlert = function(type) {
             switch(type) {
-            case "status":
-                $scope.bitmarkPayError = null;
             case "issue":
                 $scope.issueResult = null;
             case "transfer":
                 $scope.transferResult = null;
-            default:
             }
         };
 
@@ -405,6 +402,7 @@ angular.module('bitmarkWebguiApp')
                     }
                 }else{
                     $scope.infoAlert.show = false;
+                    $scope.showWaiting = true;
                     pollInfoCount = 0;
                 }
                 break;
