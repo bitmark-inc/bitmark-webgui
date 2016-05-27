@@ -71,7 +71,8 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 		}
 	case "status":
-		status := bitmarkPayService.Status()
+		request := bitmarkPayParseRequest(w, req, response, log)
+		status := bitmarkPayService.Status(request.JobHash)
 		response.Ok = true
 		response.Result = status
 	case "result":

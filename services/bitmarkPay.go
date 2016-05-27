@@ -161,7 +161,16 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
 	return bitmarkPay.runBitmarkPayJob(cmd, "pay")
 }
 
-func (bitmarkPay *BitmarkPay) Status() string {
+func (bitmarkPay *BitmarkPay) Status(hashString string) string {
+	cmd := bitmarkPay.asyncJob.command
+	if nil != cmd || hashString != bitmarkPay.asyncJob.hash {
+		return bitmarkPay.status()
+
+	}
+	return "stopped"
+}
+
+func (bitmarkPay *BitmarkPay) status() string {
 	cmd := bitmarkPay.asyncJob.command
 	if nil != cmd {
 		if nil != cmd.ProcessState {
@@ -196,12 +205,24 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 
 	go func() {
 		// waiting for process killing done and set the variable to nil
+		var waitTime = 30 // 30s
+		var count = 0
 	loop:
 		for {
 			select {
 			case <-time.After(1 * time.Second):
 				if nil != cmd.ProcessState {
 					bitmarkPay.log.Infof("get signal: %s", cmd.ProcessState.String())
+					break loop
+				}
+				count++
+				if count > waitTime {
+					bitmarkPay.log.Infof("force kill process: %d", cmd.Process.Pid)
+					err := cmd.Process.Signal(syscall.SIGKILL)
+					if nil != err {
+						bitmarkPay.log.Errorf("Failed to Kill process: %d", cmd.Process.Pid)
+						return err
+					}
 					break loop
 				}
 			}
@@ -258,7 +279,7 @@ func (bitmarkPay *BitmarkPay) GetBitmarkPayJobResult(bitmarkPayType BitmarkPayTy
 		return nil, fault.ErrNotFoundBitmarkPayJob
 	}
 
-	if bitmarkPay.Status() == "running" {
+	if bitmarkPay.status() == "running" {
 		return nil, fault.ErrInvalidAccessBitmarkPayJobResult
 	}
 

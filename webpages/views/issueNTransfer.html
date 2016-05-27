@@ -10,13 +10,13 @@
     <div class="panel-body">
       <p ng-show="showSetup">Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
       <div ng-show="!showSetup">
-        <uib-alert type="danger" close="clearErrAlert('status')" ng-if="bitmarkPayError != null">
-          {{bitmarkPayError}}
+        <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show">
+          {{infoErr.msg}}
         </uib-alert>
         <uib-alert type="warning"  ng-show="infoAlert.show">
           {{infoAlert.msg}}
-          <button ng-click="killBitmarkPayStatusProcess(true)">Yes</button>
-          <button ng-click="killBitmarkPayStatusProcess(false)">Later</button>
+          <button ng-click="killPayProcess('info', true)">Yes</button>
+          <button ng-click="killPayProcess('info', false)">Later</button>
         </uib-alert>
         <p>
           <b>Chain</b>

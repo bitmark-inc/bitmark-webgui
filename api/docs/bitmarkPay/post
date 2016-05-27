@@ -79,7 +79,7 @@ Path: /api/bitamrkPay/status
 Method: POST
 Params example:
 {
-
+  "job_hash": "124sdq38971240"
 }
 
 Return examples:
