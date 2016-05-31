@@ -221,7 +221,6 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 					err := cmd.Process.Signal(syscall.SIGKILL)
 					if nil != err {
 						bitmarkPay.log.Errorf("Failed to Kill process: %d", cmd.Process.Pid)
-						return err
 					}
 					break loop
 				}
