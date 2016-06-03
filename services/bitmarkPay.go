@@ -16,6 +16,17 @@ import (
 	"time"
 )
 
+type BitmarkPayInterface interface {
+	Encrypt(bitmarkPayType BitmarkPayType) error
+	Info(bitmarkPayType BitmarkPayType) error
+	Pay(bitmarkPayType BitmarkPayType) error
+	Status(hashString string) string
+	Kill() error
+	GetBitmarkPayJobHash() string
+	GetBitmarkPayJobResult(bitmarkPayType BitmarkPayType) ([]byte, error)
+	GetBitmarkPayJobType(hashString string) string
+}
+
 type BitmarkPay struct {
 	sync.RWMutex
 	initialised bool
@@ -161,31 +172,33 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
 	return bitmarkPay.runBitmarkPayJob(cmd, "pay")
 }
 
-func (bitmarkPay *BitmarkPay) Status(hashString string) string {
-	cmd := bitmarkPay.asyncJob.command
-	if nil != cmd || hashString != bitmarkPay.asyncJob.hash {
-		return bitmarkPay.status()
-
+func (bitmarkPay *BitmarkPay) Status(hashString string) (string, error) {
+	if hashString != bitmarkPay.asyncJob.hash {
+		return "", fault.ErrNotFoundBitmarkPayJob
 	}
-	return "stopped"
+
+	return bitmarkPay.status(), nil
 }
 
 func (bitmarkPay *BitmarkPay) status() string {
 	cmd := bitmarkPay.asyncJob.command
 	if nil != cmd {
-		if nil != cmd.ProcessState {
-			if cmd.ProcessState.Exited() {
-				if cmd.ProcessState.Success() {
-					return "success"
+		if nil != cmd.Process {
+			if nil != cmd.ProcessState {
+				if cmd.ProcessState.Exited() {
+					if cmd.ProcessState.Success() {
+						return "success"
+					}
+					return "fail"
+				} else {
+					return cmd.ProcessState.String()
 				}
-				return "fail"
 			} else {
-				return cmd.ProcessState.String()
+				return "running"
 			}
-		} else {
-			return "running"
+		} else { // process is nil means the command is fail or not start yet
+			return "stopped"
 		}
-
 	}
 	return "stopped"
 }
@@ -278,7 +291,7 @@ func (bitmarkPay *BitmarkPay) GetBitmarkPayJobResult(bitmarkPayType BitmarkPayTy
 		return nil, fault.ErrNotFoundBitmarkPayJob
 	}
 
-	if bitmarkPay.status() == "running" {
+	if bitmarkPay.status() == "running" || bitmarkPay.status() == "stopped" {
 		return nil, fault.ErrInvalidAccessBitmarkPayJobResult
 	}
 

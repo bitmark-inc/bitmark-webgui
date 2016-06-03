@@ -3,6 +3,7 @@ package api_test
 import (
 	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/api"
+	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
 	"io"
 	"net/http"
@@ -18,6 +19,10 @@ var (
 )
 
 func init() {
+	mockBitmarkPay := services.MockBitmarkPay{}
+	// api.BitmarkPayService = &mockBitmarkPay
+	api.Register(&mockBitmarkPay)
+
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/api/bitmarkPay/", handleBitmarkPay)
 	serveMux.HandleFunc("/api/bitmarkPay/encrypt", handleBitmarkPay)
@@ -32,7 +37,6 @@ func init() {
 
 	//Grab the address for the API endpoint
 	url = fmt.Sprintf("%s/api/bitmarkPay", server.URL)
-
 }
 
 func handleBitmarkPay(w http.ResponseWriter, req *http.Request) {
@@ -69,7 +73,7 @@ func TestGetBitmarkPayInfo(t *testing.T) {
 		t.Error(err) //Something is wrong while sending request
 	}
 
-	if res.StatusCode != 201 {
+	if res.StatusCode != 200 {
 		t.Errorf("Success expected: %d", res.StatusCode) //Uh-oh this means our test failed
 	}
 }

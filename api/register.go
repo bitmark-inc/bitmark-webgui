@@ -5,20 +5,23 @@
 package api
 
 import (
+	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 )
 
 var bitmarkService *services.Bitmarkd
-var bitmarkPayService *services.BitmarkPay
+var bitmarkPayService services.BitmarkPayInterface
 var bitmarkCliService *services.BitmarkCli
 
 func Register(service interface{}) {
-	switch service.(type) {
+	switch t := service.(type) {
 	case *services.Bitmarkd:
 		bitmarkService = service.(*services.Bitmarkd)
-	case *services.BitmarkPay:
-		bitmarkPayService = service.(*services.BitmarkPay)
+	case services.BitmarkPayInterface:
+		bitmarkPayService = service.(services.BitmarkPayInterface)
 	case *services.BitmarkCli:
 		bitmarkCliService = service.(*services.BitmarkCli)
+	default:
+		fmt.Printf("Undefined type: %v\n", t)
 	}
 }
