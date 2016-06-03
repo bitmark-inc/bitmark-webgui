@@ -1,0 +1,68 @@
+<h3>Create New Bitmark Account</h3>
+<p>Create a bitmark account to get a new bitmark key pair and a new bitcoin wallet</p>
+
+<div class="panel panel-default" ng-show="panelConfig.showPart == 1">
+  <div class="panel-heading">Choose bitmark Chain</div>
+  <div class="panel-body">
+    <p>
+      <b>chain</b>
+      <label>
+        <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
+        Local
+      </label>
+      <label>
+        <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
+        Testing
+      </label>
+      <label>
+        <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
+        Bitmark
+      </label>
+    </p>
+
+    <div ng-show="generateConfig.running">
+      <p ng-repeat="(i, val) in generateConfig.msg">
+        {{val}}
+      </p>        
+    </div>
+  </div>
+  <div class="panel-footer">
+    <button ng-click="generate()" ng-disabled="generateConfig.running">Generate</button>
+  </div>
+</div>
+
+<div class="panel panel-default" ng-show="panelConfig.showPart == 2">
+  <div class="panel-heading">Your Bitmark Account</div>
+  <div class="panel-body">
+    <div class="alert alert-warning" role="alert">
+      Write down your private key, and keep it safe. You will need it to access the account. There is no way to recover this account when you lose it
+    </div>
+    <p>
+      <!-- <b>private key</b> -->
+      <label>
+        adfljadsg234popiufgs
+      </label>
+    </p>
+  </div>
+  <div class="panel-footer">
+    <button ng-click="setPassCode()" ng-disabled="generateConfig.running">Next</button>
+  </div>
+</div>
+
+<div class="panel panel-default" ng-show="panelConfig.showPart == 3">
+  <div class="panel-heading">Set passcode</div>
+  <div class="panel-body">
+    <div class="alert alert-warning" role="alert">
+      To protect your private key, you need to setup a passcode, this passcode is just for this session, you will be asked to give a new one after you logout
+    </div>
+    <p>
+      <b>Set passcode</b>
+      <label>
+        <password-set password="request.New" result="verifyPassword"></password-set>
+      </label>
+    </p>
+  </div>
+  <div class="panel-footer">
+    <button ng-click="done()">Done</button>
+  </div>
+</div>

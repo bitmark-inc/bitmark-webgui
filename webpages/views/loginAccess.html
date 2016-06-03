@@ -1,0 +1,39 @@
+<h3>Access Existing Bitmark Account</h3>
+<form name="bitmarkForm" novalidate>
+  <div class="panel panel-default">
+    <div class="panel-body">.
+      <p>
+        <b>chain</b>
+        <label>
+          <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
+          Local
+        </label>
+        <label>
+          <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
+          Testing
+        </label>
+        <label>
+          <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
+          Bitmark
+        </label>
+      </p>
+
+      <p>
+        <b>private key</b>
+        <label>
+          <input required>
+        </label>
+      </p>
+
+      <p>
+        <b>Set passcode</b>
+        <label>
+          <password-set password="request.New" result="verifyPassword"></password-set>
+        </label>
+      </p>
+    </div>
+    <div class="panel-footer">
+      <button ng-click="go()">Go</button>
+    </div>
+  </div>
+</form>
