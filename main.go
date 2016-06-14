@@ -226,6 +226,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/password", handleSetPassword)
 	http.HandleFunc("/api/login", handleLogin)
 	http.HandleFunc("/api/logout", handleLogout)
+	http.HandleFunc("/api/bitcoind", handleBitcoind)
 	http.HandleFunc("/api/bitmarkd", handleBitmarkd)
 
 	http.HandleFunc("/api/bitmarkPay/", handleBitmarkPay)
@@ -399,6 +400,24 @@ func handleLogout(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case `POST`:
 		api.LogoutBitmarkWebgui(w, log)
+	case `OPTIONS`:
+		return
+	default:
+		log.Error("Error: Unknow method")
+	}
+}
+
+func handleBitcoind(w http.ResponseWriter, req *http.Request) {
+	log := logger.New("api-bitcoind")
+	api.SetCORSHeader(w, req)
+
+	// if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+	// 	return
+	// }
+
+	switch req.Method {
+	case `POST`:
+		api.Bitcoind(w, req, log)
 	case `OPTIONS`:
 		return
 	default:

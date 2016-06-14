@@ -16,6 +16,21 @@ const (
 	setPasswordErr = `Failed to set up bitmark-webgui password`
 
 	// bitmarkd api
+	bitcoindStartSuccess = `start running bitcoind`
+	bitcoindStopSuccess  = `stop running bitcoind`
+	bitcoindStarted      = `started`
+	bitcoindStopped      = `stopped`
+
+	// bitcoind error
+	bitcoindStartErr        = `Failed to start bitcoind`
+	bitcoindStopErr         = `Failed to stop bitcoind`
+	bitcoindAlreadyStartErr = `Already started bitcoind`
+	bitcoindAlreadyStopErr  = `Already stoped bitcoind`
+	bitcoindConnectErr      = `Failed to connect to bitcoind`
+	bitcoindGetInfoErr      = `Failed to get bitcoind info`
+	bitcoindGetConfigErr    = `Failed to get bitamrkd configuration`
+
+	// bitmarkd api
 	bitmarkdStartSuccess = `start running bitmarkd`
 	bitmarkdStopSuccess  = `stop running bitmarkd`
 	bitmarkdStarted      = `started`

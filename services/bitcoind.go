@@ -176,12 +176,12 @@ func (bitcoind *Bitcoind) stopBitcoind() error {
 	return nil
 }
 
-func (bitcoind *Bitcoind) GetInfo() error {
-	_, err := exec.Command("bitcoin-cli", "getinfo").Output()
+func (bitcoind *Bitcoind) GetInfo() ([]byte, error) {
+	out, err := exec.Command("bitcoin-cli", "getinfo").Output()
 	if err != nil {
 		bitcoind.log.Infof("fail to get bitcoin info")
-		return err
+		return nil, err
 	}
 
-	return nil
+	return out, nil
 }
