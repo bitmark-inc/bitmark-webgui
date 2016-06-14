@@ -12,6 +12,7 @@ import (
 )
 
 var backgroundService *background.T
+var bitcoinService services.Bitcoind
 var bitmarkService services.Bitmarkd
 var bitmarkPayService services.BitmarkPay
 var bitmarkCliService services.BitmarkCli
@@ -20,6 +21,9 @@ var bitmarkCliService services.BitmarkCli
 func InitialiseService(configs *configuration.Configuration) error {
 
 	// initialise all  services
+	if err := bitcoinService.Initialise(); nil != err {
+		return err
+	}
 	if err := bitmarkService.Initialise(configs.BitmarkConfigFile); nil != err {
 		return err
 	}
@@ -32,11 +36,13 @@ func InitialiseService(configs *configuration.Configuration) error {
 
 	// create and start all background service
 	var processes = background.Processes{
+		bitcoinService.BitcoindBackground,
 		bitmarkService.BitmarkdBackground,
 	}
 	backgroundService = background.Start(processes, nil)
 
 	// register services to api
+	api.Register(&bitcoinService)
 	api.Register(&bitmarkService)
 	api.Register(&bitmarkPayService)
 	api.Register(&bitmarkCliService)
@@ -46,6 +52,10 @@ func InitialiseService(configs *configuration.Configuration) error {
 
 // finialise - stop all background tasks
 func FinaliseBackgroundService() error {
+
+	if err := bitcoinService.Finalise(); nil != err {
+		return err
+	}
 
 	if err := bitmarkService.Finalise(); nil != err {
 		return err

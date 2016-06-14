@@ -9,12 +9,15 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/services"
 )
 
+var bitcoinService *services.Bitcoind
 var bitmarkService *services.Bitmarkd
 var bitmarkPayService services.BitmarkPayInterface
 var bitmarkCliService *services.BitmarkCli
 
 func Register(service interface{}) {
 	switch t := service.(type) {
+	case *services.Bitcoind:
+		bitcoinService = service.(*services.Bitcoind)
 	case *services.Bitmarkd:
 		bitmarkService = service.(*services.Bitmarkd)
 	case services.BitmarkPayInterface:
