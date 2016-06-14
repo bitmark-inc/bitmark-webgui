@@ -30,6 +30,34 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
             method: 'POST',
             url: hostApiPath+'/logout'
         },
+        startBitcoind: {
+            method: 'POST',
+            url: hostApiPath+'/bitcoind',
+            data:{
+                option: "start"
+            }
+        },
+        stopBitcoind: {
+            method: 'POST',
+            url: hostApiPath+'/bitcoind',
+            data:{
+                option: "stop"
+            }
+        },
+        statusBitcoind: {
+            method: 'POST',
+            url: hostApiPath+'/bitcoind',
+            data:{
+                option: "status"
+            }
+        },
+        getBitcoindInfo: {
+            method: 'POST',
+            url: hostApiPath+'/bitcoind',
+            data:{
+                option: "info"
+            }
+        },
         startBitmarkd: {
             method: 'POST',
             url: hostApiPath+'/bitmarkd',
