@@ -28,10 +28,11 @@
             <a class="navbar-brand" href="" ng-click="goUrl('/')">bitmark</a>
           </div>
           <ul class="nav navbar-nav" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/issuentransfer')">Issue&Transfer</a></l>
+            <li><a href="" ng-click="goUrl('/issue')">Issue</a></li>
+            <li><a href="" ng-click="goUrl('/transfer')">Transfer</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/system')">System</a></li>
+            <li><a href="" ng-click="goUrl('/network')">Network</a></li>
             <li><a href="" ng-click="logout()">Logout</a></li>
           </ul>
         </div>
@@ -62,12 +63,15 @@
         <script src="scripts/controllers/navBar.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/edit.js"></script>
-        <script src="scripts/controllers/issueNTransfer.js"></script>
-        <script src="scripts/controllers/system.js"></script>
+        <!-- <script src="scripts/controllers/issueNTransfer.js"></script> -->
+        <script src="scripts/controllers/issue.js"></script>
+        <script src="scripts/controllers/transfer.js"></script>
+        <script src="scripts/controllers/network.js"></script>
         <script src="scripts/controllers/login.js"></script>
         <script src="scripts/controllers/loginCreate.js"></script>
         <script src="scripts/controllers/loginAccess.js"></script>
         <script src="scripts/services/httpService.js"></script>
+        <script src="scripts/services/configuration.js"></script>
         <script src="scripts/directives/passwordSet.js"></script>
         <script src="scripts/directives/fingerprintInput.js"></script>
         <!-- endbuild -->

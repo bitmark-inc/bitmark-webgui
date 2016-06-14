@@ -6,13 +6,13 @@
 
 /**
  * @ngdoc function
- * @name bitmarkWebguiApp.controller:MainCtrl
+ * @name bitmarkWebguiApp.controller:NetworkCtrl
  * @description
  * # MainCtrl
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('SystemCtrl', ['$scope', '$http', '$location', 'httpService', function ($scope, $http, $location, httpService) {
+    .controller('NetworkCtrl', ['$scope', '$http', '$location', 'httpService', function ($scope, $http, $location, httpService) {
         $scope.request = {
             Origin: "",
             New: ""

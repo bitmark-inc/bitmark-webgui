@@ -30,6 +30,11 @@ var app = angular
             Fee: "0.0002",
             Address: ""
         })
+        .constant("BitmarkdConfig", {
+            "testing": "/etc/bitmarkd-TESTING.conf",
+            "bitmark": "/etc/bitmarkd-BITMARK.conf",
+            "local": "/etc/bitmarkd-LOCAL.conf"
+        })
         .constant("BitmarkCliConfig", {
             "testing": "/home/bitmark/config/bitmark-cli/bitmark-cli-TESTING.conf",
             "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf",
@@ -57,9 +62,17 @@ var app = angular
         templateUrl: 'views/issueNTransfer.html',
         controller: 'IssueNTransferCtrl'
       })
-      .when('/system', {
-        templateUrl: 'views/system.html',
-        controller: 'SystemCtrl'
+      .when('/issue', {
+        templateUrl: 'views/issue.html',
+        controller: 'IssueCtrl'
+      })
+      .when('/transfer', {
+        templateUrl: 'views/transfer.html',
+        controller: 'TransferCtrl'
+      })
+      .when('/network', {
+        templateUrl: 'views/network.html',
+        controller: 'NetworkCtrl'
       })
       .when('/login', {
         templateUrl: 'views/login.html',

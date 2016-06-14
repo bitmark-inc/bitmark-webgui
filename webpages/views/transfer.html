@@ -1,0 +1,114 @@
+<div>
+  <h3>Transfer Bitmark</h3>
+  <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
+    <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+  </div>
+
+  <!-- info section -->
+  <div class="panel panel-default">
+    <div class="panel-heading">Info</div>
+    <div class="panel-body">
+      <p ng-show="showSetup">Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
+      <div ng-show="!showSetup">
+        <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show">
+          {{infoErr.msg}}
+        </uib-alert>
+        <uib-alert type="warning"  ng-show="infoAlert.show">
+          {{infoAlert.msg}}
+          <button ng-click="killPayProcess('info', true)">Yes</button>
+          <button ng-click="killPayProcess('info', false)">Later</button>
+        </uib-alert>
+        <p>
+          <b>Chain</b>
+          {{onestepStatusResult.cli_result.network}}
+        </p>
+        <p>
+          <b>Connect</b>
+          {{onestepStatusResult.cli_result.connect}}
+        </p>
+        <p>
+          <b>Identity Name</b>
+          {{onestepStatusResult.cli_result.identities[0].name}}
+        </p>
+        <p>
+          <b>Identity Description</b>
+          {{onestepStatusResult.cli_result.identities[0].description}}
+        </p>
+        <p>
+          <b>Identity Publickey</b>
+          {{onestepStatusResult.cli_result.identities[0].public_key}}
+        </p>
+        <p>
+          <b>Bitcoin Address</b>
+          {{onestepStatusResult.pay_result.address}}
+        </p>
+        <p>
+          <b>Estimated Balance</b>
+          {{onestepStatusResult.pay_result.estimated_balance}}
+        </p>
+        <p>
+          <b>Available Balance</b>
+          {{onestepStatusResult.pay_result.available_balance}}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transfer setction -->
+  <div class="panel panel-default" ng-show="!showSetup && bitmarkCliInfoSuccess">
+    <div class="panel-heading">
+      Transfer Bitmark
+    </div>
+    
+    <div class="panel-body">
+      <!--  alert -->
+      <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null">
+      <b>{{transferResult.msg}}</b>
+      <div ng-show="transferResult.cliResult != null">
+        <div>
+          <b>txid</b>
+          {{transferResult.cliResult.transferId}}
+        </div>
+        <div>
+          <b>currency</b>
+          {{transferResult.cliResult.paymentAddress[0].currency}}
+        </div>
+          <div>
+            <b>address</b>
+            {{transferResult.cliResult.paymentAddress[0].address}}
+          </div>
+      </div>
+      </uib-alert>
+      
+      <form name="transferForm">
+        <div class="panel-body">
+          <p>
+            <label>
+              Transaction Id
+              <input type="text" ng-model="transferConfig.txid" required>
+            </label>
+          </p>
+          <p>
+            <label>
+              Receiver
+              <input type="text" ng-model="transferConfig.receiver" required>
+            </label>
+          </p>
+          <p>
+            <label>
+              Identity Password
+              <input type="password" ng-model="transferConfig.cli_password" required>
+            </label>
+          </p>
+          <p>
+            <label>
+              Pay Password
+              <input type="password" ng-model="transferConfig.pay_password" required>
+            </label>
+          </p>        
+        </div>
+        <button ng-click="submitTransfer()" ng-disabled="transferForm.$invalid">submit</button>
+      </form>  
+    </div>
+  </div>
+</div>

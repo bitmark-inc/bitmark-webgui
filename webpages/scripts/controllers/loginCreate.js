@@ -12,12 +12,13 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginCreateCtrl', ['$scope', '$timeout', '$location', '$cookies', 'httpService', function ($scope, $timeout, $location, $cookies, httpService) {
+    .controller('LoginCreateCtrl', ['$scope', '$timeout', '$location', '$cookies', 'httpService', 'configuration', function ($scope, $timeout, $location, $cookies, httpService, configuration) {
         $scope.panelConfig = {
             showPart: 1
         };
 
         $scope.generateConfig = {
+            chain: "testing",
             running: false,
             msg: [
                 "checking bitcoin ...",
@@ -26,9 +27,12 @@ angular.module('bitmarkWebguiApp')
         };
         $scope.generate = function(){
             $scope.generateConfig.running = true;
-            // TODO:
             // save chain to bitmark
-            //check bitcoin
+            configuration.setChain($scope.generateConfig.chain);
+
+            // TODO:
+            // check bitcoin
+
             // create key pair
             // encrypt bitmark wallet
 
