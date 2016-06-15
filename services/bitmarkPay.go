@@ -17,14 +17,14 @@ import (
 )
 
 type BitmarkPayInterface interface {
-	Encrypt(bitmarkPayType BitmarkPayType) error
-	Info(bitmarkPayType BitmarkPayType) error
-	Pay(bitmarkPayType BitmarkPayType) error
-	Status(hashString string) string
+	Encrypt(BitmarkPayType) error
+	Info(BitmarkPayType) error
+	Pay(BitmarkPayType) error
+	Status(string) (string, error)
 	Kill() error
 	GetBitmarkPayJobHash() string
-	GetBitmarkPayJobResult(bitmarkPayType BitmarkPayType) ([]byte, error)
-	GetBitmarkPayJobType(hashString string) string
+	GetBitmarkPayJobResult(BitmarkPayType) ([]byte, error)
+	GetBitmarkPayJobType(string) string
 }
 
 type BitmarkPay struct {

@@ -9,6 +9,7 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
 	"net/http"
+	"fmt"
 )
 
 type BitmarkPayInfoResponse struct {
@@ -72,9 +73,13 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 		}
 	case "status":
 		request := bitmarkPayParseRequest(w, req, response, log)
-		status := bitmarkPayService.Status(request.JobHash)
-		response.Ok = true
-		response.Result = status
+		if status, err := bitmarkPayService.Status(request.JobHash); nil != err {
+			response.Result = err
+		} else {
+			response.Ok = true
+			response.Result = status
+		}
+
 	case "result":
 		request := bitmarkPayParseRequest(w, req, response, log)
 		if nil == request {
