@@ -35,6 +35,11 @@ var app = angular
             "bitmark": "/etc/bitmarkd-BITMARK.conf",
             "local": "/etc/bitmarkd-LOCAL.conf"
         })
+        .constant("BitmarkCliSetupConfig", {
+            identity: "admin",
+            connect: "127.0.0.1:2130",
+            description: "bitmark-webgui generated"
+        })
         .constant("BitmarkCliConfig", {
             "testing": "/home/bitmark/config/bitmark-cli/bitmark-cli-TESTING.conf",
             "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf",

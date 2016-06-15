@@ -81,6 +81,7 @@ type BitmarkCliSetupType struct {
 	Network     string `json:"network"`
 	Connect     string `json:"connect"`
 	Description string `json:"description"`
+	PrivateKey  string `json:"private_key"`
 }
 
 func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType) ([]byte, error) {
@@ -89,13 +90,14 @@ func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType) ([]byte
 	}
 
 	cmd := exec.Command("bitmark-cli",
-		"--config", bitmarkCliSetup.Config,
-		"--identity", bitmarkCliSetup.Identity,
-		"--password", bitmarkCliSetup.Password,
-		"setup",
-		"--network", bitmarkCliSetup.Network,
-		"--connect", bitmarkCliSetup.Connect,
-		"--description", bitmarkCliSetup.Description)
+			"--config", bitmarkCliSetup.Config,
+			"--identity", bitmarkCliSetup.Identity,
+			"--password", bitmarkCliSetup.Password,
+			"setup",
+			"--network", bitmarkCliSetup.Network,
+			"--connect", bitmarkCliSetup.Connect,
+			"--description", bitmarkCliSetup.Description,
+			"--privateKey", bitmarkCliSetup.PrivateKey)
 
 	return getCmdOutput(cmd, "setup", bitmarkCli.log)
 }

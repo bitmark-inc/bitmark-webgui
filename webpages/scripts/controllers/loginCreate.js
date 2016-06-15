@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginCreateCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig) {
+    .controller('LoginCreateCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliSetupConfig) {
         $scope.panelConfig = {
             showPart: 1
         };
@@ -31,7 +31,7 @@ angular.module('bitmarkWebguiApp')
             }
         };
         $scope.privateKey = "";
-        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
+        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
         var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
 
         var encryptPromise;
@@ -171,12 +171,41 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
-        $scope.setPassCode = function(){
-            $scope.panelConfig.showPart = 3;
+        $scope.toSetPassCode = function(){
+                $scope.panelConfig.showPart = 3;
         };
 
+        $scope.doneErr = {
+            show: false,
+            msg: ""
+        };
         $scope.done = function(){
-            $location.path("/main");
+            //set up bitmark-cli
+            if (!$scope.verifyPassword) {
+                return;
+            }
+            var config = angular.copy(BitmarkCliSetupConfig);
+            config.config = bitmarkCliConfigFile;
+            config.password = $scope.password;
+            config.network = $scope.generateConfig.chain;
+            config.private_key =  $scope.privateKey;
+
+            httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
+                $location.path("/main");
+            }, function(setupCliErr){
+                $scope.doneErr.msg = setupCliErr;
+                $scope.doneErr.show = true;
+            });
+
+            // {
+            //     config: bitmarkCliConfigFile,
+            //     identity: "admin",
+            //     password: $scope.password,
+            //     network: $scope.generateConfig.chain,
+            //     connect: "127.0.0.1:2130",
+            //     description: "bitmark-webgui generated",
+            //     private_key: $scope.privateKey
+            // }
         };
 
         $scope.$on("$destroy", function(){

@@ -59,7 +59,7 @@
     </p>
   </div>
   <div class="panel-footer">
-    <button ng-click="setPassCode()" ng-disabled="generateConfig.running">Next</button>
+    <button ng-click="toSetPassCode()" ng-disabled="generateConfig.running">Next</button>
   </div>
 </div>
 
@@ -69,14 +69,17 @@
     <div class="alert alert-warning" role="alert">
       To protect your private key, you need to setup a passcode, this passcode is just for this session, you will be asked to give a new one after you logout
     </div>
+    <uib-alert type="danger" close="doneErr.show=false" ng-show="doneErr.show">
+      {{doneErr.msg}}
+    </uib-alert>
     <p>
       <b>Set passcode</b>
       <label>
-        <password-set password="request.New" result="verifyPassword"></password-set>
+        <password-set password="password" result="verifyPassword"></password-set>
       </label>
     </p>
   </div>
   <div class="panel-footer">
-    <button ng-click="done()">Done</button>
+    <button ng-click="done()" ng-disabled="!verifyPassword">Done</button>
   </div>
 </div>
