@@ -1,21 +1,35 @@
 <h3>Create New Bitmark Account</h3>
 <p>Create a bitmark account to get a new bitmark key pair and a new bitcoin wallet</p>
 
+<!-- <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="generateConfig.running"> -->
+<!--   <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)"> -->
+<!-- </div> -->
+  
 <div class="panel panel-default" ng-show="panelConfig.showPart == 1">
   <div class="panel-heading">Choose bitmark Chain</div>
   <div class="panel-body">
+    <uib-alert type="danger" close="generateConfig.error.show=false" ng-show="generateConfig.error.show">
+      {{generateConfig.error.msg}}
+    </uib-alert>
+    
+    <uib-alert type="warning"  ng-show="generateConfig.encryptAlert.show">
+      {{generateConfig.encryptAlert.msg}}
+      <button ng-click="killPayProcess(true)">Yes</button>
+      <button ng-click="killPayProcess(false)">Later</button>
+    </uib-alert>
+    
     <p>
       <b>chain</b>
       <label>
-        <input type="radio" ng-model="generateConfig.chain" value="local" ng-change="setBitcoinProxy()">
+        <input type="radio" ng-model="generateConfig.chain" value="local" ng-disabled="generateConfig.running">
         Local
       </label>
       <label>
-        <input type="radio" ng-model="generateConfig.chain" value="testing" ng-change="setBitcoinProxy()">
+        <input type="radio" ng-model="generateConfig.chain" value="testing" ng-disabled="generateConfig.running">
         Testing
       </label>
       <label>
-        <input type="radio" ng-model="generateConfig.chain" value="bitmark" ng-change="setBitcoinProxy()">
+        <input type="radio" ng-model="generateConfig.chain" value="bitmark" ng-disabled="generateConfig.running">
         Bitmark
       </label>
     </p>
