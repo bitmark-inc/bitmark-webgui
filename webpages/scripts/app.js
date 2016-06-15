@@ -85,11 +85,11 @@ var app = angular
       })
       .when('/login/create', {
         templateUrl: 'views/loginCreate.html',
-        controller: 'LoginCreateCtrl'
+        controller: 'LoginProcessCtrl'
       })
       .when('/login/access', {
         templateUrl: 'views/loginAccess.html',
-        controller: 'LoginAccessCtrl'
+        controller: 'LoginProcessCtrl'
       })
       .otherwise({
         redirectTo: '/'

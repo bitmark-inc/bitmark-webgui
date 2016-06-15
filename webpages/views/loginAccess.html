@@ -1,19 +1,29 @@
 <h3>Access Existing Bitmark Account</h3>
-<form name="bitmarkForm" novalidate>
+<form name="bitmarkAccessForm" novalidate>
   <div class="panel panel-default">
-    <div class="panel-body">.
+    <div class="panel-body">
+      <uib-alert type="danger" close="generateConfig.error.show=false" ng-show="generateConfig.error.show">
+        {{generateConfig.error.msg}}
+      </uib-alert>
+      
+      <uib-alert type="warning"  ng-show="generateConfig.encryptAlert.show">
+        {{generateConfig.encryptAlert.msg}}
+      <button ng-click="killPayProcess(true)">Yes</button>
+      <button ng-click="killPayProcess(false)">Later</button>
+      </uib-alert>
+      
       <p>
         <b>chain</b>
         <label>
-          <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
+          <input type="radio" ng-model="generateConfig.chain" value="local" ng-disabled="generateConfig.running">
           Local
         </label>
         <label>
-          <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
+          <input type="radio" ng-model="generateConfig.chain" value="testing" ng-disabled="generateConfig.running">
           Testing
         </label>
         <label>
-          <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
+          <input type="radio" ng-model="generateConfig.chain" value="bitmark" ng-disabled="generateConfig.running">
           Bitmark
         </label>
       </p>
@@ -21,19 +31,25 @@
       <p>
         <b>private key</b>
         <label>
-          <input required>
+          <input ng-model="privateKey" required>
         </label>
       </p>
 
       <p>
         <b>Set passcode</b>
         <label>
-          <password-set password="request.New" result="verifyPassword"></password-set>
+          <password-set password="password" result="verifyPassword"></password-set>
         </label>
       </p>
+
+      <div ng-show="generateConfig.running">
+        <p ng-repeat="(i, val) in generateConfig.msg">
+          {{val}}
+        </p>        
+      </div>
     </div>
     <div class="panel-footer">
-      <button ng-click="go()">Go</button>
+      <button ng-click="generate(false)" ng-disabled="bitmarkAccessForm.$invalid || !verifyPassword || generateConfig.running">Go</button>
     </div>
   </div>
 </form>

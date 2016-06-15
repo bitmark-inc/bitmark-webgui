@@ -6,13 +6,13 @@
 
 /**
  * @ngdoc function
- * @name bitmarkWebguiApp.controller:LoginCreateCtrl
+ * @name bitmarkWebguiApp.controller:LoginProcessCtrl
  * @description
  * # LoginCtrl
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginCreateCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliSetupConfig) {
+    .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliSetupConfig) {
         $scope.panelConfig = {
             showPart: 1
         };
@@ -38,63 +38,72 @@ angular.module('bitmarkWebguiApp')
         var encryptWaitingTime = 60; // 60s
         var pollEncryptCount = 0;
         var encryptJobHash;
+
+        var encryptWallet = function(chain, finalCallback){
+            $scope.generateConfig.msg.push("encrypting wallet...");
+            var net = chain;
+            if(chain == "local"){
+                net = "local_bitcoin_reg";
+            }
+            httpService.send("setupBitmarkPay", {
+                net: net,
+                config: bitmarkPayConfigFile,
+                // config: BitmarkPayConfig[chain],
+                password: $scope.privateKey
+            }).then(function(encryptPayJobHash){
+                $interval.cancel(encryptPromise);
+                encryptJobHash = encryptPayJobHash;
+                encryptPromise = $interval(function(){
+                    httpService.send("getBitmarkPayStatus", {
+                        job_hash: encryptPayJobHash
+                    }).then(function(payStatusResult){
+                        switch(payStatusResult){
+                        case "success":
+                            $interval.cancel(encryptPromise);
+                            pollEncryptCount = 0;
+                            $scope.generateConfig.running = false;
+                            $scope.panelConfig.showPart = 2;
+
+                            if(null != finalCallback){
+                                finalCallback();
+                            }
+                        case "running":
+                            pollEncryptCount++;
+                            if(pollEncryptCount*3 > encryptWaitingTime){
+                                $scope.generateConfig.encryptAlert.msg = "Bitmark-pay has been running for "
+                                    +pollEncryptCount*3+
+                                    " seconds, normally it could cost 7 mins, would you want to stop the process?";
+                                $scope.generateConfig.encryptAlert.show = true;
+                            }
+                            break;
+                        case "fail":
+                            $interval.cancel(encryptPromise);
+                            $scope.generateConfig.error.show = true;
+                            $scope.generateConfig.error.msg = "failed to encrypt wallet, please check your bitcoin status";
+                            $scope.encryptErr.show = true;
+                            break;
+                        case "stopped":
+                            $interval.cancel(encryptPromise);
+                            $scope.generateConfig.error.show = true;
+                            $scope.generateConfig.error.msg = "wallet was encrypted before, please decrypt your bitmark wallet first";
+                            break;
+                        }
+                    });
+                }, 3*1000);
+            }, function(ecryptErr){
+                $scope.generateConfig.error.show = true;
+                $scope.generateConfig.error.msg = "failed to encrypt bitmarPay: "+ecryptErr;
+            });
+        };
         // will create keypair and then encrypt bitmark wallet
         var runGenerate = function(chain){
             // create key pair
             $scope.generateConfig.msg.push("generating bitmark keypair...");
             httpService.send("generateBitmarkKeyPair").then(function(keyPair){
                 $scope.privateKey = keyPair.private_key;
-                // TODO: encrypt bitmark wallet
-                $scope.generateConfig.msg.push("encrypting wallet...");
-                var net = chain;
-                if(chain == "local"){
-                    net = "local_bitcoin_reg";
-                }
-                httpService.send("setupBitmarkPay", {
-                    net: net,
-                    config: bitmarkPayConfigFile,
-                    // config: BitmarkPayConfig[chain],
-                    password: $scope.privateKey
-                }).then(function(encryptPayJobHash){
-                    $interval.cancel(encryptPromise);
-                    encryptJobHash = encryptPayJobHash;
-                    encryptPromise = $interval(function(){
-                        httpService.send("getBitmarkPayStatus", {
-                            job_hash: encryptPayJobHash
-                        }).then(function(payStatusResult){
-                            switch(payStatusResult){
-                            case "success":
-                                $interval.cancel(encryptPromise);
-                                pollEncryptCount = 0;
-                                $scope.generateConfig.running = false;
-                                $scope.panelConfig.showPart = 2;
-                            case "running":
-                                pollEncryptCount++;
-                                if(pollEncryptCount*3 > encryptWaitingTime){
-                                    $scope.generateConfig.encryptAlert.msg = "Bitmark-pay has been running for "
-                                        +pollEncryptCount*3+
-                                        " seconds, normally it could cost 7 mins, would you want to stop the process?";
-                                    $scope.generateConfig.encryptAlert.show = true;
-                                }
-                                break;
-                            case "fail":
-                                $interval.cancel(encryptPromise);
-                                $scope.generateConfig.error.show = true;
-                                $scope.generateConfig.error.msg = "failed to encrypt wallet, please check your bitcoin status";
-                                $scope.encryptErr.show = true;
-                                break;
-                            case "stopped":
-                                $interval.cancel(encryptPromise);
-                                $scope.generateConfig.error.show = true;
-                                $scope.generateConfig.error.msg = "wallet was encrypted before, please decrypt your bitmark wallet first";
-                                break;
-                            }
-                        });
-                    }, 3*1000);
-                }, function(ecryptErr){
-                    $scope.generateConfig.error.show = true;
-                    $scope.generateConfig.error.msg = "failed to encrypt bitmarPay: "+ecryptErr;
-                });
+                // encrypt bitmark wallet
+                encryptWallet(chain, undefined);
+
             }, function(keyPairErr){
                 $scope.generateConfig.error.show = true;
                 $scope.generateConfig.error.msg = "failed to generate bitmark keypair: "+keyPairErr;
@@ -102,7 +111,7 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
-        $scope.generate = function(){
+        $scope.generate = function(isCreateAccount){
             $scope.generateConfig.running = true;
             // save chain to bitmark
             configuration.setChain($scope.generateConfig.chain);
@@ -116,7 +125,11 @@ angular.module('bitmarkWebguiApp')
 
                         httpService.send("startBitcoind").then(function(startSuccess){
                             $scope.generateConfig.msg.push("bitcoind is started");
-                            runGenerate($scope.generateConfig.chain);
+                            if(isCreateAccount){
+                                runGenerate($scope.generateConfig.chain);
+                            } else {
+                                encryptWallet($scope.generateConfig.chain, $scope.done);
+                            }
                         }, function(startErr){
                             $scope.generateConfig.error.show = true;
                             $scope.generateConfig.error.msg = "failed to start bitcoind: "+startErr;
@@ -124,11 +137,19 @@ angular.module('bitmarkWebguiApp')
                         });
                     }else{
                         $scope.generateConfig.msg.push("bitcoind is started...");
-                        runGenerate($scope.generateConfig.chain);
+                        if(isCreateAccount){
+                            runGenerate($scope.generateConfig.chain);
+                        } else {
+                            encryptWallet($scope.generateConfig.chain, $scope.done);
+                        }
                     }
                 });
             } else {
-                runGenerate($scope.generateConfig.chain);
+                if(isCreateAccount){
+                    runGenerate($scope.generateConfig.chain);
+                } else {
+                    encryptWallet($scope.generateConfig.chain, $scope.done);
+                }
             }
         };
 
@@ -196,16 +217,6 @@ angular.module('bitmarkWebguiApp')
                 $scope.doneErr.msg = setupCliErr;
                 $scope.doneErr.show = true;
             });
-
-            // {
-            //     config: bitmarkCliConfigFile,
-            //     identity: "admin",
-            //     password: $scope.password,
-            //     network: $scope.generateConfig.chain,
-            //     connect: "127.0.0.1:2130",
-            //     description: "bitmark-webgui generated",
-            //     private_key: $scope.privateKey
-            // }
         };
 
         $scope.$on("$destroy", function(){
