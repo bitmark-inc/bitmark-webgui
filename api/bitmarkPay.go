@@ -9,7 +9,6 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
 	"net/http"
-	"fmt"
 )
 
 type BitmarkPayInfoResponse struct {

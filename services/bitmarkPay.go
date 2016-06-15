@@ -181,6 +181,9 @@ func (bitmarkPay *BitmarkPay) Status(hashString string) (string, error) {
 }
 
 func (bitmarkPay *BitmarkPay) status() string {
+	bitmarkPay.Lock()
+	defer bitmarkPay.Unlock()
+
 	cmd := bitmarkPay.asyncJob.command
 	if nil != cmd {
 		if nil != cmd.Process {
@@ -239,6 +242,10 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 				}
 			}
 		}
+
+		bitmarkPay.Lock()
+		defer bitmarkPay.Unlock()
+
 		bitmarkPay.asyncJob.hash = ""
 		bitmarkPay.asyncJob.command = nil
 		bitmarkPay.asyncJob.cmdType = ""
@@ -251,19 +258,31 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) error {
 	byteHash, err := time.Now().MarshalText()
 	if nil != err {
+		bitmarkPay.log.Errorf("get error: %v\n", err)
 		return err
 	}
-
 	hash := hex.EncodeToString(byteHash)
+
+	bitmarkPay.Lock()
+	defer bitmarkPay.Unlock()
+
 	bitmarkPay.asyncJob.hash = hash
 	bitmarkPay.asyncJob.command = cmd
 	bitmarkPay.asyncJob.cmdType = cmdType
 
 	go func() {
 		if result, err := getCmdOutput(cmd, cmdType, bitmarkPay.log); nil != err {
+			bitmarkPay.Lock()
+			defer bitmarkPay.Unlock()
+
 			bitmarkPay.log.Errorf("job fail: %s", bitmarkPay.asyncJob.hash)
 			bitmarkPay.asyncJob.result = nil
+			bitmarkPay.asyncJob.command.Process.Kill()
+			bitmarkPay.asyncJob.command = nil
 		} else {
+			bitmarkPay.Lock()
+			defer bitmarkPay.Unlock()
+
 			// make sure result is no nil, otherwise the api will consider the result command is failed
 			if nil == result {
 				result = []byte("")
