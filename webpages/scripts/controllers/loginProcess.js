@@ -13,6 +13,9 @@
  */
 angular.module('bitmarkWebguiApp')
     .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliSetupConfig) {
+        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
+        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
+
         $scope.panelConfig = {
             showPart: 1
         };
@@ -31,8 +34,6 @@ angular.module('bitmarkWebguiApp')
             }
         };
         $scope.privateKey = "";
-        var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
-        var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
 
         var encryptPromise;
         var encryptWaitingTime = 60; // 60s
@@ -47,8 +48,8 @@ angular.module('bitmarkWebguiApp')
             }
             httpService.send("setupBitmarkPay", {
                 net: net,
-                config: bitmarkPayConfigFile,
-                // config: BitmarkPayConfig[chain],
+                // config: bitmarkPayConfigFile,
+                config: BitmarkPayConfig[chain],
                 password: $scope.privateKey
             }).then(function(encryptPayJobHash){
                 $interval.cancel(encryptPromise);
