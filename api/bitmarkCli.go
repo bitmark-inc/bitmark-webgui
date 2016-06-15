@@ -8,6 +8,11 @@ import (
 	"net/http"
 )
 
+type BitmarkCliGenerateResponse struct {
+	PublicKey string `json:"public_key"`
+	PrivateKey string `json:"private_key"`
+}
+
 type BitmarkCliInfoResponse struct {
 	Default_identity string                `json:"default_identity"`
 	Network          string                `json:"network"`
@@ -40,6 +45,19 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	}
 
 	switch command {
+	case "generate":
+		output, err := bitmarkCliService.Generate()
+		if nil != err {
+			response.Result = err
+		} else {
+			var jsonKeyPair BitmarkCliGenerateResponse
+			if err := json.Unmarshal(output, &jsonKeyPair); nil != err {
+				log.Errorf("Error: %v", err)
+			} else {
+				response.Ok = true
+				response.Result = jsonKeyPair
+			}
+		}
 	case "info":
 		var request services.BitmarkCliInfoType
 		decoder := json.NewDecoder(req.Body)

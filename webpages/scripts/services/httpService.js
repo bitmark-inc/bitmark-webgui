@@ -86,6 +86,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
                 option: "info"
             }
         },
+        generateBitmarkKeyPair: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkCli/generate'
+        },
         getBitmarkCliInfo: {
             method: 'POST',
             url: hostApiPath+'/bitmarkCli/info'
