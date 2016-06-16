@@ -214,6 +214,7 @@ angular.module('bitmarkWebguiApp')
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
                 $scope.$emit('Authenticated', true);
+                $cookies.put('bitmark-chain', $scope.generateConfig.chain, {secure: true});
                 $location.path("/main");
             }, function(setupCliErr){
                 $scope.doneErr.msg = setupCliErr;

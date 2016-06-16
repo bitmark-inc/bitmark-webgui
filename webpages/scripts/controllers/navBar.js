@@ -1,5 +1,5 @@
 angular.module('bitmarkWebguiApp')
-    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService) {
+    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService, $cookies) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;
         });
@@ -26,6 +26,7 @@ angular.module('bitmarkWebguiApp')
             httpService.send("logout").then(
                 function(){
                     $scope.$emit('Authenticated', false);
+                    $cookies.remove('bitmark-chain');
                     $scope.goUrl('/login');
                 }, function(errorMsg){
                     $scope.$emit('Authenticated', true);
