@@ -90,14 +90,14 @@ func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType) ([]byte
 	}
 
 	cmd := exec.Command("bitmark-cli",
-			"--config", bitmarkCliSetup.Config,
-			"--identity", bitmarkCliSetup.Identity,
-			"--password", bitmarkCliSetup.Password,
-			"setup",
-			"--network", bitmarkCliSetup.Network,
-			"--connect", bitmarkCliSetup.Connect,
-			"--description", bitmarkCliSetup.Description,
-			"--privateKey", bitmarkCliSetup.PrivateKey)
+		"--config", bitmarkCliSetup.Config,
+		"--identity", bitmarkCliSetup.Identity,
+		"--password", bitmarkCliSetup.Password,
+		"setup",
+		"--network", bitmarkCliSetup.Network,
+		"--connect", bitmarkCliSetup.Connect,
+		"--description", bitmarkCliSetup.Description,
+		"--privateKey", bitmarkCliSetup.PrivateKey)
 
 	return getCmdOutput(cmd, "setup", bitmarkCli.log)
 }

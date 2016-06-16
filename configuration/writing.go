@@ -5,8 +5,8 @@
 package configuration
 
 import (
-	"os"
 	"github.com/bitmark-inc/bitmark-webgui/templates"
+	"os"
 	"text/template"
 )
 

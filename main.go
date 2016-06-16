@@ -105,7 +105,6 @@ func runSetup(c *cli.Context, configFile string) {
 			mainLog.Errorf("Encrypt password failed: %v", err)
 			exitwithstatus.Message("Error: %v\n", err)
 		}
-
 		defaultConfig.Password = string(encryptPassword)
 
 		// generate config file
