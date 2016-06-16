@@ -1,3 +1,4 @@
+
 app.service('configuration', function () {
     var configuration = {
         chain: "testing"

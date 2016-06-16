@@ -213,6 +213,7 @@ angular.module('bitmarkWebguiApp')
             config.private_key =  $scope.privateKey;
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
+                $scope.$emit('Authenticated', true);
                 $location.path("/main");
             }, function(setupCliErr){
                 $scope.doneErr.msg = setupCliErr;
