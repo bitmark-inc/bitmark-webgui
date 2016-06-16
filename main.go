@@ -8,7 +8,6 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/api"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
-	"github.com/bitmark-inc/bitmark-webgui/templates"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/exitwithstatus"
 	"github.com/bitmark-inc/logger"
@@ -20,7 +19,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"text/template"
 	"time"
 )
 
@@ -101,11 +99,6 @@ func runSetup(c *cli.Context, configFile string) {
 
 	// Check if file exist
 	if !utils.EnsureFileExists(configFile) {
-		file, err := os.Create(configFile)
-		if nil != err {
-			mainLog.Errorf("create config file: %s failed: %v", configFile, err)
-			exitwithstatus.Message("Error: %v\n", err)
-		}
 
 		encryptPassword, err := bcrypt.GenerateFromPassword([]byte(defaultConfig.Password), bcrypt.DefaultCost)
 		if nil != err {
@@ -116,8 +109,8 @@ func runSetup(c *cli.Context, configFile string) {
 		defaultConfig.Password = string(encryptPassword)
 
 		// generate config file
-		confTemp := template.Must(template.New("config").Parse(templates.ConfigurationTemplate))
-		if err := confTemp.Execute(file, defaultConfig); nil != err {
+		err = configuration.UpdateConfiguration(configFile, defaultConfig)
+		if nil != err {
 			mainLog.Errorf("Generate config template failed: %v", err)
 			exitwithstatus.Message("Error: %v\n", err)
 		}
