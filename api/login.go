@@ -94,6 +94,11 @@ type logoutRequset struct {
 
 // POST /api/logout
 func LogoutBitmarkWebgui(w http.ResponseWriter, req *http.Request, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
+	removeBitmarkCliConfigAndCookie(w, filePath, webguiConfiguration, log)
+}
+
+// POST /api/logoutOnestep
+func LogoutBitmarkWebguiOnestep(w http.ResponseWriter, req *http.Request, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
 
 	log.Info("POST /api/logout")
 	response := &Response{
@@ -195,18 +200,27 @@ loop:
 			break loop
 		}
 	}
+	removeBitmarkCliConfigAndCookie(w, filePath, webguiConfiguration, log)
+}
+
+func removeBitmarkCliConfigAndCookie (w http.ResponseWriter, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
+	response := &Response{
+		Ok:     false,
+		Result: "logout error",
+	}
 
 	// remove bitmark-cli config file
+	webguiConfiguration.BitmarkCliConfigFile = ""
+	configuration.UpdateConfiguration(filePath, webguiConfiguration)
+
 	log.Infof("removing file: %v\n", webguiConfiguration.BitmarkCliConfigFile)
-	if err = os.Remove(webguiConfiguration.BitmarkCliConfigFile); nil != err {
+	if err := os.Remove(webguiConfiguration.BitmarkCliConfigFile); nil != err {
 		response.Result = "delete bitmark-cli config file error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
 		return
 	}
-	webguiConfiguration.BitmarkCliConfigFile = ""
-	configuration.UpdateConfiguration(filePath, webguiConfiguration)
 
 	// remove cookie
 	cookie := &http.Cookie{

@@ -1,9 +1,23 @@
 <div>
   <h3>Logout</h3>
   <p>Use your passcode to logout completely</p>
-  <p>{{errorMsg}}</p>
+  <uib-alert type="danger" close="error.show=false" ng-show="error.show">
+    {{error.msg}}
+  </uib-alert>
 
+  <uib-alert type="warning"  ng-show="decryptAlert.show">
+    {{decryptAlert.msg}}
+    <button ng-click="killPayProcess(true)">Yes</button>
+    <button ng-click="killPayProcess(false)">Later</button>
+  </uib-alert>
+  
   <p>Passcode</p>
   <input type="password" ng-model="password">
   <button ng-click="logout()">logout</button>
+
+  <div>
+    <p ng-repeat="(i, val) in msg">
+      {{val}}
+    </p>        
+  </div>
 </div>

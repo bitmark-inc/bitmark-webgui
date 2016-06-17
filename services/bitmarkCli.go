@@ -165,13 +165,13 @@ type BitmarkCliKeyPairType struct {
 	Password string `json:"password"`
 }
 
-func (bitmarkCli *BitmarkCli) KeyPair(bitmarkCliKeyPair BitmarkCliKeyPairType, bitmarkWebguiConfig string) ([]byte, error) {
+func (bitmarkCli *BitmarkCli) KeyPair(bitmarkCliKeyPair BitmarkCliKeyPairType, bitmarkCliConfigFile string) ([]byte, error) {
 	if err := checkRequireStringParameters(bitmarkCliKeyPair.Password); nil != err {
 		return nil, err
 	}
 
 	cmd := exec.Command("bitmark-cli",
-		"--config", bitmarkWebguiConfig,
+		"--config", bitmarkCliConfigFile,
 		"--password", bitmarkCliKeyPair.Password,
 		"keypair")
 

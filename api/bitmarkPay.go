@@ -70,6 +70,19 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			response.Ok = true
 			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 		}
+	case "decrypt":
+		request := bitmarkPayParseRequest(w, req, response, log)
+		if nil == request {
+			return
+		}
+
+		err := bitmarkPayService.Decrypt(*request)
+		if nil != err {
+			response.Result = err
+		} else {
+			response.Ok = true
+			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
+		}
 	case "status":
 		request := bitmarkPayParseRequest(w, req, response, log)
 		if status, err := bitmarkPayService.Status(request.JobHash); nil != err {

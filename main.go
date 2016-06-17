@@ -223,6 +223,7 @@ func startWebServer(configs *configuration.Configuration) error {
 
 	http.HandleFunc("/api/bitmarkPay/", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/encrypt", handleBitmarkPay)
+	http.HandleFunc("/api/bitmarkPay/decrypt", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/status", handleBitmarkPay)
@@ -233,6 +234,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitmarkCli/setup", handleBitmarkCli)
 	http.HandleFunc("/api/bitmarkCli/issue", handleBitmarkCli)
 	http.HandleFunc("/api/bitmarkCli/transfer", handleBitmarkCli)
+	http.HandleFunc("/api/bitmarkCli/keypair", handleBitmarkCli)
 
 	http.HandleFunc("/api/onestep/status", handleOnestep)
 	http.HandleFunc("/api/onestep/setup", handleOnestep)

@@ -154,6 +154,31 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 				response.Result = jsonTransfer
 			}
 		}
+	case "keypair":
+		var request services.BitmarkCliKeyPairType
+		decoder := json.NewDecoder(req.Body)
+		err := decoder.Decode(&request)
+		if nil != err {
+			log.Errorf("Error: %v", err)
+			response.Result = "bitmark-cli request parsing error"
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
+		}
+
+		output, err := bitmarkCliService.KeyPair(request, configuration.BitmarkCliConfigFile)
+		if nil != err {
+			response.Result = "bitmark-cli keypair error"
+		} else {
+			var jsonKeyPair BitmarkCliGenerateResponse
+			if err := json.Unmarshal(output, &jsonKeyPair); nil != err {
+				log.Errorf("Error: %v", err)
+			} else {
+				response.Ok = true
+				response.Result = jsonKeyPair
+			}
+		}
 	default:
 		response.Result = fault.ErrInvalidCommandType
 	}

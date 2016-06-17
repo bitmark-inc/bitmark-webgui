@@ -90,6 +90,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
             method: 'POST',
             url: hostApiPath+'/bitmarkCli/generate'
         },
+        getBitmarkKeyPair: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkCli/keypair'
+        },
         getBitmarkCliInfo: {
             method: 'POST',
             url: hostApiPath+'/bitmarkCli/info'
@@ -109,6 +113,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
         setupBitmarkPay: {
             method: 'POST',
             url: hostApiPath+'/bitmarkPay/encrypt'
+        },
+        decryptBitmarkPay: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkPay/decrypt'
         },
         getBitmarkPayInfo: {
             method: 'POST',
