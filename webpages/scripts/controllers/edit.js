@@ -114,7 +114,7 @@ angular.module('bitmarkWebguiApp')
         $scope.saveConfig = function(){
             $scope.error.show = false;
             saveConfig(function(){
-                $scope.goUrl('/');
+                $scope.goUrl('/main');
             });
         };
 
@@ -125,7 +125,7 @@ angular.module('bitmarkWebguiApp')
             saveConfig(function(){
                 httpService.send("startBitmarkd").then(
                     function(result){
-                        $scope.goUrl('/');
+                        $scope.goUrl('/main');
                     }, function(errorMsg){
                         $scope.error.show = true;
                         $scope.error.msg = errorMsg;

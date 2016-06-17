@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, httpService, configuration, BitmarkPayConfig, BitmarkCliConfig, BitmarkCliSetupConfig) {
+    .controller('LoginProcessCtrl', function ($scope, $interval, $location, httpService, configuration, BitmarkPayConfig, BitmarkCliConfig, BitmarkCliSetupConfig, BitmarkdConfig) {
         if(configuration.getConfiguration().bitmarkCliConfigFile.length != 0){
             $location.path('/login');
         }
@@ -213,8 +213,17 @@ angular.module('bitmarkWebguiApp')
             config.private_key =  $scope.privateKey;
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
-                $scope.$emit('Authenticated', true);
-                $location.path("/main");
+                // TODO: setup bitmarkConfig file in server
+                httpService.send('setupBitmarkd', {
+                    config_file: BitmarkdConfig[$scope.generateConfig.chain]
+                }).then(function(setupBitmarkdResult){
+                    configuration.setBitmarkCliConfigFile(BitmarkCliConfig[$scope.generateConfig.chain]);
+                    $scope.$emit('Authenticated', true);
+                    $location.path("/main");
+                }, function(setupBitmarkdErr){
+                    $scope.doneErr.msg = setupBitmarkdErr;
+                    $scope.doneErr.show = true;
+                });
             }, function(setupCliErr){
                 $scope.doneErr.msg = setupCliErr;
                 $scope.doneErr.show = true;
@@ -225,4 +234,4 @@ angular.module('bitmarkWebguiApp')
             $interval.cancel(encryptPromise);
             $interval.cancel(killPromise);
         });
-  }]);
+  });

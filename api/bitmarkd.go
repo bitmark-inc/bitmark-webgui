@@ -6,7 +6,8 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/bitmark-inc/bitmarkd/configuration"
+	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net/http"
@@ -15,11 +16,12 @@ import (
 )
 
 type bitmarkdRequest struct {
-	Option string
+	Option string `json:"option"`
+	ConfigFile string `json:"config_file"`
 }
 
 // POST /api/bitmarkd
-func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
+func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, webguiConfig *configuration.Configuration, log *logger.L) {
 
 	log.Info("POST /api/bitmarkd")
 	response := &Response{
@@ -81,11 +83,22 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 		if !bitmarkService.IsRunning() {
 			response.Result = bitmarkdAlreadyStopErr
 		} else {
-			if info, err := getBitmarkdInfo(bitmarkConfigFile, log); "" != err {
+			if info, err := getBitmarkdInfo(webguiConfig.BitmarkConfigFile, log); "" != err {
 				response.Result = err
 			} else {
 				response.Ok = true
 				response.Result = info
+			}
+		}
+	case `setup`:
+		if bitmarkService.IsRunning() {
+			response.Result = bitmarkdAlreadyStopErr
+		} else {
+			if err := bitmarkService.Setup(request.ConfigFile, webguiFilePath, webguiConfig); nil != err {
+				response.Result = err
+			} else {
+				response.Ok = true
+				response.Result = nil
 			}
 		}
 	default:
@@ -102,7 +115,7 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string
 }
 
 func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, string) {
-	bitmarkConfig, err := configuration.GetConfiguration(bitmarkConfigFile)
+	bitmarkConfig, err := bitmarkdConfig.GetConfiguration(bitmarkConfigFile)
 	if nil != err {
 		log.Errorf("Failed to get bitmarkd configuration: %v", err)
 		return nil, bitmarkdGetConfigErr

@@ -58,6 +58,13 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
                 option: "info"
             }
         },
+        setupBitmarkd: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkd',
+            data: {
+                option: "setup"
+            }
+        },
         startBitmarkd: {
             method: 'POST',
             url: hostApiPath+'/bitmarkd',
@@ -167,7 +174,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
 
             var apiConfig = angular.copy(API[api]);
             if( data != undefined) {
-                apiConfig.data = data;
+                if(apiConfig.data == undefined) {
+                    apiConfig.data = {};
+                }
+                angular.extend(apiConfig.data, data);
             }
 
 

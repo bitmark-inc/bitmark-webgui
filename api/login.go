@@ -220,7 +220,14 @@ func removeBitmarkCliConfigAndCookie(w http.ResponseWriter, filePath string, web
 	}
 
 	webguiConfiguration.BitmarkCliConfigFile = ""
-	configuration.UpdateConfiguration(filePath, webguiConfiguration)
+	if err := configuration.UpdateConfiguration(filePath, webguiConfiguration); nil != err {
+		response.Result = "update webgui config file error"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
 
 	// remove cookie
 	cookie := &http.Cookie{

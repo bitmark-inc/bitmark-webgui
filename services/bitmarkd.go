@@ -7,6 +7,7 @@ package services
 import (
 	"bufio"
 	"crypto/tls"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/bitmarkd/rpc"
@@ -66,6 +67,11 @@ func (bitmarkd *Bitmarkd) Finalise() error {
 
 func (bitmarkd *Bitmarkd) IsRunning() bool {
 	return bitmarkd.running
+}
+
+func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+	webguiConfig.BitmarkConfigFile = bitmarkConfigFile
+	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
 
 func (bitmarkd *Bitmarkd) BitmarkdBackground(args interface{}, shutdown <-chan bool, finished chan<- bool) {

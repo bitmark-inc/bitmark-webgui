@@ -430,7 +430,7 @@ func handleBitmarkd(w http.ResponseWriter, req *http.Request) {
 
 	switch req.Method {
 	case `POST`:
-		api.Bitmarkd(w, req, GlobalConfig.BitmarkConfigFile, log)
+		api.Bitmarkd(w, req, BitmarkWebguiConfigFile, GlobalConfig, log)
 	case `OPTIONS`:
 		return
 	default:
