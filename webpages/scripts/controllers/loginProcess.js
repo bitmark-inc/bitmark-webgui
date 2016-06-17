@@ -12,7 +12,10 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliConfig, BitmarkCliSetupConfig) {
+    .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, httpService, configuration, BitmarkPayConfig, BitmarkCliConfig, BitmarkCliSetupConfig) {
+        if(configuration.getConfiguration().bitmarkCliConfigFile.length != 0){
+            $location.path('/login');
+        }
 
         $scope.panelConfig = {
             showPart: 1
@@ -211,7 +214,6 @@ angular.module('bitmarkWebguiApp')
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
                 $scope.$emit('Authenticated', true);
-                $cookies.put('bitmark-chain', $scope.generateConfig.chain, {secure: true});
                 $location.path("/main");
             }, function(setupCliErr){
                 $scope.doneErr.msg = setupCliErr;

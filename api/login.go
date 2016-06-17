@@ -210,9 +210,6 @@ func removeBitmarkCliConfigAndCookie (w http.ResponseWriter, filePath string, we
 	}
 
 	// remove bitmark-cli config file
-	webguiConfiguration.BitmarkCliConfigFile = ""
-	configuration.UpdateConfiguration(filePath, webguiConfiguration)
-
 	log.Infof("removing file: %v\n", webguiConfiguration.BitmarkCliConfigFile)
 	if err := os.Remove(webguiConfiguration.BitmarkCliConfigFile); nil != err {
 		response.Result = "delete bitmark-cli config file error"
@@ -221,6 +218,9 @@ func removeBitmarkCliConfigAndCookie (w http.ResponseWriter, filePath string, we
 		}
 		return
 	}
+
+	webguiConfiguration.BitmarkCliConfigFile = ""
+	configuration.UpdateConfiguration(filePath, webguiConfiguration)
 
 	// remove cookie
 	cookie := &http.Cookie{

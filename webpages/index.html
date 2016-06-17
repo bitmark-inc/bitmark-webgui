@@ -24,8 +24,8 @@
     <div class="header" ng-controller="NavbarCtrl" ng-init="init()">
       <div class="navbar navbar-default" role="navigation">
         <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="" ng-click="goUrl('/')">bitmark</a>
+          <div class="navbar-header" ng-show="showNavItem">
+            <a class="navbar-brand" href="" ng-click="goUrl('/main')">bitmark</a>
           </div>
           <ul class="nav navbar-nav" ng-show="showNavItem">
             <li><a href="" ng-click="goUrl('/issue')">Issue</a></li>

@@ -53,52 +53,55 @@ var app = angular
             // "local": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml"
         })
         .config(function ($routeProvider, $httpProvider) {
-    $httpProvider.defaults.withCredentials = true;
-    delete $httpProvider.defaults.headers.common["X-Requested-With"];
+            $httpProvider.defaults.withCredentials = true;
+            delete $httpProvider.defaults.headers.common["X-Requested-With"];
 
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/edit', {
-        templateUrl: 'views/edit.html',
-        controller: 'EditCtrl'
-      })
-      .when('/issuentransfer', {
-        templateUrl: 'views/issueNTransfer.html',
-        controller: 'IssueNTransferCtrl'
-      })
-      .when('/issue', {
-        templateUrl: 'views/issue.html',
-        controller: 'IssueCtrl'
-      })
-      .when('/transfer', {
-        templateUrl: 'views/transfer.html',
-        controller: 'TransferCtrl'
-      })
-      .when('/network', {
-        templateUrl: 'views/network.html',
-        controller: 'NetworkCtrl'
-      })
-      .when('/login', {
-        templateUrl: 'views/login.html',
-        controller: 'LoginCtrl'
-      })
-      .when('/login/create', {
-        templateUrl: 'views/loginCreate.html',
-        controller: 'LoginProcessCtrl'
-      })
-      .when('/login/access', {
-        templateUrl: 'views/loginAccess.html',
-        controller: 'LoginProcessCtrl'
-      })
-      .when('/logout', {
-        templateUrl: 'views/logout.html',
-        controller: 'LogoutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-
-  });
+            $routeProvider
+                .when('/main', {
+                    templateUrl: 'views/main.html',
+                    controller: 'MainCtrl'
+                })
+                .when('/edit', {
+                    templateUrl: 'views/edit.html',
+                    controller: 'EditCtrl'
+                })
+                .when('/issuentransfer', {
+                    templateUrl: 'views/issueNTransfer.html',
+                    controller: 'IssueNTransferCtrl'
+                })
+                .when('/issue', {
+                    templateUrl: 'views/issue.html',
+                    controller: 'IssueCtrl'
+                })
+                .when('/transfer', {
+                    templateUrl: 'views/transfer.html',
+                    controller: 'TransferCtrl'
+                })
+                .when('/network', {
+                    templateUrl: 'views/network.html',
+                    controller: 'NetworkCtrl'
+                })
+                .when('/', {
+                    templateUrl: 'views/login.html',
+                    controller: 'LoginCtrl'
+                })
+                .when('/login', {
+                    templateUrl: 'views/login.html',
+                    controller: 'LoginCtrl'
+                })
+                .when('/login/create', {
+                    templateUrl: 'views/loginCreate.html',
+                    controller: 'LoginProcessCtrl'
+                })
+                .when('/login/access', {
+                    templateUrl: 'views/loginAccess.html',
+                    controller: 'LoginProcessCtrl'
+                })
+                .when('/logout', {
+                    templateUrl: 'views/logout.html',
+                    controller: 'LogoutCtrl'
+                })
+                .otherwise({
+                    redirectTo: '/login'
+                });
+        });

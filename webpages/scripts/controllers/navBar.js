@@ -14,11 +14,8 @@ angular.module('bitmarkWebguiApp')
                 function(result){
                     configuration.setChain(result.chain);
                     configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
-                    if(result.bitmark_cli.config_file.length == 0) {
-                        $location.path('/login/access');
-                    }else{ // not logout properly, use last time setting
+                    if(result.bitmark_cli_config_file.length != 0 )  {
                         $scope.$emit('Authenticated', true);
-                        $location.path('/');
                     }
                 },function(){
                     $scope.$emit('Authenticated', false);

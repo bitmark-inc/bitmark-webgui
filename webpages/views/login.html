@@ -1,16 +1,26 @@
-<div ng-if="!showWelcome">
-  <h3>Login</h3>
-  <p>{{errorMsg}}</p>
+<div ng-init="init()">
+  <div ng-if="!showWelcome">
+    <h3>Login Bitmark Web</h3>
+    <p>{{errorMsg}}</p>
 
-  <p>Password</p>
-  <input type="password" ng-model="request.Password">
-  <button ng-click="login()">login</button>
-</div>
+    <p>Password</p>
+    <input type="password" ng-model="request.Password">
+    <button ng-click="login()">login</button>
+  </div>
 
-<div ng-if="showWelcome">
-  <h3>Welcome to Bitmark Node</h3>
-  <br/>
-  <button type="button" class="btn btn-primary btn-lg" ng-click="goUrl('create')">Create New Bitmark Account</button>
-  <br/><br/>
-  <button type="button" class="btn btn-default btn-lg" ng-click="goUrl('access')">Access Existing Bitmark Account</button>
+  <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWarning">
+    <uib-alert type="warning" style="margin: 0; position:absolute; left:50%; transform: translate(-50%, 0%);">
+      You didn't logout properly last time or another session is running, we suggest you logout first.
+      <button ng-click="goUrl('logout')">Yes</button>
+      <button ng-click="goUrl('main')">No</button>
+    </uib-alert>
+  </div>
+
+  <div ng-if="showWelcome">
+    <h3>Welcome to Bitmark Node</h3>
+    <br/>
+    <button type="button" class="btn btn-primary btn-lg" ng-click="goUrl('create')">Create New Bitmark Account</button>
+    <br/><br/>
+    <button type="button" class="btn btn-default btn-lg" ng-click="goUrl('access')">Access Existing Bitmark Account</button>
+  </div>
 </div>
