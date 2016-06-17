@@ -1,5 +1,5 @@
 angular.module('bitmarkWebguiApp')
-    .controller('LogoutCtrl', function ($rootScope, $scope, $location, httpService, $cookies, configuration, BitmarkPayConfig, $interval) {
+    .controller('LogoutCtrl', function ($rootScope, $scope, $location, httpService, configuration, BitmarkPayConfig, $interval) {
         var chain = configuration.getConfiguration().chain;
         var bitmarkPayConfigFile = BitmarkPayConfig[chain];
 
@@ -19,7 +19,6 @@ angular.module('bitmarkWebguiApp')
             httpService.send("logout").then(
                 function(){
                     $scope.$emit('Authenticated', false);
-                    $cookies.remove('bitmark-chain');
                     $scope.goUrl('/login');
                 }, function(errorMsg){
                     $scope.$emit('Authenticated', true);

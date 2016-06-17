@@ -1,5 +1,5 @@
 angular.module('bitmarkWebguiApp')
-    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService, $cookies, configuration) {
+    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService, configuration) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;
         });
