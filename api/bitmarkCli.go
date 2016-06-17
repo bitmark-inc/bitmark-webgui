@@ -97,7 +97,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			return
 		}
 
-		_, err = bitmarkCliService.Setup(request,webguiFilePath, configuration)
+		_, err = bitmarkCliService.Setup(request, webguiFilePath, configuration)
 		if nil != err {
 			response.Result = "bitmark-cli setup error"
 		} else {

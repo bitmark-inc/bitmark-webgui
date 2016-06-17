@@ -1,8 +1,7 @@
 angular.module('bitmarkWebguiApp')
     .controller('LogoutCtrl', function ($rootScope, $scope, $location, httpService, $cookies, configuration, BitmarkPayConfig) {
 
-        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
-        var bitmarkPayConfigFile = BitmarkPayConfig[configuration.getChain()];
+        var bitmarkPayConfigFile = BitmarkPayConfig[configuration.getConfiguration().chain];
 
         $scope.logout = function(){
             httpService.send("logout", {

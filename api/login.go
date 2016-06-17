@@ -6,18 +6,18 @@ package api
 
 import (
 	"encoding/json"
-	"time"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
-	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
+	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
+	"time"
 )
 
 type LoginResponse struct {
-	Chain string `json:"chain"`
+	Chain                string `json:"chain"`
 	BitmarkCliConfigFile string `json:"bitmark_cli_config_file"`
 }
 
@@ -25,8 +25,8 @@ type LoginResponse struct {
 func LoginStatus(w http.ResponseWriter, configuration *configuration.Configuration, log *logger.L) {
 
 	log.Info("GET /api/login: check login status")
-	loginResponse := &LoginResponse {
-		Chain: configuration.BitmarkChain,
+	loginResponse := &LoginResponse{
+		Chain:                configuration.BitmarkChain,
 		BitmarkCliConfigFile: configuration.BitmarkCliConfigFile,
 	}
 	response := &Response{
@@ -71,8 +71,8 @@ func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, configuration 
 		return
 	}
 
-	loginResponse := &LoginResponse {
-		Chain: configuration.BitmarkChain,
+	loginResponse := &LoginResponse{
+		Chain:                configuration.BitmarkChain,
 		BitmarkCliConfigFile: configuration.BitmarkCliConfigFile,
 	}
 
@@ -88,7 +88,7 @@ func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, configuration 
 }
 
 type logoutRequset struct {
-	Password string `json:"password"`
+	Password             string `json:"password"`
 	BitmarkPayConfigFile string `json:"bitmark_pay_config_file"`
 }
 
@@ -114,7 +114,7 @@ func LogoutBitmarkWebgui(w http.ResponseWriter, req *http.Request, filePath stri
 
 	// get privateKey from bitmark-cli
 	var keyPair BitmarkCliGenerateResponse
-	bitmarkCliKeyPair := services.BitmarkCliKeyPairType {
+	bitmarkCliKeyPair := services.BitmarkCliKeyPairType{
 		Password: request.Password,
 	}
 	output, err := bitmarkCliService.KeyPair(bitmarkCliKeyPair, webguiConfiguration.BitmarkCliConfigFile)
@@ -151,9 +151,9 @@ func LogoutBitmarkWebgui(w http.ResponseWriter, req *http.Request, filePath stri
 	if "local" == net {
 		net = "local_bitcoin_reg"
 	}
-	decryptConfig := services.BitmarkPayType {
-		Net: net,
-		Config: request.BitmarkPayConfigFile,
+	decryptConfig := services.BitmarkPayType{
+		Net:      net,
+		Config:   request.BitmarkPayConfigFile,
 		Password: keyPair.PrivateKey,
 	}
 	if err := bitmarkPayService.Decrypt(decryptConfig); nil != err {
@@ -194,7 +194,7 @@ loop:
 			ticker.Stop()
 			break loop
 		}
-        }
+	}
 
 	// remove bitmark-cli config file
 	log.Infof("removing file: %v\n", webguiConfiguration.BitmarkCliConfigFile)

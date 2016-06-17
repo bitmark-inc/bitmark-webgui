@@ -12,9 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliSetupConfig) {
-        // var bitmarkCliConfigFile = "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config";
-        // var bitmarkPayConfigFile = "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml";
+    .controller('LoginProcessCtrl', ['$scope', '$interval', '$location', '$cookies', 'httpService', 'configuration', 'BitmarkPayConfig', 'BitmarkCliConfig', 'BitmarkCliSetupConfig', function ($scope, $interval, $location, $cookies, httpService, configuration, BitmarkPayConfig, BitmarkCliConfig, BitmarkCliSetupConfig) {
 
         $scope.panelConfig = {
             showPart: 1
@@ -48,7 +46,6 @@ angular.module('bitmarkWebguiApp')
             }
             httpService.send("setupBitmarkPay", {
                 net: net,
-                // config: bitmarkPayConfigFile,
                 config: BitmarkPayConfig[chain],
                 password: $scope.privateKey
             }).then(function(encryptPayJobHash){
@@ -207,7 +204,7 @@ angular.module('bitmarkWebguiApp')
                 return;
             }
             var config = angular.copy(BitmarkCliSetupConfig);
-            config.config = bitmarkCliConfigFile;
+            config.config = BitmarkCliConfig[$scope.generateConfig.chain];
             config.password = $scope.password;
             config.network = $scope.generateConfig.chain;
             config.private_key =  $scope.privateKey;
