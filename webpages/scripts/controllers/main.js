@@ -12,7 +12,10 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('MainCtrl', ['$scope', '$location', 'httpService', 'ProxyTemp', '$interval', function ($scope, $location, httpService, ProxyTemp, $interval) {
+    .controller('MainCtrl', ['$scope', '$location', 'httpService', 'ProxyTemp', '$interval', 'configuration', function ($scope, $location, httpService, ProxyTemp, $interval, configuration) {
+        if(configuration.getConfiguration().bitmarkCliConfigFile.length == 0){
+            $location.path('/login');
+        }
 
         var bitmarkStatusObj = {
             "run": "Running",

@@ -12,6 +12,8 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('TransferCtrl', ['$scope', 'httpService', function ($scope, httpService) {
-
-  }]);
+    .controller('TransferCtrl', function ($scope, $location, httpService, configuration) {
+        if(configuration.getConfiguration().bitmarkCliConfigFile.length == 0){
+            $location.path('/login');
+        }
+  });

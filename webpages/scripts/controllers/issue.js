@@ -12,6 +12,8 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('IssueCtrl', ['$scope', 'httpService', function ($scope, httpService) {
-
-  }]);
+    .controller('IssueCtrl', function ($scope, $location, httpService, configuration) {
+        if(configuration.getConfiguration().bitmarkCliConfigFile.length == 0){
+            $location.path('/login');
+        }
+  });

@@ -12,7 +12,11 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('NetworkCtrl', ['$scope', '$http', '$location', 'httpService', function ($scope, $http, $location, httpService) {
+    .controller('NetworkCtrl', function ($scope, $http, $location, httpService, configuration) {
+        if(configuration.getConfiguration().bitmarkCliConfigFile.length == 0){
+            $location.path('/login');
+        }
+
         $scope.request = {
             Origin: "",
             New: ""
@@ -37,4 +41,4 @@ angular.module('bitmarkWebguiApp')
         $scope.goUrl = function(path){
             $location.path(path);
         };
-  }]);
+  });

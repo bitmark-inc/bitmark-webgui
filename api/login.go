@@ -203,7 +203,7 @@ loop:
 	removeBitmarkCliConfigAndCookie(w, filePath, webguiConfiguration, log)
 }
 
-func removeBitmarkCliConfigAndCookie (w http.ResponseWriter, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
+func removeBitmarkCliConfigAndCookie(w http.ResponseWriter, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
 	response := &Response{
 		Ok:     false,
 		Result: "logout error",
