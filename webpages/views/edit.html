@@ -15,18 +15,10 @@
 
         <p>
           <b>chain</b>
-          <label>
-            <input type="radio" ng-model="bitmarkConfig.Chain" value="local" ng-change="setBitcoinProxy()">
-            Local
-          </label>
-          <label>
-            <input type="radio" ng-model="bitmarkConfig.Chain" value="testing" ng-change="setBitcoinProxy()">
-            Testing
-          </label>
-          <label>
-            <input type="radio" ng-model="bitmarkConfig.Chain" value="bitmark" ng-change="setBitcoinProxy()">
-            Bitmark
-          </label>
+          {{bitmarkConfig.Chain}}
+          <button uib-popover="Logout to change chain" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
         </p>
  
         <p>

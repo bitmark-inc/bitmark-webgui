@@ -44,12 +44,16 @@ var app = angular
             "testing": "/home/bitmark/config/bitmark-cli/bitmark-cli-TESTING.conf",
             "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf",
             "local": "/home/bitmark/config/bitmark-cli/bitmark-cli-LOCAL.conf"
+
+            // "testing": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config"
             // "local": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config"
         })
         .constant("BitmarkPayConfig", {
             "testing": "/home/bitmark/config/bitmark-pay/bitmark-pay-TESTING.xml",
             "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.xml",
             "local": "/home/bitmark/config/bitmark-pay/bitmark-pay-LOCAL.xml"
+
+            // "testing": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml"
             // "local": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml"
         })
         .config(function ($routeProvider, $httpProvider) {

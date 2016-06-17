@@ -72,22 +72,6 @@ angular.module('bitmarkWebguiApp')
             Address: ""
         };
 
-        $scope.setBitcoinProxy = function(){
-            switch($scope.bitmarkConfig.Chain){
-            case 'local':
-                $scope.bitcoinUseProxy = proxyType.local;
-                break;
-            default:
-                if($scope.bitmarkConfig.Bitcoin.URL == BitmarkProxyURL.testing || $scope.bitmarkConfig.Bitcoin.URL == BitmarkProxyURL.bitmark){
-                    $scope.bitcoinUseProxy = proxyType[$scope.bitmarkConfig.Chain];
-                }else if($scope.bitmarkConfig.Bitcoin.Username == ProxyTemp.Username){
-                    $scope.bitcoinUseProxy = proxyType.other;
-                }else{
-                    $scope.bitcoinUseProxy = proxyType.local;
-                }
-            }
-        };
-
         $scope.verifyPassowrd = "";
         $scope.bitcoinPasswordEqual = true;
         $scope.publicKeyPattern = /^(\w|\d|\.|\-|:|\+|=|\^|!|\/|\*|\?|&|<|>|\(|\)|\[|\]|\{|\}|@|%|\$|#)+$/;
