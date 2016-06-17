@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
@@ -37,7 +38,7 @@ type BitmarkCliTransferResponse struct {
 }
 
 //POST /api/bitmarkCli/*
-func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string) {
+func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
 	log.Infof("POST /api/bitmarCli/%s", command)
 	response := &Response{
 		Ok:     false,
@@ -96,7 +97,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			return
 		}
 
-		_, err = bitmarkCliService.Setup(request)
+		_, err = bitmarkCliService.Setup(request,webguiFilePath, configuration)
 		if nil != err {
 			response.Result = "bitmark-cli setup error"
 		} else {

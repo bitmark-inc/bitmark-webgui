@@ -366,7 +366,7 @@ func handleLogin(w http.ResponseWriter, req *http.Request) {
 		if !checkAuthorization(w, req, true, log) {
 			return
 		}
-		api.LoginStatus(w, log)
+		api.LoginStatus(w, GlobalConfig, log)
 	case `POST`:
 		if GlobalConfig.EnableHttps && checkAuthorization(w, req, false, log) {
 			if err := api.WriteGlobalErrorResponse(w, fault.ApiErrAlreadyLoggedIn, log); nil != err {
@@ -374,7 +374,7 @@ func handleLogin(w http.ResponseWriter, req *http.Request) {
 			}
 			return
 		}
-		api.LoginBitmarkWebgui(w, req, GlobalConfig.Password, log)
+		api.LoginBitmarkWebgui(w, req, GlobalConfig, log)
 	case `OPTIONS`:
 		return
 	default:
@@ -392,7 +392,7 @@ func handleLogout(w http.ResponseWriter, req *http.Request) {
 
 	switch req.Method {
 	case `POST`:
-		api.LogoutBitmarkWebgui(w, log)
+		api.LogoutBitmarkWebgui(w, req, BitmarkWebguiConfigFile, GlobalConfig, log)
 	case `OPTIONS`:
 		return
 	default:
@@ -470,7 +470,7 @@ func handleBitmarkCli(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case `POST`:
 		reqUriArr := strings.Split(req.RequestURI, "/")
-		api.BitmarkCliExec(w, req, log, reqUriArr[3])
+		api.BitmarkCliExec(w, req, log, reqUriArr[3], BitmarkWebguiConfigFile, GlobalConfig)
 	case `OPTIONS`:
 		return
 	default:
@@ -489,7 +489,7 @@ func handleOnestep(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case `POST`:
 		reqUriArr := strings.Split(req.RequestURI, "/")
-		api.OnestepExec(w, req, log, reqUriArr[3])
+		api.OnestepExec(w, req, log, reqUriArr[3], BitmarkWebguiConfigFile, GlobalConfig)
 	case `OPTIONS`:
 		return
 	default:

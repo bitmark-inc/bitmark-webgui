@@ -1,7 +1,8 @@
 
 app.service('configuration', function () {
     var configuration = {
-        chain: "testing"
+        chain: "testing",
+        bitmarkCliConfigFile: ""
     };
 
     return {
@@ -10,6 +11,9 @@ app.service('configuration', function () {
         },
         setChain: function(chain) {
             configuration.chain = chain;
+        },
+        setBitmarkCliConfigFile: function(file){
+            configuration.bitmarkCliConfigFile = file;
         }
     };
 });

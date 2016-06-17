@@ -16,7 +16,9 @@ const (
 	defaultPort                 = 2150
 	defaultPassword             = "bitmark-webgui"
 	defaultEnableHttps          = true
+	defaultBitmarkChain         = "testing"
 	defaultBitmarkConfigFile    = "/etc/bitmarkd.conf"
+	defaultBitmarkCliConfigFile = ""
 	defaultBitmarkPayServiceBin = "./bin/bitmarkPayService"
 
 	defaultLogDirectory = "log"
@@ -50,7 +52,9 @@ type Configuration struct {
 	Port                 int        `libucl:"port"`
 	Password             string     `libucl:"password"`
 	EnableHttps          bool       `libucl:"enable_https"`
+	BitmarkChain         string     `libucl:"bitmark_chain"`
 	BitmarkConfigFile    string     `libucl:"bitmark_config_file"`
+	BitmarkCliConfigFile string     `libucl:"bitmark_cli_config_file"`
 	BitmarkPayServiceBin string     `libucl:"bitmark_pay_service_bin"`
 	Logging              LoggerType `libucl:"logging"`
 }
@@ -61,7 +65,9 @@ func GetDefaultConfiguration(dataDirectory string) (*Configuration, error) {
 		Port:                 defaultPort,
 		Password:             defaultPassword,
 		EnableHttps:          defaultEnableHttps,
+		BitmarkChain:         defaultBitmarkChain,
 		BitmarkConfigFile:    defaultBitmarkConfigFile,
+		BitmarkCliConfigFile: defaultBitmarkCliConfigFile,
 		BitmarkPayServiceBin: defaultBitmarkPayServiceBin,
 		Logging:              *defaultLogger,
 	}

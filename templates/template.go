@@ -13,7 +13,9 @@ data_directory = "{{.DataDirectory}}"
 port = "{{.Port}}"
 password = "{{.Password}}"
 enable_https = "{{.EnableHttps}}"
+bitmark_chain = "{{.BitmarkChain}}"
 bitmark_config_file = "{{.BitmarkConfigFile}}"
+bitmark_cli_config_file = "{{.BitmarkCliConfigFile}}"
 bitmark_pay_service_bin = "{{.BitmarkPayServiceBin}}"
 logging {
   size = 1048576

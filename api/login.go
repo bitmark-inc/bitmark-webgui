@@ -6,19 +6,32 @@ package api
 
 import (
 	"encoding/json"
+	"time"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
+	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"os"
 )
 
+type LoginResponse struct {
+	Chain string `json:"chain"`
+	BitmarkCliConfigFile string `json:"bitmark_cli_config_file"`
+}
+
 // GET /api/login
-func LoginStatus(w http.ResponseWriter, log *logger.L) {
+func LoginStatus(w http.ResponseWriter, configuration *configuration.Configuration, log *logger.L) {
 
 	log.Info("GET /api/login: check login status")
+	loginResponse := &LoginResponse {
+		Chain: configuration.BitmarkChain,
+		BitmarkCliConfigFile: configuration.BitmarkCliConfigFile,
+	}
 	response := &Response{
 		Ok:     true,
-		Result: nil,
+		Result: loginResponse,
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -31,7 +44,7 @@ type loginRequset struct {
 }
 
 // POST /api/login
-func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, password string, log *logger.L) {
+func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, configuration *configuration.Configuration, log *logger.L) {
 
 	log.Info("POST /api/login")
 	response := &Response{
@@ -50,7 +63,7 @@ func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, password strin
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(request.Password)); nil != err {
+	if err := bcrypt.CompareHashAndPassword([]byte(configuration.Password), []byte(request.Password)); nil != err {
 		log.Errorf("Login failed: %v, Host: %v, User-Agent: %v", fault.ErrWrongPassword, req.Host, req.Header.Get("User-Agent"))
 		if err := writeApiResponse(w, response); nil != err {
 			log.Errorf("Error: %v", err)
@@ -58,8 +71,13 @@ func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, password strin
 		return
 	}
 
+	loginResponse := &LoginResponse {
+		Chain: configuration.BitmarkChain,
+		BitmarkCliConfigFile: configuration.BitmarkCliConfigFile,
+	}
+
 	response.Ok = true
-	response.Result = nil
+	response.Result = loginResponse
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}
@@ -69,10 +87,128 @@ func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, password strin
 
 }
 
+type logoutRequset struct {
+	Password string `json:"password"`
+	BitmarkPayConfigFile string `json:"bitmark_pay_config_file"`
+}
+
 // POST /api/logout
-func LogoutBitmarkWebgui(w http.ResponseWriter, log *logger.L) {
+func LogoutBitmarkWebgui(w http.ResponseWriter, req *http.Request, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
 
 	log.Info("POST /api/logout")
+	response := &Response{
+		Ok:     false,
+		Result: "logout error",
+	}
+
+	decoder := json.NewDecoder(req.Body)
+	var request logoutRequset
+	err := decoder.Decode(&request)
+	if nil != err {
+		log.Errorf("Error: %v", err)
+		if err := writeApiResponse(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	// get privateKey from bitmark-cli
+	var keyPair BitmarkCliGenerateResponse
+	bitmarkCliKeyPair := services.BitmarkCliKeyPairType {
+		Password: request.Password,
+	}
+	output, err := bitmarkCliService.KeyPair(bitmarkCliKeyPair, webguiConfiguration.BitmarkCliConfigFile)
+	if nil != err {
+		log.Errorf("Error: %v", err)
+
+		response.Result = "password error"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	} else {
+		if err := json.Unmarshal(output, &keyPair); nil != err {
+			log.Errorf("Error: %v", err)
+
+			response.Result = "parse json error"
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			return
+		}
+	}
+
+	// decrypt bitmark-wallet
+	if _, err := os.Stat(request.BitmarkPayConfigFile); nil != err {
+		response.Result = "bitmarkPayConfigFile not existed"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	net := webguiConfiguration.BitmarkChain
+	if "local" == net {
+		net = "local_bitcoin_reg"
+	}
+	decryptConfig := services.BitmarkPayType {
+		Net: net,
+		Config: request.BitmarkPayConfigFile,
+		Password: keyPair.PrivateKey,
+	}
+	if err := bitmarkPayService.Decrypt(decryptConfig); nil != err {
+		log.Errorf("decrypt bitmarkPay error: %v\n", err)
+		response.Result = "internal error"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+
+	ticker := time.NewTicker(time.Millisecond * 500)
+loop:
+	for range ticker.C {
+		status, err := bitmarkPayService.Status(bitmarkPayService.GetBitmarkPayJobHash())
+		if nil != err {
+			log.Errorf("decrypt bitmarkPay error: %v\n", err)
+			response.Result = "internal error"
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			break loop
+		}
+
+		switch status {
+		case "success":
+			ticker.Stop()
+			break loop
+		case "fail":
+			ticker.Stop()
+			log.Errorf("decrypt bitmarkPay job error")
+			response.Result = "internal error"
+			if err := writeApiResponseAndSetCookie(w, response); nil != err {
+				log.Errorf("Error: %v", err)
+			}
+			break loop
+		case "stopped":
+			ticker.Stop()
+			break loop
+		}
+        }
+
+	// remove bitmark-cli config file
+	log.Infof("removing file: %v\n", webguiConfiguration.BitmarkCliConfigFile)
+	if err = os.Remove(webguiConfiguration.BitmarkCliConfigFile); nil != err {
+		response.Result = "delete bitmark-cli config file error"
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+	webguiConfiguration.BitmarkCliConfigFile = ""
+	configuration.UpdateConfiguration(filePath, webguiConfiguration)
+
+	// remove cookie
 	cookie := &http.Cookie{
 		Name:   CookieName,
 		Secure: true,
@@ -80,10 +216,8 @@ func LogoutBitmarkWebgui(w http.ResponseWriter, log *logger.L) {
 	}
 	http.SetCookie(w, cookie)
 
-	response := &Response{
-		Ok:     true,
-		Result: nil,
-	}
+	response.Ok = true
+	response.Result = nil
 
 	w.Header().Set("Content-Type", "text/json; charset=utf-8")
 	if b, err := json.MarshalIndent(response, "", "  "); nil != err {

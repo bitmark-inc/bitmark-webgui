@@ -1,5 +1,5 @@
 angular.module('bitmarkWebguiApp')
-    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService, $cookies) {
+    .controller('NavbarCtrl', function ($rootScope, $scope, $location, httpService, $cookies, configuration) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;
         });
@@ -11,10 +11,15 @@ angular.module('bitmarkWebguiApp')
 
         $scope.init = function(){
             httpService.send("checkAuthenticate").then(
-                function(){
-                    $scope.$emit('Authenticated', true);
-                    $location.path('/');
-
+                function(result){
+                    configuration.setChain(result.chain);
+                    configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
+                    if(result.bitmark_cli.config_file.length == 0) {
+                        $location.path('/login/access');
+                    }else{ // not logout properly, use last time setting
+                        $scope.$emit('Authenticated', true);
+                        $location.path('/');
+                    }
                 },function(){
                     $scope.$emit('Authenticated', false);
                     $location.path('/login');
@@ -22,17 +27,6 @@ angular.module('bitmarkWebguiApp')
         };
 
 
-        $scope.logout = function(){
-            httpService.send("logout").then(
-                function(){
-                    $scope.$emit('Authenticated', false);
-                    $cookies.remove('bitmark-chain');
-                    $scope.goUrl('/login');
-                }, function(errorMsg){
-                    $scope.$emit('Authenticated', true);
-                    $scope.errorMsg = errorMsg;
-                });
-        };
         $scope.goUrl = function(path){
             $location.path(path);
         };

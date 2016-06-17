@@ -29,32 +29,18 @@ angular.module('bitmarkWebguiApp')
             $cookies.remove('bitmark-webgui');
             httpService.send('login', $scope.request).then(
                 function(result){
-                    var chain = $cookies.get('bitmark-chain');
-                    if(chain == undefined) {
+                    configuration.setChain(result.chain);
+                    configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
+                    if(result.bitmark_cli_config_file.length == 0) {
                         $scope.showWelcome = true;
-                    } else { // not logout properly, use last time setting
-                        if(chain != "local" && chain != "testing" && chain != "bitmark"){
-                            $log.error("Fatal error! cookie bimark-chain is not usual: "+chain);
-                        } else{
-                            $scope.$emit('Authenticated', true);
-                            configuration.setChain(chain);
-                            $location.path('/');
-                        }
+                    }else{ // not logout properly, use last time setting
+                        $scope.$emit('Authenticated', true);
+                        $location.path('/');
                     }
                 }, function(result){
                     if (result == "Already logged in") {
-                        var chain = $cookies.get('bitmark-chain');
-                        if(chain == undefined) {
-                            $log.error("Fatal error! cookie bimark-chain is null but server logined!");
-                        } else {
-                            if(chain != "local" && chain != "testing" && chain != "bitmark"){
-                                $log.error("Fatal error! cookie bimark-chain is not usual: "+chain);
-                            } else{
-                                $scope.$emit('Authenticated', true);
-                                configuration.setChain(chain);
-                                $location.path('/');
-                            }
-                        }
+                        $log.error("Already login!");
+                        $scope.errorMsg = "Already login! should not see this page";
                     }else{
                         $scope.$emit('Authenticated', false);
                         $scope.errorMsg = "Login failed";

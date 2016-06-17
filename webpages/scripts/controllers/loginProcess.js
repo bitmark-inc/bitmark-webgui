@@ -21,7 +21,7 @@ angular.module('bitmarkWebguiApp')
         };
 
         $scope.generateConfig = {
-            chain: "testing",
+            chain: configuration.getConfiguration().chain,
             running: false,
             msg: [],
             error: {

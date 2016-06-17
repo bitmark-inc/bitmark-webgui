@@ -12,7 +12,8 @@ import (
 	"os/exec"
 )
 
-func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L) ([]byte, error) {
+// logStdOut determines print result from stdout or not
+func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L, logStdOut bool) ([]byte, error) {
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		log.Errorf("Error: %v", err)
@@ -36,7 +37,10 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L) ([]byte, error) 
 	}
 
 	log.Errorf("%s %s stderr: %s", cmd.Path, cmdType, stde)
-	log.Infof("%s %s stdout: %s", cmd.Path, cmdType, stdo)
+	if logStdOut {
+		log.Infof("%s %s stdout: %s", cmd.Path, cmdType, stdo)
+	}
+
 	if len(stde) != 0 {
 		return nil, errors.New(string(stde))
 	}

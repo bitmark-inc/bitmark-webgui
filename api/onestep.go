@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 type onestepRequest interface{}
 
 // POST /api/onestep/status, setup, issue, transfer
-func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string) {
+func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
 	log.Infof("POST /api/onestep/%s", command)
 
 	// get diffrent request instance for json decode
@@ -41,7 +42,7 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 		execOnestepStatus(w, *realRequest, log)
 	case *OnestepSetupRequest:
 		realRequest := request.(*OnestepSetupRequest)
-		execOnestepSetup(w, *realRequest, log)
+		execOnestepSetup(w, *realRequest, log, webguiFilePath, configuration)
 	case *OnestepIssueRequest:
 		realRequest := request.(*OnestepIssueRequest)
 		execOnestepIssue(w, *realRequest, log)
@@ -138,7 +139,7 @@ type OnestepSetupRequest struct {
 	PayPassword string `json:"pay_password"`
 }
 
-func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *logger.L) {
+func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *logger.L, webguiFilePath string, configuration *configuration.Configuration) {
 	response := &Response{
 		Ok:     false,
 		Result: nil,
@@ -153,7 +154,7 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 		Connect:     request.Connect,
 		Description: request.Description,
 	}
-	_, err := bitmarkCliService.Setup(cliRequest)
+	_, err := bitmarkCliService.Setup(cliRequest, webguiFilePath, configuration)
 	if nil != err {
 		response.Result = "bitmark-cli setup error"
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {

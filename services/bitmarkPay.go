@@ -18,6 +18,7 @@ import (
 
 type BitmarkPayInterface interface {
 	Encrypt(BitmarkPayType) error
+	Decrypt(BitmarkPayType) error
 	Info(BitmarkPayType) error
 	Pay(BitmarkPayType) error
 	Status(string) (string, error)
@@ -116,7 +117,32 @@ func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) error {
 		"--password="+bitmarkPayType.Password,
 		"encrypt")
 
-	return bitmarkPay.runBitmarkPayJob(cmd, "encrypt")
+	return bitmarkPay.runBitmarkPayJob(cmd, "encrypt", true)
+}
+
+func (bitmarkPay *BitmarkPay) Decrypt(bitmarkPayType BitmarkPayType) error {
+	//check command process is not running
+	oldCmd := bitmarkPay.asyncJob.command
+
+	if nil != oldCmd && nil == oldCmd.ProcessState {
+		return fault.ErrBitmarkPayIsRunning
+	}
+
+	// check config, net, password
+	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Password); nil != err {
+		return err
+	}
+
+	// check cmd process is finish
+	cmd := exec.Command("java", "-jar",
+		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
+		bitmarkPay.bin,
+		"--net="+bitmarkPayType.Net,
+		"--config="+bitmarkPayType.Config,
+		"--password="+bitmarkPayType.Password,
+		"decrypt")
+
+	return bitmarkPay.runBitmarkPayJob(cmd, "decrypt", false)
 }
 
 func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) error {
@@ -140,7 +166,7 @@ func (bitmarkPay *BitmarkPay) Info(bitmarkPayType BitmarkPayType) error {
 		"--json",
 		"info")
 
-	return bitmarkPay.runBitmarkPayJob(cmd, "info")
+	return bitmarkPay.runBitmarkPayJob(cmd, "info", true)
 }
 
 func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
@@ -169,7 +195,7 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
 		addresses,
 	)
 
-	return bitmarkPay.runBitmarkPayJob(cmd, "pay")
+	return bitmarkPay.runBitmarkPayJob(cmd, "pay", true)
 }
 
 func (bitmarkPay *BitmarkPay) Status(hashString string) (string, error) {
@@ -255,7 +281,7 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 	return nil
 }
 
-func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) error {
+func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string, logStdOut bool) error {
 	byteHash, err := time.Now().MarshalText()
 	if nil != err {
 		bitmarkPay.log.Errorf("get error: %v\n", err)
@@ -271,7 +297,7 @@ func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string) er
 	bitmarkPay.asyncJob.cmdType = cmdType
 
 	go func() {
-		if result, err := getCmdOutput(cmd, cmdType, bitmarkPay.log); nil != err {
+		if result, err := getCmdOutput(cmd, cmdType, bitmarkPay.log, logStdOut); nil != err {
 			bitmarkPay.Lock()
 			defer bitmarkPay.Unlock()
 

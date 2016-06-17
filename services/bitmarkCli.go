@@ -5,6 +5,7 @@
 package services
 
 import (
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"os/exec"
@@ -71,7 +72,7 @@ func (bitmarkCli *BitmarkCli) Info(bitmarkCliInfo BitmarkCliInfoType) ([]byte, e
 		"--config", bitmarkCliInfo.Config,
 		"info")
 
-	return getCmdOutput(cmd, "setup", bitmarkCli.log)
+	return getCmdOutput(cmd, "setup", bitmarkCli.log, true)
 }
 
 type BitmarkCliSetupType struct {
@@ -84,7 +85,7 @@ type BitmarkCliSetupType struct {
 	PrivateKey  string `json:"private_key"`
 }
 
-func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType) ([]byte, error) {
+func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType, filePath string, bitmarkWebguiConfig *configuration.Configuration) ([]byte, error) {
 	if err := checkRequireStringParameters(bitmarkCliSetup.Config, bitmarkCliSetup.Identity, bitmarkCliSetup.Password, bitmarkCliSetup.Network, bitmarkCliSetup.Connect, bitmarkCliSetup.Description); nil != err {
 		return nil, err
 	}
@@ -99,7 +100,12 @@ func (bitmarkCli *BitmarkCli) Setup(bitmarkCliSetup BitmarkCliSetupType) ([]byte
 		"--description", bitmarkCliSetup.Description,
 		"--privateKey", bitmarkCliSetup.PrivateKey)
 
-	return getCmdOutput(cmd, "setup", bitmarkCli.log)
+	output, err := getCmdOutput(cmd, "setup", bitmarkCli.log, true)
+	if nil == err {
+		bitmarkWebguiConfig.BitmarkCliConfigFile = bitmarkCliSetup.Config
+		configuration.UpdateConfiguration(filePath, bitmarkWebguiConfig)
+	}
+	return output, err
 }
 
 type BitmarkCliIssueType struct {
@@ -128,7 +134,7 @@ func (bitmarkCli *BitmarkCli) Issue(bitmarkCliIssue BitmarkCliIssueType) ([]byte
 		"--fingerprint", bitmarkCliIssue.Fingerprint,
 		"--quantity", quantity)
 
-	return getCmdOutput(cmd, "issue", bitmarkCli.log)
+	return getCmdOutput(cmd, "issue", bitmarkCli.log, true)
 }
 
 type BitmarkCliTransferType struct {
@@ -152,5 +158,22 @@ func (bitmarkCli *BitmarkCli) Transfer(bitmarkCliTransfer BitmarkCliTransferType
 		"--txid", bitmarkCliTransfer.Txid,
 		"--receiver", bitmarkCliTransfer.Receiver)
 
-	return getCmdOutput(cmd, "transfer", bitmarkCli.log)
+	return getCmdOutput(cmd, "transfer", bitmarkCli.log, true)
+}
+
+type BitmarkCliKeyPairType struct {
+	Password string `json:"password"`
+}
+
+func (bitmarkCli *BitmarkCli) KeyPair(bitmarkCliKeyPair BitmarkCliKeyPairType, bitmarkWebguiConfig string) ([]byte, error) {
+	if err := checkRequireStringParameters(bitmarkCliKeyPair.Password); nil != err {
+		return nil, err
+	}
+
+	cmd := exec.Command("bitmark-cli",
+		"--config", bitmarkWebguiConfig,
+		"--password", bitmarkCliKeyPair.Password,
+		"keypair")
+
+	return getCmdOutput(cmd, "keypair", bitmarkCli.log, false)
 }
