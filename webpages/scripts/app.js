@@ -45,7 +45,7 @@ var app = angular
             "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf",
             "local": "/home/bitmark/config/bitmark-cli/bitmark-cli-LOCAL.conf"
 
-            // "testing": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config"
+            // "testing": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config",
             // "local": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config"
         })
         .constant("BitmarkPayConfig", {
@@ -70,12 +70,12 @@ var app = angular
                     controller: 'EditCtrl'
                 })
                 .when('/issue', {
-                    templateUrl: 'views/issue.html',
-                    controller: 'IssueCtrl'
+                    templateUrl: 'views/issueNTransfer.html',
+                    controller: 'IssueNTransferCtrl'
                 })
                 .when('/transfer', {
-                    templateUrl: 'views/transfer.html',
-                    controller: 'TransferCtrl'
+                    templateUrl: 'views/issueNTransfer.html',
+                    controller: 'IssueNTransferCtrl'
                 })
                 .when('/network', {
                     templateUrl: 'views/network.html',

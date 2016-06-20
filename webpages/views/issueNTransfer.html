@@ -1,5 +1,6 @@
 <div ng-init="init()">
-  <h3>Issue and Transfer Bitmark</h3>
+  <h3 ng-if="showIssueView">Issue Bitmark</h3>
+  <h3 ng-if="!showIssueView">Transfer Bitmark</h3>
   <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
     <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
   </div>
@@ -8,8 +9,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">Info</div>
     <div class="panel-body">
-      <p ng-show="showSetup">Setup an identity in bitmark and a bitcoin wallet to issue and transfer your assets. </p>
-      <div ng-show="!showSetup">
+      <div>
         <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show">
           {{infoErr.msg}}
         </uib-alert>
@@ -21,18 +21,6 @@
         <p>
           <b>Chain</b>
           {{onestepStatusResult.cli_result.network}}
-        </p>
-        <p>
-          <b>Connect</b>
-          {{onestepStatusResult.cli_result.connect}}
-        </p>
-        <p>
-          <b>Identity Name</b>
-          {{onestepStatusResult.cli_result.identities[0].name}}
-        </p>
-        <p>
-          <b>Identity Description</b>
-          {{onestepStatusResult.cli_result.identities[0].description}}
         </p>
         <p>
           <b>Identity Publickey</b>
@@ -54,63 +42,8 @@
     </div>
   </div>
 
-  <!-- setup section -->
-  <div class="panel panel-default" ng-show="showSetup">
-    <div class="panel-heading">
-      Setup
-    </div>
-    <div class="panel-body">
-      <uib-alert type="danger"  ng-show="setupErr.show" close="setupErr.show=false">
-        {{setupErr.msg}}
-      </uib-alert>
-      <uib-alert type="warning"  ng-show="setupAlert.show">
-        {{setupAlert.msg}}
-        <button ng-click="killPayProcess('setup')">Yes</button>
-      </uib-alert>
-      <form name="setupForm">
-        <div class="panel-body">
-          <p>
-            <b>Chain</b>
-            {{bitmarkChain}}
-          </p>
-          <p>
-            <label>
-              Connect
-              <input type="text" ng-model="setupConfig.connect" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Identity Name
-              <input type="text" ng-model="setupConfig.identity" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Identity Description
-              <textarea ng-model="setupConfig.description" required></textarea>
-            </label>
-          </p>
-          <p>
-            <label>
-              Identity Password
-              <password-set password="setupConfig.cli_password" result="cliPasswordResult"></password-set>
-            </label>
-          </p>
-          <p>
-            <label>
-              Pay Password
-              <password-set password="setupConfig.pay_password" result="payPasswordResult"></password-set>
-            </label>
-          </p>
-        </div>
-        <button ng-click="submitSetup()" ng-disabled="setupForm.$invalid || !cliPasswordResult || !payPasswordResult">submit</button>
-      </form>
-    </div>
-  </div>
-
   <!-- Issue setction -->
-  <div class="panel panel-default" ng-show="!showSetup && bitmarkCliInfoSuccess">
+  <div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="showIssueView">
     <div class="panel-heading">
       Issue Asset
     </div>
@@ -176,16 +109,10 @@
           </p>
           <p>
             <label>
-              Identity Password
-              <input type="password" ng-model="issueConfig.cli_password" required>
+              Passcode
+              <input type="password" ng-model="issueConfig.password" required>
             </label>
           </p>
-          <p>
-            <label>
-              Pay Password
-              <input type="password" ng-model="issueConfig.pay_password" required>
-            </label>
-          </p>        
         </div>
         <button ng-click="submitIssue()" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == ''">submit</button>
       </form>        
@@ -194,7 +121,7 @@
 
 
   <!-- Transfer setction -->
-  <div class="panel panel-default" ng-show="!showSetup && bitmarkCliInfoSuccess">
+  <div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="!showIssueView">
     <div class="panel-heading">
       Transfer Bitmark
     </div>
@@ -235,16 +162,10 @@
           </p>
           <p>
             <label>
-              Identity Password
-              <input type="password" ng-model="transferConfig.cli_password" required>
+              Passcode
+              <input type="password" ng-model="transferConfig.password" required>
             </label>
           </p>
-          <p>
-            <label>
-              Pay Password
-              <input type="password" ng-model="transferConfig.pay_password" required>
-            </label>
-          </p>        
         </div>
         <button ng-click="submitTransfer()" ng-disabled="transferForm.$invalid">submit</button>
       </form>  
