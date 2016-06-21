@@ -20,6 +20,7 @@ type ProcessError GenericError
 var (
 	ErrAlreadyInitialised               = ExistsError("already initialised")
 	ErrBitcoinAddress                   = InvalidError("Invalid bitcoin address")
+	ErrBitmarkdIsRunning                = InvalidError("Bitmarkd is running")
 	ErrBitmarkPayIsRunning              = InvalidError("Bitmark-pay is running")
 	ErrCertificateFileAlreadyExists     = ExistsError("certificate file already exists")
 	ErrConfigFileExited                 = ExistsError("Config file is existed")

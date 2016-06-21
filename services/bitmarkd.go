@@ -70,6 +70,12 @@ func (bitmarkd *Bitmarkd) IsRunning() bool {
 }
 
 func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+	if bitmarkd.running {
+		return fault.ErrBitmarkdIsRunning
+	}
+
+	bitmarkd.configFile = bitmarkConfigFile
+
 	webguiConfig.BitmarkConfigFile = bitmarkConfigFile
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
@@ -105,6 +111,7 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	}
 
 	// Check bitmarkConfigFile exists
+	bitmarkd.log.Infof("bitmark config file: %s\n", bitmarkd.configFile)
 	if !utils.EnsureFileExists(bitmarkd.configFile) {
 		return fault.ErrNotFoundConfigFile
 	}

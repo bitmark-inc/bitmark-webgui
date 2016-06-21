@@ -213,7 +213,7 @@ angular.module('bitmarkWebguiApp')
             config.private_key =  $scope.privateKey;
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
-                // TODO: setup bitmarkConfig file in server
+                // setup bitmarkConfig file in server
                 httpService.send('setupBitmarkd', {
                     config_file: BitmarkdConfig[$scope.generateConfig.chain]
                 }).then(function(setupBitmarkdResult){

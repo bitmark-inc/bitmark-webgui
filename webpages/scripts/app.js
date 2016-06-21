@@ -55,6 +55,7 @@ var app = angular
 
             // "testing": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml"
             // "local": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml"
+
         })
         .config(function ($routeProvider, $httpProvider) {
             $httpProvider.defaults.withCredentials = true;
