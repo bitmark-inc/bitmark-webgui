@@ -15,16 +15,41 @@ angular.module('bitmarkWebguiApp')
             msg: ""
         };
 
-        var logout = function(){
-            httpService.send("logout").then(
-                function(){
-                    $scope.$emit('Authenticated', false);
-                    $scope.goUrl('/login');
-                }, function(errorMsg){
-                    $scope.$emit('Authenticated', true);
-                    $scope.error.msg = errorMsg;
-                    $scope.error.show = true;
-                });
+        var stopBitmardNLogout = function(){
+            httpService.send("statusBitmarkd").then(function(bitmarkStatus){
+                $scope.msg.push("checking bitmarkd...");
+                if(bitmarkStatus == "started") {
+                    // stop bitmarkd first
+                    $scope.msg.push("stopping bitmarkd...");
+                    httpService.send("stopBitmarkd").then(
+                        function(result){
+                            $scope.msg.push("bitmarkd stopped...");
+                            httpService.send("logout").then(
+                                function(){
+                                    $scope.$emit('Authenticated', false);
+                                    $scope.goUrl('/login');
+                                }, function(errorMsg){
+                            $scope.$emit('Authenticated', true);
+                                    $scope.error.msg = errorMsg;
+                                    $scope.error.show = true;
+                                });
+                        }, function(stopBitmarkdErr){
+                            $scope.error.msg = stopBitmarkdErr;
+                            $scope.error.show = true;
+                        });
+                } else {
+                    $scope.msg.push("bitmarkd stopped...");
+                    httpService.send("logout").then(
+                        function(){
+                            $scope.$emit('Authenticated', false);
+                            $scope.goUrl('/login');
+                        }, function(errorMsg){
+                            $scope.$emit('Authenticated', true);
+                            $scope.error.msg = errorMsg;
+                            $scope.error.show = true;
+                        });
+                }
+            });
         };
 
         var decryptPromise;
@@ -55,7 +80,7 @@ angular.module('bitmarkWebguiApp')
                         case "success":
                             $interval.cancel(decryptPromise);
                             pollDecryptCount = 0;
-                            logout();
+                            stopBitmardNLogout();
                         case "running":
                             pollDecryptCount++;
                             if(pollDecryptCount*3 > decryptWaitingTime){
@@ -82,13 +107,13 @@ angular.module('bitmarkWebguiApp')
                 // stop bitcoind
                 if(chain == "local") {
                     httpService("stopBitcoind").then(function(stop){
-                        logout();
+                        stopBitmardNLogout();
                     }, function(stopErr){
                         $scope.error.msg = "failed to stop: "+ stopErr;
                         $scope.error.show = true;
                     });
                 } else {
-                    logout();
+                    stopBitmardNLogout();
                 }
             }, function(decryptErr){
                 $scope.error.msg = "failed to decrypt wallet: "+decryptErr;

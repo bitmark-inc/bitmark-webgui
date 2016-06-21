@@ -92,7 +92,7 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 		}
 	case `setup`:
 		if bitmarkService.IsRunning() {
-			response.Result = bitmarkdAlreadyStopErr
+			response.Result = bitmarkdAlreadyStartErr
 		} else {
 			if err := bitmarkService.Setup(request.ConfigFile, webguiFilePath, webguiConfig); nil != err {
 				response.Result = err
