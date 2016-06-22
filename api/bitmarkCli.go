@@ -60,19 +60,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			}
 		}
 	case "info":
-		var request services.BitmarkCliInfoType
-		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmark-cli request parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
-			return
-		}
-
-		output, err := bitmarkCliService.Info(request)
+		output, err := bitmarkCliService.Info(configuration.BitmarkCliConfigFile)
 		if nil != err {
 			response.Result = "bitmark-cli info error"
 		} else {

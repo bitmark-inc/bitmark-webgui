@@ -39,7 +39,7 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 	switch request.(type) {
 	case *OnestepStatusRequest:
 		realRequest := request.(*OnestepStatusRequest)
-		execOnestepStatus(w, *realRequest, log)
+		execOnestepStatus(w, *realRequest, configuration.BitmarkCliConfigFile, log)
 	case *OnestepSetupRequest:
 		realRequest := request.(*OnestepSetupRequest)
 		execOnestepSetup(w, *realRequest, log, webguiFilePath, configuration)
@@ -69,7 +69,7 @@ type OnestepStatusResponse struct {
 	JobHash   string                 `json:"job_hash"`
 }
 
-func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log *logger.L) {
+func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, bitmarkCliConfigFile string, log *logger.L) {
 	response := &Response{
 		Ok:     false,
 		Result: nil,
@@ -78,10 +78,8 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 	var statusResponse OnestepStatusResponse
 	var cliResponse BitmarkCliInfoResponse
 	// get bitmark-cli info
-	cliRequest := services.BitmarkCliInfoType{
-		Config: request.CliConfig,
-	}
-	cliOutput, err := bitmarkCliService.Info(cliRequest)
+
+	cliOutput, err := bitmarkCliService.Info(bitmarkCliConfigFile)
 	if nil != err {
 		response.Result = onestepCliInfoErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {

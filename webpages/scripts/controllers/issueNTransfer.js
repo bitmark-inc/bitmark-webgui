@@ -123,7 +123,6 @@ angular.module('bitmarkWebguiApp')
             $scope.infoAlert.show = false;
 
             httpService.send("onestepStatus",{
-                cli_config: bitmarkCliConfigFile,
                 network: chain,
                 pay_config: bitmarkPayConfigFile
             }).then(function(infoResult){
