@@ -10,10 +10,7 @@ import (
 
 type onestepRequest interface{}
 
-// POST /api/onestep/status, setup, issue, transfer
-func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
-	log.Infof("POST /api/onestep/%s", command)
-
+func parseOneStepRequest(w http.ResponseWriter, req *http.Request, log *logger.L, command string) onestepRequest {
 	// get diffrent request instance for json decode
 	oneStepRequest := map[string]func() onestepRequest{
 		"status":   func() onestepRequest { return &OnestepStatusRequest{} },
@@ -32,22 +29,34 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
-		return
+		return nil
 	}
 
-	switch request.(type) {
-	case *OnestepStatusRequest:
-		realRequest := request.(*OnestepStatusRequest)
-		execOnestepStatus(w, *realRequest, configuration.BitmarkCliConfigFile, log)
-	case *OnestepSetupRequest:
-		realRequest := request.(*OnestepSetupRequest)
+	return request
+}
+
+// POST /api/onestep/status, setup, issue, transfer
+func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
+	log.Infof("POST /api/onestep/%s", command)
+
+	request := parseOneStepRequest(w, req, log, command)
+	if nil == request {
+		return
+	}else {
+		switch request.(type) {
+		case *OnestepStatusRequest:
+			realRequest := request.(*OnestepStatusRequest)
+			execOnestepStatus(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		case *OnestepSetupRequest:
+			realRequest := request.(*OnestepSetupRequest)
 		execOnestepSetup(w, *realRequest, log, webguiFilePath, configuration)
-	case *OnestepIssueRequest:
-		realRequest := request.(*OnestepIssueRequest)
-		execOnestepIssue(w, *realRequest, configuration.BitmarkCliConfigFile, log)
-	case *OnestepTransferRequest:
-		realRequest := request.(*OnestepTransferRequest)
-		execOnestepTransfer(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		case *OnestepIssueRequest:
+			realRequest := request.(*OnestepIssueRequest)
+			execOnestepIssue(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		case *OnestepTransferRequest:
+			realRequest := request.(*OnestepTransferRequest)
+			execOnestepTransfer(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		}
 	}
 }
 
