@@ -31,14 +31,15 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 
 	decoder := json.NewDecoder(req.Body)
 	var request bitmarkdRequest
-	err := decoder.Decode(&request)
-	if nil != err {
+	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
 		return
 	}
+
 	log.Infof("bitmarkd option: %s", request.Option)
 
 	apiErr := invalidValueErr

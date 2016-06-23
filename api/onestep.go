@@ -23,8 +23,7 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 	}
 	request := oneStepRequest[command]()
 	decoder := json.NewDecoder(req.Body)
-	err := decoder.Decode(request)
-	if nil != err {
+	if err := decoder.Decode(request); nil != err {
 		log.Errorf("Error: %v", err)
 		response := &Response{
 			Ok:     false,
@@ -81,7 +80,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, bitm
 
 	cliOutput, err := bitmarkCliService.Info(bitmarkCliConfigFile)
 	if nil != err {
-		response.Result = onestepCliInfoErr
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -89,7 +88,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, bitm
 	} else {
 		if err := json.Unmarshal(cliOutput, &cliResponse); nil != err {
 			log.Errorf("Error: %v", err)
-			response.Result = "bitmarkOnestep status response parsing error"
+			response.Result = err
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
 				log.Errorf("Error: %v", err)
 			}
@@ -106,8 +105,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, bitm
 		payRequest.Net = "local_bitcoin_reg"
 	}
 
-	err = bitmarkPayService.Info(payRequest)
-	if nil != err {
+	if err := bitmarkPayService.Info(payRequest); nil != err {
 		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
@@ -152,9 +150,8 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 		Connect:     request.Connect,
 		Description: request.Description,
 	}
-	_, err := bitmarkCliService.Setup(cliRequest, webguiFilePath, configuration)
-	if nil != err {
-		response.Result = "bitmark-cli setup error"
+	if _, err := bitmarkCliService.Setup(cliRequest, webguiFilePath, configuration); nil != err {
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -170,9 +167,9 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 	if payRequest.Net == "local" {
 		payRequest.Net = "local_bitcoin_reg"
 	}
-	err = bitmarkPayService.Encrypt(payRequest)
-	if nil != err {
-		response.Result = "bitmark-pay encrypt error"
+
+	if err := bitmarkPayService.Encrypt(payRequest); nil != err {
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -338,7 +335,7 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 
 	output, err := bitmarkCliService.Transfer(cliRequest)
 	if nil != err {
-		response.Result = "bitmark-cli transfer error"
+		response.Result = "bitmark-cli transfer error" + err.Error()
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -348,7 +345,7 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 	var cliTransfer BitmarkCliTransferResponse
 	if err := json.Unmarshal(output, &cliTransfer); nil != err {
 		log.Errorf("Error: %v", err)
-		response.Result = "bitmark-cli transfer success, but parsing fail."
+		response.Result = "bitmark-cli transfer success, but parsing fail." + err.Error()
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}

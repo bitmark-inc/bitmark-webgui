@@ -47,8 +47,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 
 	switch command {
 	case "generate":
-		output, err := bitmarkCliService.Generate()
-		if nil != err {
+		if output, err := bitmarkCliService.Generate(); nil != err {
 			response.Result = err
 		} else {
 			var jsonKeyPair BitmarkCliGenerateResponse
@@ -60,8 +59,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			}
 		}
 	case "info":
-		output, err := bitmarkCliService.Info(configuration.BitmarkCliConfigFile)
-		if nil != err {
+		if output, err := bitmarkCliService.Info(configuration.BitmarkCliConfigFile); nil != err {
 			response.Result = "bitmark-cli info error"
 		} else {
 			var jsonInfo BitmarkCliInfoResponse
@@ -75,8 +73,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	case "setup":
 		var request services.BitmarkCliSetupType
 		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
+		if err := decoder.Decode(&request); nil != err {
 			log.Errorf("Error: %v", err)
 			response.Result = "bitmark-cli request parsing error"
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -85,8 +82,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			return
 		}
 
-		_, err = bitmarkCliService.Setup(request, webguiFilePath, configuration)
-		if nil != err {
+		if _, err := bitmarkCliService.Setup(request, webguiFilePath, configuration); nil != err {
 			response.Result = "bitmark-cli setup error"
 		} else {
 			response.Ok = true
@@ -95,8 +91,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	case "issue":
 		var request services.BitmarkCliIssueType
 		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
+		if err := decoder.Decode(&request); nil != err {
 			log.Errorf("Error: %v", err)
 			response.Result = "bitmark-cli request parsing error"
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -120,8 +115,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	case "transfer":
 		var request services.BitmarkCliTransferType
 		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
+		if err := decoder.Decode(&request); nil != err {
 			log.Errorf("Error: %v", err)
 			response.Result = "bitmark-cli request parsing error"
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -145,8 +139,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	case "keypair":
 		var request services.BitmarkCliKeyPairType
 		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
+		if err := decoder.Decode(&request); nil != err {
 			log.Errorf("Error: %v", err)
 			response.Result = "bitmark-cli request parsing error"
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {

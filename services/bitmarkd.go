@@ -89,14 +89,9 @@ loop:
 			break loop
 		case start := <-bitmarkd.ModeStart:
 			if start {
-				if err := bitmarkd.startBitmarkd(); nil != err {
-					bitmarkd.log.Errorf("Start bitmarkd failed: %v", err)
-				}
-
+				bitmarkd.startBitmarkd()
 			} else {
-				if err := bitmarkd.stopBitmarkd(); nil != err {
-					bitmarkd.log.Errorf("Stop bitmarkd failed: %v", err)
-				}
+				bitmarkd.stopBitmarkd()
 			}
 		}
 
@@ -107,12 +102,14 @@ loop:
 
 func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	if bitmarkd.running {
-		return nil
+		bitmarkd.log.Errorf("Start bitmarkd failed: %v", fault.ErrBitmarkdIsRunning)
+		return fault.ErrBitmarkdIsRunning
 	}
 
 	// Check bitmarkConfigFile exists
 	bitmarkd.log.Infof("bitmark config file: %s\n", bitmarkd.configFile)
 	if !utils.EnsureFileExists(bitmarkd.configFile) {
+		bitmarkd.log.Errorf("Start bitmarkd failed: %v", fault.ErrNotFoundConfigFile)
 		return fault.ErrNotFoundConfigFile
 	}
 
@@ -122,10 +119,12 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		bitmarkd.log.Errorf("Error: %v", err)
+		return err
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		bitmarkd.log.Errorf("Error: %v", err)
+		return err
 	}
 	if err := cmd.Start(); nil != err {
 		return err
@@ -146,7 +145,6 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 			defer close(stderrDone)
 			for {
 				stde, err := stdeReader.ReadString('\n')
-				// fmt.Printf("bitmarkd stderr: %q\n", stde)
 				bitmarkd.log.Errorf("bitmarkd stderr: %q", stde)
 				if nil != err {
 					bitmarkd.log.Errorf("Error: %v", err)
@@ -159,7 +157,6 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 			defer close(stdoutDone)
 			for {
 				stdo, err := stdoReader.ReadString('\n')
-				// fmt.Printf("bitmarkd stdout: %q\n", stdo)
 				bitmarkd.log.Infof("bitmarkd stdout: %q", stdo)
 				if nil != err {
 					bitmarkd.log.Errorf("Error: %v", err)
@@ -185,7 +182,8 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 
 func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 	if !bitmarkd.running {
-		return nil
+		bitmarkd.log.Errorf("Stop bitmarkd failed: %v", fault.ErrBitmarkdIsNotRunning)
+		return fault.ErrBitmarkdIsNotRunning
 	}
 
 	if err := bitmarkd.process.Signal(os.Interrupt); nil != err {

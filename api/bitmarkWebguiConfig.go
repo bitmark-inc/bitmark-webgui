@@ -30,9 +30,9 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 
 	decoder := json.NewDecoder(req.Body)
 	var request bWebguiPasswordRequset
-	err := decoder.Decode(&request)
-	if nil != err {
+	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error:%v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -42,6 +42,7 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 	if password != "" {
 		if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(request.Origin)); nil != err {
 			log.Errorf("Error: %v", fault.ErrWrongPassword)
+			response.Result = err
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
 				log.Errorf("Error: %v", err)
 			}
@@ -62,6 +63,7 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 	input, err := ioutil.ReadFile(bitmarkWebguiConfigFile)
 	if nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -80,6 +82,7 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 	err = ioutil.WriteFile(bitmarkWebguiConfigFile, []byte(output), 0644)
 	if nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
