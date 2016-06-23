@@ -128,7 +128,7 @@ func bitmarkPayParseRequest(w http.ResponseWriter, req *http.Request, response *
 	decoder = json.NewDecoder(req.Body)
 	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
-		response.Result =  err
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}

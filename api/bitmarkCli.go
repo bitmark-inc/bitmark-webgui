@@ -6,8 +6,8 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
-	"net/http"
 	"io"
+	"net/http"
 )
 
 type BitmarkCliGenerateResponse struct {
@@ -97,7 +97,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			} else {
 				var jsonIssue BitmarkCliIssueResponse
 				if err := json.Unmarshal(output, &jsonIssue); nil != err {
-				log.Errorf("Error: %v", err)
+					log.Errorf("Error: %v", err)
 				} else {
 					response.Ok = true
 					response.Result = jsonIssue
@@ -108,7 +108,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	case "transfer":
 		if tmpRequest := parseCliRequest(w, req.Body, log, command); nil == tmpRequest {
 			return
-		}else {
+		} else {
 			request := tmpRequest.(*services.BitmarkCliTransferType)
 			output, err := bitmarkCliService.Transfer(*request)
 			if nil != err {
@@ -118,7 +118,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 				if err := json.Unmarshal(output, &jsonTransfer); nil != err {
 					log.Errorf("Error: %v", err)
 				} else {
-				response.Ok = true
+					response.Ok = true
 					response.Result = jsonTransfer
 				}
 			}
@@ -153,7 +153,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 
 func parseCliRequest(w http.ResponseWriter, requestBody io.ReadCloser, log *logger.L, command string) bitmarkCliRequestInterface {
 
-	bitmarkCliRequest := map[string]func() bitmarkCliRequestInterface {
+	bitmarkCliRequest := map[string]func() bitmarkCliRequestInterface{
 		"setup": func() bitmarkCliRequestInterface {
 			return &services.BitmarkCliSetupType{}
 		},

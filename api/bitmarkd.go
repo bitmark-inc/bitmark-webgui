@@ -6,8 +6,8 @@ package api
 
 import (
 	"encoding/json"
-	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
+	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net/http"
@@ -16,7 +16,7 @@ import (
 )
 
 type bitmarkdRequest struct {
-	Option string `json:"option"`
+	Option     string `json:"option"`
 	ConfigFile string `json:"config_file"`
 }
 
