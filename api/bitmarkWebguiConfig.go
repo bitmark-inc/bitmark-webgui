@@ -6,6 +6,7 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"golang.org/x/crypto/bcrypt"
@@ -20,7 +21,7 @@ type bWebguiPasswordRequset struct {
 }
 
 // POST /api/password
-func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkWebguiConfigFile string, password string, log *logger.L) {
+func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkWebguiConfigFile string, configs *configuration.Configuration, log *logger.L) {
 
 	log.Info("POST /api/password")
 	response := &Response{
@@ -39,8 +40,8 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 		return
 	}
 
-	if password != "" {
-		if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(request.Origin)); nil != err {
+	if configs.Password != "" {
+		if err := bcrypt.CompareHashAndPassword([]byte(configs.Password), []byte(request.Origin)); nil != err {
 			log.Errorf("Error: %v", fault.ErrWrongPassword)
 			response.Result = err
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -89,12 +90,20 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 		return
 	}
 
+
+	configs.Password = string(encryptPassword)
+
 	response.Ok = true
 	response.Result = nil
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}
 
+	// clear server cookie
+	globalCookie[0] = cookie{}
+	globalCookie[1] = cookie{}
+
 	// clean request password
 	request.New = "0000000000000000"
+
 }

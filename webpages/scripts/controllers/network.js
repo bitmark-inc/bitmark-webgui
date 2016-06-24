@@ -32,7 +32,7 @@ angular.module('bitmarkWebguiApp')
             }
             httpService.send('updateBitmarkWebguiPassword', $scope.request).then(
                 function(result){
-                    $scope.goUrl('/');
+                    $scope.goUrl('/main');
                 }, function(errorMsg){
                     $scope.errorMsg = "Set password failed";
                 });
