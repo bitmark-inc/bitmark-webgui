@@ -17,19 +17,24 @@
       <button ng-click="killPayProcess(true)">Yes</button>
       <button ng-click="killPayProcess(false)">Later</button>
     </uib-alert>
+
+    <uib-alert type="warning" ng-show="bitmarkd.isRunning">
+      bitmarkd is running in {{bitmarkd.chain}}, if you want to change chain, please stop it first
+      <button ng-click="stopBitmarkd()">Stop</button>
+    </uib-alert>
     
     <p>
       <b>chain</b>
       <label>
-        <input type="radio" ng-model="generateConfig.chain" value="local" ng-disabled="generateConfig.running">
+        <input type="radio" ng-model="generateConfig.chain" value="local" ng-disabled="generateConfig.running || bitmarkd.isRunning">
         Local
       </label>
       <label>
-        <input type="radio" ng-model="generateConfig.chain" value="testing" ng-disabled="generateConfig.running">
+        <input type="radio" ng-model="generateConfig.chain" value="testing" ng-disabled="generateConfig.running || bitmarkd.isRunning">
         Testing
       </label>
       <label>
-        <input type="radio" ng-model="generateConfig.chain" value="bitmark" ng-disabled="generateConfig.running">
+        <input type="radio" ng-model="generateConfig.chain" value="bitmark" ng-disabled="generateConfig.running || bitmarkd.isRunning">
         Bitmark
       </label>
     </p>

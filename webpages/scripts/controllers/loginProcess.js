@@ -16,6 +16,35 @@ angular.module('bitmarkWebguiApp')
         if(configuration.getConfiguration().bitmarkCliConfigFile.length != 0){
             $location.path('/login');
         }
+        $scope.bitmarkd = {
+            isRunning: false,
+            chain: ""
+        };
+
+        // checkout bitmarkd status first
+        httpService.send('statusBitmarkd').then(
+            function(result){
+                if(result.search("stop") >= 0) {
+                    $scope.bitmarkd.isRunning = false;
+                }else{
+                    httpService.send('getBitmarkdInfo').then(function(info){
+                        $scope.bitmarkd.isRunning = true;
+                        $scope.bitmarkd.chain = info.chain;
+                        configuration.setChain(info.chain);
+                    }, function(infoErr){
+                    });
+                }
+            }, function(errorMsg){
+            });
+
+
+        $scope.stopBitmarkd = function(){
+            httpService.send("stopBitmarkd").then(
+                function(result){
+                    $scope.bitmarkd.isRunning = false;
+                }, function(errorMsg){
+                });
+        };
 
         $scope.panelConfig = {
             showPart: 1
@@ -214,16 +243,22 @@ angular.module('bitmarkWebguiApp')
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
                 // setup bitmarkConfig file in server
-                httpService.send('setupBitmarkd', {
-                    config_file: BitmarkdConfig[$scope.generateConfig.chain]
-                }).then(function(setupBitmarkdResult){
+                if(!$scope.bitmarkd.isRunning){
+                    httpService.send('setupBitmarkd', {
+                        config_file: BitmarkdConfig[$scope.generateConfig.chain]
+                    }).then(function(setupBitmarkdResult){
+                        configuration.setBitmarkCliConfigFile(BitmarkCliConfig[$scope.generateConfig.chain]);
+                        $scope.$emit('Authenticated', true);
+                        $location.path("/main");
+                    }, function(setupBitmarkdErr){
+                        $scope.doneErr.msg = setupBitmarkdErr;
+                        $scope.doneErr.show = true;
+                    });
+                } else {
                     configuration.setBitmarkCliConfigFile(BitmarkCliConfig[$scope.generateConfig.chain]);
                     $scope.$emit('Authenticated', true);
                     $location.path("/main");
-                }, function(setupBitmarkdErr){
-                    $scope.doneErr.msg = setupBitmarkdErr;
-                    $scope.doneErr.show = true;
-                });
+                }
             }, function(setupCliErr){
                 $scope.doneErr.msg = setupCliErr;
                 $scope.doneErr.show = true;
