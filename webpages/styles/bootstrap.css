@@ -29,7 +29,7 @@ summary {
 }
 audio,
 canvas,
-progress,
+progress,g
 video {
   display: inline-block;
   vertical-align: baseline;

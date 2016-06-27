@@ -23,7 +23,7 @@
     <!-- Add your site or application content here -->
 
     <div class="header" ng-controller="NavbarCtrl" ng-init="init()">
-      <div class="navbar navbar-default" role="navigation">
+      <div ng-class="navbarClass" role="navigation">
         <div class="container">
           
           <div class="navbar-header" ng-show="showNavItem">
