@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Bitmark Docker Container</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -21,13 +21,19 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
+
     <div class="header" ng-controller="NavbarCtrl" ng-init="init()">
       <div class="navbar navbar-default" role="navigation">
         <div class="container">
+          
           <div class="navbar-header" ng-show="showNavItem">
-            <a class="navbar-brand" href="" ng-click="goUrl('/main')">bitmark</a>
+          
+            <a class="navbar-brand" href="" ng-click="goUrl('/main')" >
+                <img src="/images/bitmark-logo.png" class="logo" width="120px" height="28px" ></a>
           </div>
+
           <ul class="nav navbar-nav" ng-show="showNavItem">
+            <li><a href="" ng-click="goUrl('/main')">Status</a></li>
             <li><a href="" ng-click="goUrl('/issue')">Issue</a></li>
             <li><a href="" ng-click="goUrl('/transfer')">Transfer</a></li>
           </ul>
@@ -39,10 +45,15 @@
       </div>
     </div>
 
-    <div class="container">
-    <div ng-view=""></div>
-    </div>
 
+    <div class="container">
+             <div ng-view="">
+             </div>
+        </div>
+    </div>
+   
+
+ 
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
