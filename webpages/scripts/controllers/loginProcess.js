@@ -17,8 +17,7 @@ angular.module('bitmarkWebguiApp')
             $location.path('/login');
         }
         $scope.bitmarkd = {
-            isRunning: false,
-            chain: ""
+            isRunning: false
         };
 
         // checkout bitmarkd status first
@@ -29,7 +28,7 @@ angular.module('bitmarkWebguiApp')
                 }else{
                     httpService.send('getBitmarkdInfo').then(function(info){
                         $scope.bitmarkd.isRunning = true;
-                        $scope.bitmarkd.chain = info.chain;
+                        $scope.generateConfig.chain = info.chain;
                         configuration.setChain(info.chain);
                     }, function(infoErr){
                     });
