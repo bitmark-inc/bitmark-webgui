@@ -165,6 +165,7 @@ angular.module('bitmarkWebguiApp')
 
         var issuePromise;
         $scope.submitIssue = function(){
+            $scope.showWaiting = true;
             $scope.clearErrAlert('issue');
             $scope.issueResult = {
                 type:"danger",
@@ -184,10 +185,12 @@ angular.module('bitmarkWebguiApp')
                                 httpService.send("getBitmarkPayResult", {
                                     "job_hash": result.job_hash
                                 }).then(function(payResult){
+                                    $scope.showWaiting = false;
                                     $scope.issueResult.type = "success";
                                     $scope.issueResult.msg = "Pay success!";
                                     $scope.issueResult.cliResult = result.cli_result;
                                 }, function(payErr){
+                                    $scope.showWaiting = false;
                                     $scope.issueResult.type = "danger";
                                     if(payErr.cli_result != null) {
                                         $scope.issueResult.msg = "Pay failed";
@@ -204,6 +207,7 @@ angular.module('bitmarkWebguiApp')
                     }, 3*1000);
                 },
                 function(errResult){
+                    $scope.showWaiting = false;
                     $scope.issueResult.type = "danger";
                     if(errResult.cli_result != null) {
                         $scope.issueResult.msg = "Pay failed";
@@ -218,6 +222,7 @@ angular.module('bitmarkWebguiApp')
 
         var transferPromise;
         $scope.submitTransfer = function(){
+            $scope.showWaiting = true;
             $scope.clearErrAlert('transfer');
             $scope.transferResult = {
                 type:"danger",
@@ -232,6 +237,7 @@ angular.module('bitmarkWebguiApp')
                         httpService.send("getBitmarkPayStatus", {
                             job_hash: result.job_hash
                         }).then(function(payStatus){
+                            $scope.showWaiting = false;
                             if(payStatus == "success"){
                                 $interval.cancel(transferPromise);
                                 httpService.send("getBitmarkPayResult", {"job_hash": result.job_hash}).then(function(payResult){
@@ -249,6 +255,7 @@ angular.module('bitmarkWebguiApp')
 
 
                 }, function(errResult){
+                    $scope.showWaiting = false;
                     $scope.transferResult.type = "danger";
                     if(errResult.cli_result != null) {
                         $scope.transferResult.msg = "Pay failed";

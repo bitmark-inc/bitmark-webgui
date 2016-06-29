@@ -49,7 +49,7 @@
     </div>
     <div class="panel-body">
       <!--  alert -->
-      <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null">
+      <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null && issueResult.msg != ''">
         <b>{{issueResult.msg}}</b>
         <div ng-show="issueResult.cliResult != null">
           <span ng-repeat="index in issueResult.cliResult.issueIds track by $index">
@@ -128,7 +128,7 @@
     
     <div class="panel-body">
       <!--  alert -->
-      <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null">
+      <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null && transferResult.msg != ''">
       <b>{{transferResult.msg}}</b>
       <div ng-show="transferResult.cliResult != null">
         <div>
