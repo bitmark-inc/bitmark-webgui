@@ -91,6 +91,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			return
 		} else {
 			request := tmpRequest.(*services.BitmarkCliIssueType)
+			request.Config = configuration.BitmarkCliConfigFile
 			output, err := bitmarkCliService.Issue(*request)
 			if nil != err {
 				response.Result = err
@@ -110,6 +111,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			return
 		} else {
 			request := tmpRequest.(*services.BitmarkCliTransferType)
+			request.Config = configuration.BitmarkCliConfigFile
 			output, err := bitmarkCliService.Transfer(*request)
 			if nil != err {
 				response.Result = err

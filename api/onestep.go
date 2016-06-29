@@ -63,7 +63,6 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 
 type OnestepStatusRequest struct {
 	Network   string `json:"network"`
-	CliConfig string `json:"cli_config"`
 	PayConfig string `json:"pay_config"`
 }
 

@@ -3,7 +3,7 @@ Path: /api/bitmarkd
 Method: POST
 Params:
 {
-  "options": "start/stop/status/info"
+  "options": "start/stop/status/info/setup"
 }
 
 Retrun examples:
@@ -75,4 +75,16 @@ info success:
     "pending": 0,
     "verified": 0
   }
+}
+
+setup failed:
+{
+  "ok": false,
+  "result": "Already started bitmarkd"
+}
+
+setup success:
+{
+  "ok": true,
+  "result": null
 }

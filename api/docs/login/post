@@ -1,6 +1,10 @@
 Usage: login bitmark-webgui
 Path: /api/login
 Method: POST
+Params:
+{
+  "password": password of webgui
+}
 Return examples:
 failed:
 {

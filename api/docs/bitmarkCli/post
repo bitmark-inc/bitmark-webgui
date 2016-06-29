@@ -1,10 +1,27 @@
+Usage: generate keypair
+Path: /api/bitamrkCli/generate
+Method: POST
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    public_key:"92c574b652d634ab16a04ede5c5cc5b69b6d1d7e18a212b31e326acff093a2c6",
+    private_key:"4859528fbbcb54b7639cd724d68c16a08f920c48ab664f44930112dfbc1a8ad692c574b652d634ab16a04ede5c5cc5b69b6d1d7e18a212b31e326acff093a2c6"
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"json unmarshal error"
+}
+
+====================================================================
+
 Usage: get bitmarkCli info
 Path: /api/bitamrkCli/info
 Method: POST
-Params example:
-{
-  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
-}
 
 Return examples:
 success:
@@ -65,7 +82,6 @@ Path: /api/bitamrkCli/issue
 Method: POST
 Params example:
 {
-  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
   "identity": "identity name",
   "password": "12345678",
   "asset": "asset name",
@@ -106,7 +122,6 @@ Path: /api/bitamrkCli/transfer
 Method: POST
 Params example:
 {
-  "config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
   "identity": "test",
   "password": "12345678",
   "txid": "bitmakr transaction id",
@@ -125,6 +140,32 @@ success:
         "address": "bitcoin pay addr"
       },
     ]
+  }
+}
+
+fail:
+{
+  "ok":"false"
+  "result":"bitmark-cli issue error"
+}
+
+====================================================================
+
+Usage: get existing bitmark keypair in bitmark-cli config file
+Path: /api/bitamrkCli/keypair
+Method: POST
+Params example:
+{
+  "password": "12345678",
+}
+
+Return examples:
+success:
+{
+  "ok":"true"
+  "result": {
+    public_key:"92c574b652d634ab16a04ede5c5cc5b69b6d1d7e18a212b31e326acff093a2c6",
+    private_key:"4859528fbbcb54b7639cd724d68c16a08f920c48ab664f44930112dfbc1a8ad692c574b652d634ab16a04ede5c5cc5b69b6d1d7e18a212b31e326acff093a2c6"
   }
 }
 
