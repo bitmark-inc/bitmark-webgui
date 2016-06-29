@@ -118,6 +118,10 @@ angular.module('bitmarkWebguiApp')
                             $scope.generateConfig.error.msg = "wallet was encrypted before, please decrypt your bitmark wallet first";
                             break;
                         }
+                    }, function(payStatusError){
+                        $interval.cancel(encryptPromise);
+                        $scope.generateConfig.error.show = true;
+                        $scope.generateConfig.error.msg = payStatusError;
                     });
                 }, 3*1000);
             }, function(ecryptErr){
@@ -185,6 +189,7 @@ angular.module('bitmarkWebguiApp')
 
         $scope.killPayProcess = function(kill){
             if(kill){
+                $scope.generateConfig.encryptAlert.show = false;
                 $interval.cancel(encryptPromise);
                 pollEncryptCount = 0;
                 if(encryptJobHash == "" || encryptJobHash == null) {
