@@ -22,20 +22,16 @@ angular.module('bitmarkWebguiApp')
                 result: '=result'
             },
             template: '<table>'+
+                '<tr><td><input class="enterpassword" type="password" placeholder="Enter your passcode" ng-model="password" required></td></tr>'+
                 '<tr>'+
-                '<td><input type="password" ng-model="password" required></td>'+
-                '<td ng-if="password.length > 0">'+
-                '<b>verify</b></td>'+
-                '<td ng-show="password.length > 0">'+
-                '<input type="password" ng-model="verifyPassword"></td>'+
-                '<td ng-show="!result">not equal</td>'+
+                '<td ng-class="passwordClass" ng-show="password.length > 0">'+
+                '<input class="form-control verifypassword" type="password" placeholder="Verify passcode" ng-model="verifyPassword"></td>'+
                 '</tr>'+
-                '</table>'+
-                '{{password}}'+
-                'verifiy: {{verifyPassword}}',
+                '</table>',
             link: function(scope, element, attrs){
                 // check password equality
                 scope.verifyPassword = "";
+                scope.passwordClass = "";
                 scope.result = true;
                 scope.$watchGroup(['password','verifyPassword'], function(){
                     scope.result = passwordVerified(scope.password, scope.verifyPassword);
@@ -48,8 +44,10 @@ angular.module('bitmarkWebguiApp')
 
                 function passwordVerified(password, verifyPassword){
                     if(password != "" && password != verifyPassword){
+                        scope.passwordClass = "has-error has-danger";
                         return false;
                     }
+                    scope.passwordClass = "";
                     return true;
                 };
             }

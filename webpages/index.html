@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Bitmark Docker Container</title>
+    <title>Bitmark Node</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -33,13 +33,13 @@
           </div>
 
           <ul class="nav navbar-nav" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/main')">Status</a></li>
-            <li><a href="" ng-click="goUrl('/issue')">Issue</a></li>
-            <li><a href="" ng-click="goUrl('/transfer')">Transfer</a></li>
+            <li class="active"><a href="" ng-click="goUrl('/main')">STATUS</a></li>
+            <li><a href="" ng-click="goUrl('/issue')">ISSUE</a></li>
+            <li><a href="" ng-click="goUrl('/transfer')">TRANSFER</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/network')">Network</a></li>
-            <li><a href="" ng-click="goUrl('/logout')">Logout</a></li>
+            <li><a href="" ng-click="goUrl('/network')">NETWORK</a></li>
+            <li><a href="" ng-click="goUrl('/logout')">LOGOUT</a></li>
           </ul>
         </div>
       </div>

@@ -28,7 +28,11 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
-
+        $(".nav a").on("click", function(){
+         $(".nav").find(".active").removeClass("active");
+          $(this).parent().addClass("active");
+        });
+        
         $scope.goUrl = function(path){
             $location.path(path);
         };
