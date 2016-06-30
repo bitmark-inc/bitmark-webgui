@@ -114,7 +114,7 @@
             </label>
           </p>
         </div>
-        <button ng-click="submitIssue()" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == ''">submit</button>
+        <button ng-click="submitGeneral('issue')" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == ''">submit</button>
       </form>        
     </div>
   </div>
@@ -167,7 +167,7 @@
             </label>
           </p>
         </div>
-        <button ng-click="submitTransfer()" ng-disabled="transferForm.$invalid">submit</button>
+        <button ng-click="submitGeneral('transfer')" ng-disabled="transferForm.$invalid">submit</button>
       </form>  
     </div>
   </div>
