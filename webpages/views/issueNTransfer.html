@@ -15,8 +15,8 @@
         </uib-alert>
         <uib-alert type="warning"  ng-show="infoAlert.show">
           {{infoAlert.msg}}
-          <button ng-click="killPayProcess('info', true)">Yes</button>
-          <button ng-click="killPayProcess('info', false)">Later</button>
+          <button ng-click="killPayProcess(true)">Yes</button>
+          <button ng-click="killPayProcess(false)">Later</button>
         </uib-alert>
         <p>
           <b>Chain</b>

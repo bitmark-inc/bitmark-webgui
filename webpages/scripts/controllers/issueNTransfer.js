@@ -113,7 +113,15 @@ angular.module('bitmarkWebguiApp')
                             $scope.infoErr.show = true;
                             $scope.showWaiting = false;
                             break;
+                        case "stopped":
+                            $interval.cancel(infoPromise);
+                            break;
                         }
+                    }, function(statusErr){
+                        $interval.cancel(infoPromise);
+                        $scope.infoErr.msg = "bitmark-pay error: "+statusErr;
+                        $scope.infoErr.show = true;
+                        $scope.showWaiting = false;
                     });
             }, 3*1000);
         };
@@ -136,6 +144,8 @@ angular.module('bitmarkWebguiApp')
                 if( infoErr == "Failed to get bitmark-cli info") {
                     // bitmark-cli never setup, show setup view
                     $scope.showWaiting = false;
+                    $scope.infoErr.show = true;
+                    $scope.infoErr.msg = infoErr;
                 } else {
                     httpService.send('getBitmarkPayJob').then(function(jobHash){
                         infoJobHash = jobHash;
@@ -164,6 +174,8 @@ angular.module('bitmarkWebguiApp')
         };
 
         var issuePromise;
+        var issueWaitingTime = 10; // 10s
+        var pollIssueCount = 0;
         $scope.submitIssue = function(){
             $scope.showWaiting = true;
             $scope.clearErrAlert('issue');
@@ -173,6 +185,13 @@ angular.module('bitmarkWebguiApp')
                 failStart: null,
                 cliResult: null
             };
+
+            if($scope.onestepStatusResult.pay_result.available_balance < configuration.getConfiguration().mineFee) {
+                $scope.issueResult.msg = "Your wallet doesn't have enough money (need at least > " + configuration.getConfiguration().mineFee + " satoshi), please send more bicoin to the address: "+ $scope.onestepStatusResult.pay_result.address;
+                $scope.showWaiting = false;
+                return;
+            }
+
             $scope.issueConfig.identity = $scope.onestepStatusResult.cli_result.identities[0].name;
             httpService.send("onestepIssue", $scope.issueConfig).then(
                 function(result){
@@ -180,7 +199,8 @@ angular.module('bitmarkWebguiApp')
                         httpService.send("getBitmarkPayStatus", {
                             job_hash: result.job_hash
                         }).then(function(payStatus){
-                            if(payStatus == "success"){
+                            switch(payStatus){
+                            case "success":
                                 $interval.cancel(issuePromise);
                                 httpService.send("getBitmarkPayResult", {
                                     "job_hash": result.job_hash
@@ -200,9 +220,29 @@ angular.module('bitmarkWebguiApp')
                                         $scope.issueResult.msg = payErr;
                                     }
                                 });
-                            }else{
-                            // TODO: see if bitmark-pay is still running
+                                break;
+                            case "running":
+                                pollIssueCount++;
+                                if(pollIssueCount*3 > issueWaitingTime && !$scope.infoAlert.show){
+                                    $scope.infoAlert.msg = "The bitmark-pay seems running for a long time, please check your bitcoin and bitmark-pay configuration. Would you like to stop the process?";
+                                    $scope.showWaiting = false;
+                                    $scope.infoAlert.show = true;
+                                }
+                                break;
+                            default:
+                                $interval.cancel(issuePromise);
+                                $scope.showWaiting = false;
+                                $scope.issueResult.type = "danger";
+                                $scope.issueResult.msg = "Pay Error! Pay failed";
+                                $scope.issueResult.cliResult = result.cli_result;
+                                $scope.issueResult.failStart = 0;
+                                break;
                             }
+                        }, function(payStatusErr){
+                            $interval.cancel(issuePromise);
+                            $scope.showWaiting = false;
+                            $scope.issueResult.type = "danger";
+                            $scope.issueResult.msg = payStatusErr;
                         });
                     }, 3*1000);
                 },
@@ -279,7 +319,15 @@ angular.module('bitmarkWebguiApp')
                             $interval.cancel(killPromise);
                             $scope.showWaiting = false;
                             alertObj.show = false;
+
+                            // after kill pay process, ask for info again
+                            getInfo();
                         }
+                    }, function(payStatusErr){
+                        $interval.cancel(killPromise);
+                        $scope.showWaiting = false;
+                        $scope.infoErr.show = true;
+                        $scope.infoErr.msg = payStatusErr;
                     });
                 }, 3*1000);
             }, function(err){
@@ -289,31 +337,22 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
-        $scope.killPayProcess = function(type, kill){
-            switch(type){
-            case "setup":
-                $interval.cancel(setupPromise);
-                pollSetupCount = 0;
-                killBitmarkPayStatusProcess(setupJobHash, $scope.setupAlert);
-                break;
-            case "info":
-                if(kill){
-                    $interval.cancel(infoPromise);
-                    pollInfoCount = 0;
-                    if(infoJobHash == "" || infoJobHash == null) {
-                        httpService.send('getBitmarkPayJob').then(function(jobHash){
-                            infoJobHash = jobHash;
-                            killBitmarkPayStatusProcess(infoJobHash, $scope.infoAlert);
-                        });
-                    }else{
+        $scope.killPayProcess = function(kill){
+            if(kill){
+                $interval.cancel(infoPromise);
+                pollInfoCount = 0;
+                if(infoJobHash == "" || infoJobHash == null) {
+                    httpService.send('getBitmarkPayJob').then(function(jobHash){
+                        infoJobHash = jobHash;
                         killBitmarkPayStatusProcess(infoJobHash, $scope.infoAlert);
-                    }
+                    });
                 }else{
-                    $scope.infoAlert.show = false;
-                    $scope.showWaiting = true;
-                    pollInfoCount = 0;
+                    killBitmarkPayStatusProcess(infoJobHash, $scope.infoAlert);
                 }
-                break;
+            }else{
+                $scope.infoAlert.show = false;
+                $scope.showWaiting = true;
+                pollInfoCount = 0;
             }
         };
 

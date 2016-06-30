@@ -301,7 +301,7 @@ func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string, lo
 			defer bitmarkPay.Unlock()
 
 			bitmarkPay.log.Errorf("job  %s fail, err: %v", bitmarkPay.asyncJob.hash, err)
-			bitmarkPay.asyncJob.result = nil
+			bitmarkPay.asyncJob.result = []byte(err.Error())
 			bitmarkPay.asyncJob.command.Process.Kill()
 			bitmarkPay.asyncJob.command = nil
 		} else {
