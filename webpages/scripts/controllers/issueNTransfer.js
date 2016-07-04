@@ -74,6 +74,7 @@ angular.module('bitmarkWebguiApp')
             };
 
             getInfo();
+            checkBitmarkMode();
         };
 
         var infoPromise;
@@ -161,6 +162,25 @@ angular.module('bitmarkWebguiApp')
                         }
                     });
                 }
+            });
+        };
+
+
+        $scope.bitmarkdAlert = {
+            isNormal: false,
+            msg: ""
+        };
+        var checkBitmarkMode = function(){
+            httpService.send('getBitmarkdInfo').then(function(bitmarkInfo){
+                if(bitmarkInfo.mode != 'Normal') {
+                    // disable issue and transfer and show warning
+                    $scope.bitmarkdAlert.msg = "Please wait until bitmarkd mode becomes Normal, please go to bitmark page to wait and check";
+                } else {
+                    $scope.bitmarkdAlert.isNormal = true;
+                }
+            }, function(bitmarkInfoErr){
+                // bitmarkd is not running, disable issue and transfer and show warning
+                $scope.bitmarkdAlert.msg = "bitmarkd is not running, please go to bitmark page to start and wait until the mode is Normal";
             });
         };
 

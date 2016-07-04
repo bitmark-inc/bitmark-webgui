@@ -49,6 +49,10 @@
     </div>
     <div class="panel-body">
       <!--  alert -->
+      <uib-alert type="warning" ng-if="!bitmarkdAlert.isNormal">
+        <b>{{bitmarkdAlert.msg}}</b>
+      </uib-alert>
+
       <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null && issueResult.msg != ''">
         <b>{{issueResult.msg}}</b>
         <div ng-show="issueResult.cliResult != null">
@@ -114,7 +118,7 @@
             </label>
           </p>
         </div>
-        <button ng-click="submitGeneral('issue')" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == ''">submit</button>
+        <button ng-click="submitGeneral('issue')" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == '' || !bitmarkdAlert.isNormal">submit</button>
       </form>        
     </div>
   </div>
@@ -128,6 +132,10 @@
     
     <div class="panel-body">
       <!--  alert -->
+      <uib-alert type="warning" ng-if="!bitmarkdAlert.isNormal">
+        <b>{{bitmarkdAlert.msg}}</b>
+      </uib-alert>
+
       <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null && transferResult.msg != ''">
       <b>{{transferResult.msg}}</b>
       <div ng-show="transferResult.cliResult != null">
@@ -167,7 +175,7 @@
             </label>
           </p>
         </div>
-        <button ng-click="submitGeneral('transfer')" ng-disabled="transferForm.$invalid">submit</button>
+        <button ng-click="submitGeneral('transfer')" ng-disabled="transferForm.$invalid || !bitmarkdAlert.isNormal">submit</button>
       </form>  
     </div>
   </div>
