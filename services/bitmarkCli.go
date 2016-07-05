@@ -52,24 +52,19 @@ func (bitmarkCli *BitmarkCli) Finalise() error {
 func (bitmarkCli *BitmarkCli) Generate() ([]byte, error) {
 	out, err := exec.Command("bitmark-cli", "generate").Output()
 	if err != nil {
-		bitmarkCli.log.Infof("fail to generate bitmark keypair")
 		return nil, err
 	}
 
 	return out, nil
 }
 
-type BitmarkCliInfoType struct {
-	Config string `json:"config"`
-}
-
-func (bitmarkCli *BitmarkCli) Info(bitmarkCliInfo BitmarkCliInfoType) ([]byte, error) {
-	if err := checkRequireStringParameters(bitmarkCliInfo.Config); nil != err {
+func (bitmarkCli *BitmarkCli) Info(bitmarkCliConfigFile string) ([]byte, error) {
+	if err := checkRequireStringParameters(bitmarkCliConfigFile); nil != err {
 		return nil, err
 	}
 
 	cmd := exec.Command("bitmark-cli",
-		"--config", bitmarkCliInfo.Config,
+		"--config", bitmarkCliConfigFile,
 		"info")
 
 	return getCmdOutput(cmd, "setup", bitmarkCli.log, true)

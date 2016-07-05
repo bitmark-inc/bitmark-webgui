@@ -6,6 +6,7 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
+	"io"
 	"net/http"
 )
 
@@ -37,9 +38,12 @@ type BitmarkCliTransferResponse struct {
 	PaymentAddress []BitmarkPaymentAddress `json:"paymentAddress"`
 }
 
+type bitmarkCliRequestInterface interface{}
+
 //POST /api/bitmarkCli/*
 func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
 	log.Infof("POST /api/bitmarCli/%s", command)
+
 	response := &Response{
 		Ok:     false,
 		Result: nil,
@@ -47,8 +51,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 
 	switch command {
 	case "generate":
-		output, err := bitmarkCliService.Generate()
-		if nil != err {
+		if output, err := bitmarkCliService.Generate(); nil != err {
 			response.Result = err
 		} else {
 			var jsonKeyPair BitmarkCliGenerateResponse
@@ -60,20 +63,7 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			}
 		}
 	case "info":
-		var request services.BitmarkCliInfoType
-		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmark-cli request parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
-			return
-		}
-
-		output, err := bitmarkCliService.Info(request)
-		if nil != err {
+		if output, err := bitmarkCliService.Info(configuration.BitmarkCliConfigFile); nil != err {
 			response.Result = "bitmark-cli info error"
 		} else {
 			var jsonInfo BitmarkCliInfoResponse
@@ -85,98 +75,73 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 			}
 		}
 	case "setup":
-		var request services.BitmarkCliSetupType
-		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmark-cli request parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
+		if tmpRequest := parseCliRequest(w, req.Body, log, command); nil == tmpRequest {
 			return
-		}
-
-		_, err = bitmarkCliService.Setup(request, webguiFilePath, configuration)
-		if nil != err {
-			response.Result = "bitmark-cli setup error"
 		} else {
-			response.Ok = true
-			response.Result = "success"
+			request := tmpRequest.(*services.BitmarkCliSetupType)
+			if _, err := bitmarkCliService.Setup(*request, webguiFilePath, configuration); nil != err {
+				response.Result = err
+			} else {
+				response.Ok = true
+				response.Result = "success"
+			}
 		}
 	case "issue":
-		var request services.BitmarkCliIssueType
-		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmark-cli request parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
+		if tmpRequest := parseCliRequest(w, req.Body, log, command); nil == tmpRequest {
 			return
+		} else {
+			request := tmpRequest.(*services.BitmarkCliIssueType)
+			request.Config = configuration.BitmarkCliConfigFile
+			output, err := bitmarkCliService.Issue(*request)
+			if nil != err {
+				response.Result = err
+			} else {
+				var jsonIssue BitmarkCliIssueResponse
+				if err := json.Unmarshal(output, &jsonIssue); nil != err {
+					log.Errorf("Error: %v", err)
+				} else {
+					response.Ok = true
+					response.Result = jsonIssue
+				}
+			}
 		}
 
-		output, err := bitmarkCliService.Issue(request)
-		if nil != err {
-			response.Result = "bitmark-cli issue error"
-		} else {
-			var jsonIssue BitmarkCliIssueResponse
-			if err := json.Unmarshal(output, &jsonIssue); nil != err {
-				log.Errorf("Error: %v", err)
-			} else {
-				response.Ok = true
-				response.Result = jsonIssue
-			}
-		}
 	case "transfer":
-		var request services.BitmarkCliTransferType
-		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmark-cli request parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
+		if tmpRequest := parseCliRequest(w, req.Body, log, command); nil == tmpRequest {
 			return
-		}
-
-		output, err := bitmarkCliService.Transfer(request)
-		if nil != err {
-			response.Result = "bitmark-cli transfer error"
 		} else {
-			var jsonTransfer BitmarkCliTransferResponse
-			if err := json.Unmarshal(output, &jsonTransfer); nil != err {
-				log.Errorf("Error: %v", err)
+			request := tmpRequest.(*services.BitmarkCliTransferType)
+			request.Config = configuration.BitmarkCliConfigFile
+			output, err := bitmarkCliService.Transfer(*request)
+			if nil != err {
+				response.Result = err
 			} else {
-				response.Ok = true
-				response.Result = jsonTransfer
+				var jsonTransfer BitmarkCliTransferResponse
+				if err := json.Unmarshal(output, &jsonTransfer); nil != err {
+					log.Errorf("Error: %v", err)
+				} else {
+					response.Ok = true
+					response.Result = jsonTransfer
+				}
 			}
 		}
 	case "keypair":
-		var request services.BitmarkCliKeyPairType
-		decoder := json.NewDecoder(req.Body)
-		err := decoder.Decode(&request)
-		if nil != err {
-			log.Errorf("Error: %v", err)
-			response.Result = "bitmark-cli request parsing error"
-			if err := writeApiResponseAndSetCookie(w, response); nil != err {
-				log.Errorf("Error: %v", err)
-			}
+		tmpRequest := parseCliRequest(w, req.Body, log, command)
+		if nil == tmpRequest {
 			return
-		}
-
-		output, err := bitmarkCliService.KeyPair(request, configuration.BitmarkCliConfigFile)
-		if nil != err {
-			response.Result = "bitmark-cli keypair error"
 		} else {
-			var jsonKeyPair BitmarkCliGenerateResponse
-			if err := json.Unmarshal(output, &jsonKeyPair); nil != err {
-				log.Errorf("Error: %v", err)
+			request := tmpRequest.(*services.BitmarkCliKeyPairType)
+			output, err := bitmarkCliService.KeyPair(*request, configuration.BitmarkCliConfigFile)
+			if nil != err {
+				response.Result = err
 			} else {
-				response.Ok = true
-				response.Result = jsonKeyPair
+				var jsonKeyPair BitmarkCliGenerateResponse
+				if err := json.Unmarshal(output, &jsonKeyPair); nil != err {
+					log.Errorf("Error: %v", err)
+				} else {
+					response.Ok = true
+					response.Result = jsonKeyPair
+				}
 			}
 		}
 	default:
@@ -186,4 +151,38 @@ func BitmarkCliExec(w http.ResponseWriter, req *http.Request, log *logger.L, com
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}
+}
+
+func parseCliRequest(w http.ResponseWriter, requestBody io.ReadCloser, log *logger.L, command string) bitmarkCliRequestInterface {
+
+	bitmarkCliRequest := map[string]func() bitmarkCliRequestInterface{
+		"setup": func() bitmarkCliRequestInterface {
+			return &services.BitmarkCliSetupType{}
+		},
+		"issue": func() bitmarkCliRequestInterface {
+			return &services.BitmarkCliIssueType{}
+		},
+		"transfer": func() bitmarkCliRequestInterface {
+			return &services.BitmarkCliTransferType{}
+		},
+		"keypair": func() bitmarkCliRequestInterface {
+			return &services.BitmarkCliKeyPairType{}
+		},
+	}
+
+	request := bitmarkCliRequest[command]()
+	decoder := json.NewDecoder(requestBody)
+	if err := decoder.Decode(request); nil != err {
+		log.Errorf("Error: %v", err)
+		response := &Response{
+			Ok:     false,
+			Result: "bitmarkCli " + command + "  request parsing error",
+		}
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return nil
+	}
+
+	return request
 }

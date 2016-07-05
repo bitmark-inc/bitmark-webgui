@@ -5,15 +5,13 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/logger"
+	"io"
 	"net/http"
 )
 
 type onestepRequest interface{}
 
-// POST /api/onestep/status, setup, issue, transfer
-func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
-	log.Infof("POST /api/onestep/%s", command)
-
+func parseOneStepRequest(w http.ResponseWriter, requestBody io.ReadCloser, log *logger.L, command string) onestepRequest {
 	// get diffrent request instance for json decode
 	oneStepRequest := map[string]func() onestepRequest{
 		"status":   func() onestepRequest { return &OnestepStatusRequest{} },
@@ -22,9 +20,8 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 		"transfer": func() onestepRequest { return &OnestepTransferRequest{} },
 	}
 	request := oneStepRequest[command]()
-	decoder := json.NewDecoder(req.Body)
-	err := decoder.Decode(request)
-	if nil != err {
+	decoder := json.NewDecoder(requestBody)
+	if err := decoder.Decode(request); nil != err {
 		log.Errorf("Error: %v", err)
 		response := &Response{
 			Ok:     false,
@@ -33,28 +30,39 @@ func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, comman
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
-		return
+		return nil
 	}
 
-	switch request.(type) {
-	case *OnestepStatusRequest:
-		realRequest := request.(*OnestepStatusRequest)
-		execOnestepStatus(w, *realRequest, log)
-	case *OnestepSetupRequest:
-		realRequest := request.(*OnestepSetupRequest)
-		execOnestepSetup(w, *realRequest, log, webguiFilePath, configuration)
-	case *OnestepIssueRequest:
-		realRequest := request.(*OnestepIssueRequest)
-		execOnestepIssue(w, *realRequest, configuration.BitmarkCliConfigFile, log)
-	case *OnestepTransferRequest:
-		realRequest := request.(*OnestepTransferRequest)
-		execOnestepTransfer(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+	return request
+}
+
+// POST /api/onestep/status, setup, issue, transfer
+func OnestepExec(w http.ResponseWriter, req *http.Request, log *logger.L, command string, webguiFilePath string, configuration *configuration.Configuration) {
+	log.Infof("POST /api/onestep/%s", command)
+
+	request := parseOneStepRequest(w, req.Body, log, command)
+	if nil == request {
+		return
+	} else {
+		switch request.(type) {
+		case *OnestepStatusRequest:
+			realRequest := request.(*OnestepStatusRequest)
+			execOnestepStatus(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		case *OnestepSetupRequest:
+			realRequest := request.(*OnestepSetupRequest)
+			execOnestepSetup(w, *realRequest, log, webguiFilePath, configuration)
+		case *OnestepIssueRequest:
+			realRequest := request.(*OnestepIssueRequest)
+			execOnestepIssue(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		case *OnestepTransferRequest:
+			realRequest := request.(*OnestepTransferRequest)
+			execOnestepTransfer(w, *realRequest, configuration.BitmarkCliConfigFile, log)
+		}
 	}
 }
 
 type OnestepStatusRequest struct {
 	Network   string `json:"network"`
-	CliConfig string `json:"cli_config"`
 	PayConfig string `json:"pay_config"`
 }
 
@@ -69,7 +77,7 @@ type OnestepStatusResponse struct {
 	JobHash   string                 `json:"job_hash"`
 }
 
-func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log *logger.L) {
+func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, bitmarkCliConfigFile string, log *logger.L) {
 	response := &Response{
 		Ok:     false,
 		Result: nil,
@@ -78,12 +86,10 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 	var statusResponse OnestepStatusResponse
 	var cliResponse BitmarkCliInfoResponse
 	// get bitmark-cli info
-	cliRequest := services.BitmarkCliInfoType{
-		Config: request.CliConfig,
-	}
-	cliOutput, err := bitmarkCliService.Info(cliRequest)
+
+	cliOutput, err := bitmarkCliService.Info(bitmarkCliConfigFile)
 	if nil != err {
-		response.Result = onestepCliInfoErr
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -91,7 +97,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 	} else {
 		if err := json.Unmarshal(cliOutput, &cliResponse); nil != err {
 			log.Errorf("Error: %v", err)
-			response.Result = "bitmarkOnestep status response parsing error"
+			response.Result = err
 			if err := writeApiResponseAndSetCookie(w, response); nil != err {
 				log.Errorf("Error: %v", err)
 			}
@@ -108,8 +114,7 @@ func execOnestepStatus(w http.ResponseWriter, request OnestepStatusRequest, log 
 		payRequest.Net = "local_bitcoin_reg"
 	}
 
-	err = bitmarkPayService.Info(payRequest)
-	if nil != err {
+	if err := bitmarkPayService.Info(payRequest); nil != err {
 		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
@@ -154,9 +159,8 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 		Connect:     request.Connect,
 		Description: request.Description,
 	}
-	_, err := bitmarkCliService.Setup(cliRequest, webguiFilePath, configuration)
-	if nil != err {
-		response.Result = "bitmark-cli setup error"
+	if _, err := bitmarkCliService.Setup(cliRequest, webguiFilePath, configuration); nil != err {
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -172,9 +176,9 @@ func execOnestepSetup(w http.ResponseWriter, request OnestepSetupRequest, log *l
 	if payRequest.Net == "local" {
 		payRequest.Net = "local_bitcoin_reg"
 	}
-	err = bitmarkPayService.Encrypt(payRequest)
-	if nil != err {
-		response.Result = "bitmark-pay encrypt error"
+
+	if err := bitmarkPayService.Encrypt(payRequest); nil != err {
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -248,7 +252,7 @@ func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, bitmar
 
 	// get privateKey first
 	var keyPair BitmarkCliGenerateResponse
-	cliKeyPairRequest := services.BitmarkCliKeyPairType {
+	cliKeyPairRequest := services.BitmarkCliKeyPairType{
 		Password: request.Password,
 	}
 	keypairOutput, err := bitmarkCliService.KeyPair(cliKeyPairRequest, bitmarkCliConfigFile)
@@ -306,12 +310,12 @@ func execOnestepIssue(w http.ResponseWriter, request OnestepIssueRequest, bitmar
 }
 
 type OnestepTransferRequest struct {
-	Network     string `json:"network"`
-	PayConfig   string `json:"pay_config"`
-	Identity    string `json:"identity"`
-	Txid        string `json:"txid"`
-	Receiver    string `json:"receiver"`
-	Password    string `json:"password"`
+	Network   string `json:"network"`
+	PayConfig string `json:"pay_config"`
+	Identity  string `json:"identity"`
+	Txid      string `json:"txid"`
+	Receiver  string `json:"receiver"`
+	Password  string `json:"password"`
 }
 
 type OnestepTransferFailResponse struct {
@@ -340,7 +344,7 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 
 	output, err := bitmarkCliService.Transfer(cliRequest)
 	if nil != err {
-		response.Result = "bitmark-cli transfer error"
+		response.Result = "bitmark-cli transfer error" + err.Error()
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -350,7 +354,7 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 	var cliTransfer BitmarkCliTransferResponse
 	if err := json.Unmarshal(output, &cliTransfer); nil != err {
 		log.Errorf("Error: %v", err)
-		response.Result = "bitmark-cli transfer success, but parsing fail."
+		response.Result = "bitmark-cli transfer success, but parsing fail." + err.Error()
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -359,7 +363,7 @@ func execOnestepTransfer(w http.ResponseWriter, request OnestepTransferRequest, 
 
 	// get privateKey first
 	var keyPair BitmarkCliGenerateResponse
-	cliKeyPairRequest := services.BitmarkCliKeyPairType {
+	cliKeyPairRequest := services.BitmarkCliKeyPairType{
 		Password: request.Password,
 	}
 	keypairOutput, err := bitmarkCliService.KeyPair(cliKeyPairRequest, bitmarkCliConfigFile)

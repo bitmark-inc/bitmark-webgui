@@ -42,6 +42,8 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L, logStdOut bool) 
 	}
 
 	if len(stde) != 0 {
+		stderr.Close()
+		stdout.Close()
 		return nil, errors.New(string(stde))
 	}
 
@@ -49,6 +51,8 @@ func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L, logStdOut bool) 
 		log.Errorf("%s %s failed: %v", cmd.Path, cmdType, err)
 		return nil, err
 	}
+	stderr.Close()
+	stdout.Close()
 
 	return stdo, nil
 }

@@ -27,19 +27,17 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile stri
 	}
 	if bitmarkConfigs, err := configuration.GetConfiguration(bitmarkConfigFile); nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 	} else {
 
 		bitmarkConfigs.Bitcoin.Password = ""
-		peerPublicKey, err := getPeerPublicKey(bitmarkConfigs.Peering.PublicKey)
-		if nil != err {
-			bitmarkConfigs.Peering.PublicKey = ""
+		if peerPublicKey, err := getPeerPublicKey(bitmarkConfigs.Peering.PublicKey); nil != err {
+			response.Result = err
 		} else {
+			response.Ok = true
 			bitmarkConfigs.Peering.PublicKey = *peerPublicKey
+			response.Result = bitmarkConfigs
 		}
-
-		response.Ok = true
-		response.Result = configuration.Configuration{}
-		response.Result = bitmarkConfigs
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -58,9 +56,9 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 
 	decoder := json.NewDecoder(req.Body)
 	var request configuration.Configuration
-	err := decoder.Decode(&request)
-	if nil != err {
+	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -83,6 +81,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	linesPtr, err := prepareBitmarkConfig(request, bitmarkConfigFile)
 	if nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -106,7 +105,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	output := strings.Join(outputLines, "\n")
 	err = ioutil.WriteFile(bitmarkConfigFile, []byte(output), 0644)
 	if nil != err {
-		log.Errorf("Error: %v", err)
+		log.Errorf("Error: %s, %v", bitmarkdConfigUpdateErr, err)
 		response.Result = bitmarkdConfigUpdateErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)

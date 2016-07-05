@@ -16,6 +16,34 @@ angular.module('bitmarkWebguiApp')
         if(configuration.getConfiguration().bitmarkCliConfigFile.length != 0){
             $location.path('/login');
         }
+        $scope.bitmarkd = {
+            isRunning: false
+        };
+
+        // checkout bitmarkd status first
+        httpService.send('statusBitmarkd').then(
+            function(result){
+                if(result.search("stop") >= 0) {
+                    $scope.bitmarkd.isRunning = false;
+                }else{
+                    httpService.send('getBitmarkdInfo').then(function(info){
+                        $scope.bitmarkd.isRunning = true;
+                        $scope.generateConfig.chain = info.chain;
+                        configuration.setChain(info.chain);
+                    }, function(infoErr){
+                    });
+                }
+            }, function(errorMsg){
+            });
+
+
+        $scope.stopBitmarkd = function(){
+            httpService.send("stopBitmarkd").then(
+                function(result){
+                    $scope.bitmarkd.isRunning = false;
+                }, function(errorMsg){
+                });
+        };
 
         $scope.panelConfig = {
             showPart: 1
@@ -89,6 +117,10 @@ angular.module('bitmarkWebguiApp')
                             $scope.generateConfig.error.msg = "wallet was encrypted before, please decrypt your bitmark wallet first";
                             break;
                         }
+                    }, function(payStatusError){
+                        $interval.cancel(encryptPromise);
+                        $scope.generateConfig.error.show = true;
+                        $scope.generateConfig.error.msg = payStatusError;
                     });
                 }, 3*1000);
             }, function(ecryptErr){
@@ -156,6 +188,7 @@ angular.module('bitmarkWebguiApp')
 
         $scope.killPayProcess = function(kill){
             if(kill){
+                $scope.generateConfig.encryptAlert.show = false;
                 $interval.cancel(encryptPromise);
                 pollEncryptCount = 0;
                 if(encryptJobHash == "" || encryptJobHash == null) {
@@ -213,17 +246,23 @@ angular.module('bitmarkWebguiApp')
             config.private_key =  $scope.privateKey;
 
             httpService.send('setupBitmarkCli', config).then(function(setupCliResult){
-                // TODO: setup bitmarkConfig file in server
-                httpService.send('setupBitmarkd', {
-                    config_file: BitmarkdConfig[$scope.generateConfig.chain]
-                }).then(function(setupBitmarkdResult){
+                // setup bitmarkConfig file in server
+                if(!$scope.bitmarkd.isRunning){
+                    httpService.send('setupBitmarkd', {
+                        config_file: BitmarkdConfig[$scope.generateConfig.chain]
+                    }).then(function(setupBitmarkdResult){
+                        configuration.setBitmarkCliConfigFile(BitmarkCliConfig[$scope.generateConfig.chain]);
+                        $scope.$emit('Authenticated', true);
+                        $location.path("/main");
+                    }, function(setupBitmarkdErr){
+                        $scope.doneErr.msg = setupBitmarkdErr;
+                        $scope.doneErr.show = true;
+                    });
+                } else {
                     configuration.setBitmarkCliConfigFile(BitmarkCliConfig[$scope.generateConfig.chain]);
                     $scope.$emit('Authenticated', true);
                     $location.path("/main");
-                }, function(setupBitmarkdErr){
-                    $scope.doneErr.msg = setupBitmarkdErr;
-                    $scope.doneErr.show = true;
-                });
+                }
             }, function(setupCliErr){
                 $scope.doneErr.msg = setupCliErr;
                 $scope.doneErr.show = true;

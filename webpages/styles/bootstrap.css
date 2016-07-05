@@ -4,8 +4,18 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
+@font-face {
+  font-family: 'Avenir Next LT Pro';
+  font-style: normal;
+
+  src:  url(/fonts/AvenirNextLTPro-Regular.otf) format('opentype'),
+        local('Avenir Next LT Pro') ;
+}
+
+
 html {
-  font-family: sans-serif;
+  font-family:AvenirNextLTPro-Regular;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
 }
@@ -29,7 +39,7 @@ summary {
 }
 audio,
 canvas,
-progress,
+progress,g
 video {
   display: inline-block;
   vertical-align: baseline;
@@ -1082,7 +1092,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family:'Avenir Next LT Pro', Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
   color: #333;
@@ -1288,7 +1298,7 @@ h6,
   font-size: 12px;
 }
 p {
-  margin: 0 0 10px;
+  margin: 12px 0 12px 0;
 }
 .lead {
   margin-bottom: 20px;
@@ -2511,6 +2521,7 @@ label {
   max-width: 100%;
   margin-bottom: 5px;
   font-weight: bold;
+  padding-right: 10px
 }
 input[type="search"] {
   -webkit-box-sizing: border-box;

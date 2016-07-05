@@ -103,7 +103,7 @@ Params example:
 }
 
 Return examples:
-pay/encrypt success:
+pay/encrypt/decrypt success:
 {
   "ok":"true"
   "result": "success"

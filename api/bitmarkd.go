@@ -6,8 +6,8 @@ package api
 
 import (
 	"encoding/json"
-	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
+	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net/http"
@@ -16,7 +16,7 @@ import (
 )
 
 type bitmarkdRequest struct {
-	Option string `json:"option"`
+	Option     string `json:"option"`
 	ConfigFile string `json:"config_file"`
 }
 
@@ -31,14 +31,15 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 
 	decoder := json.NewDecoder(req.Body)
 	var request bitmarkdRequest
-	err := decoder.Decode(&request)
-	if nil != err {
+	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
 		return
 	}
+
 	log.Infof("bitmarkd option: %s", request.Option)
 
 	apiErr := invalidValueErr
@@ -92,7 +93,7 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 		}
 	case `setup`:
 		if bitmarkService.IsRunning() {
-			response.Result = bitmarkdAlreadyStopErr
+			response.Result = bitmarkdAlreadyStartErr
 		} else {
 			if err := bitmarkService.Setup(request.ConfigFile, webguiFilePath, webguiConfig); nil != err {
 				response.Result = err

@@ -34,7 +34,7 @@ angular.module('bitmarkWebguiApp')
 
         $scope.login = function(){
             if($scope.request.Password == ""){
-                $scope.errorMsg = "Please enter password";
+                $scope.errorMsg = "Please enter your password.";
                 return;
             }
             // Clean cookie first
@@ -54,7 +54,7 @@ angular.module('bitmarkWebguiApp')
                         $scope.errorMsg = "Already login! should not see this page";
                     }else{
                         $scope.$emit('Authenticated', false);
-                        $scope.errorMsg = "Login failed";
+                        $scope.errorMsg = "Login failed, please try again.";
                     }
                 });
         };

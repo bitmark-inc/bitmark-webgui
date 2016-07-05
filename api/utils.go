@@ -63,6 +63,7 @@ func setCookie(w http.ResponseWriter) error {
 
 	globalCookie[0].Lock()
 	defer globalCookie[0].Unlock()
+
 	globalCookie[1].Lock()
 	defer globalCookie[1].Unlock()
 

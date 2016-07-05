@@ -1,11 +1,11 @@
-<div ng-init="init()">
+<div class="container loginContainer" style="text-align:center" ng-init="init()">
   <div ng-if="!showWelcome">
-    <h3>Login Bitmark Web</h3>
+    <h3 class="login">LOGIN BITMARK NODE WEB</h3>
+    <br>
     <p>{{errorMsg}}</p>
-
-    <p>Password</p>
-    <input type="password" ng-model="request.Password">
-    <button ng-click="login()">login</button>
+    <input class="login-password" type="password" placeholder="PASSWORD" ng-model="request.Password">
+    <br>
+    <button class="btn btn-primary btn-lg" ng-click="login()">LOGIN</button>
   </div>
 
   <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWarning">
@@ -16,11 +16,17 @@
     </uib-alert>
   </div>
 
-  <div ng-if="showWelcome">
-    <h3>Welcome to Bitmark Node</h3>
-    <br/>
-    <button type="button" class="btn btn-primary btn-lg" ng-click="goUrl('create')">Create New Bitmark Account</button>
-    <br/><br/>
+  <div ng-if="showWelcome" style="text-align:center;">
+    <img class="login" src="/images/bitmark-logo.png" width="430px">
+      <br>
+      <br>
+      <br>
+    <div class="welcome">Welcome to Bitmark Node</div>
+      <br>
+      <br>
+      <br>
+      <br>
+    <button type="button" class="btn btn-primary btn-lg" ng-click="goUrl('create')">CREATE NEW BITMARK ACCOUNT »</button>
     <button type="button" class="btn btn-default btn-lg" ng-click="goUrl('access')">Access Existing Bitmark Account</button>
   </div>
 </div>

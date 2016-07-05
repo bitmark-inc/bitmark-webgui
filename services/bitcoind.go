@@ -69,14 +69,10 @@ loop:
 			break loop
 		case start := <-bitcoind.ModeStart:
 			if start {
-				if err := bitcoind.startBitcoind(); nil != err {
-					bitcoind.log.Errorf("Start bitcoind failed: %v", err)
-				}
+				bitcoind.startBitcoind()
 
 			} else {
-				if err := bitcoind.stopBitcoind(); nil != err {
-					bitcoind.log.Errorf("Stop bitcoind failed: %v", err)
-				}
+				bitcoind.stopBitcoind()
 			}
 		}
 
@@ -87,7 +83,8 @@ loop:
 
 func (bitcoind *Bitcoind) startBitcoind() error {
 	if bitcoind.running {
-		return nil
+		bitcoind.log.Errorf("Start bitcoind failed: %v", fault.ErrBitcoindIsRunning)
+		return fault.ErrBitcoindIsRunning
 	}
 
 	// start bitcoind as sub process
@@ -96,12 +93,15 @@ func (bitcoind *Bitcoind) startBitcoind() error {
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		bitcoind.log.Errorf("Error: %v", err)
+		return err
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		bitcoind.log.Errorf("Error: %v", err)
+		return err
 	}
 	if err := cmd.Start(); nil != err {
+		bitcoind.log.Errorf("Start bitcoind failed: %v", err)
 		return err
 	}
 
@@ -120,7 +120,6 @@ func (bitcoind *Bitcoind) startBitcoind() error {
 			defer close(stderrDone)
 			for {
 				stde, err := stdeReader.ReadString('\n')
-				// fmt.Printf("bitcoind stderr: %q\n", stde)
 				bitcoind.log.Errorf("bitcoind stderr: %q", stde)
 				if nil != err {
 					bitcoind.log.Errorf("Error: %v", err)
@@ -133,7 +132,6 @@ func (bitcoind *Bitcoind) startBitcoind() error {
 			defer close(stdoutDone)
 			for {
 				stdo, err := stdoReader.ReadString('\n')
-				// fmt.Printf("bitcoind stdout: %q\n", stdo)
 				bitcoind.log.Infof("bitcoind stdout: %q", stdo)
 				if nil != err {
 					bitcoind.log.Errorf("Error: %v", err)
@@ -154,12 +152,12 @@ func (bitcoind *Bitcoind) startBitcoind() error {
 	// wait for 1 second if cmd has no error then return nil
 	time.Sleep(time.Second * 1)
 	return nil
-
 }
 
 func (bitcoind *Bitcoind) stopBitcoind() error {
 	if !bitcoind.running {
-		return nil
+		bitcoind.log.Errorf("Stop bitcoind failed: %v", fault.ErrBitcoindIsNotRunning)
+		return fault.ErrBitcoindIsNotRunning
 	}
 
 	if err := bitcoind.process.Signal(os.Interrupt); nil != err {
@@ -179,9 +177,7 @@ func (bitcoind *Bitcoind) stopBitcoind() error {
 func (bitcoind *Bitcoind) GetInfo() ([]byte, error) {
 	out, err := exec.Command("bitcoin-cli", "getinfo").Output()
 	if err != nil {
-		bitcoind.log.Infof("fail to get bitcoin info")
 		return nil, err
 	}
-
 	return out, nil
 }
