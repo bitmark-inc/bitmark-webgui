@@ -108,6 +108,24 @@ h3,.h3 {
     padding-top: 16px;
 }
 /* nav */
+/* configuration */
+.configuration-sub {
+    font-style: italic;
+    font-size: 12px;
+    margin-top: 0;
+}
+
+.btn-sm, .btn-group-sm > .btn {
+    padding: 3px 5px 3px 10px;
+    font-size: 14px;
+    background-color: transparent;
+    color: #B2C1D8;
+}
+
+.configuration-text {
+    margin: 0 0 12px 0;
+}
+/* configuration */
 /* main */
 .row {
     margin-left: 0;
@@ -128,7 +146,7 @@ h3,.h3 {
 
 .main-title {
     border: none;
-    padding-top: 20px;
+    padding-top: 22px;
     font-size: 14px;
     color: #404040;
 }
@@ -344,6 +362,24 @@ fieldset[disabled] .btn { color: #C1C1C1 }
     padding: 0 0 0 10px;
     margin: -12px 0 20px 0;
 }
+.accessinput {
+    display: block;
+    width: 466px;
+    height: 35px;
+    border: none;
+    font-size: 16px;
+    padding: 0 0 0 10px;
+}
+.accesspasscode {
+    display: block;
+    width: 466px;
+    height: 35px;
+    border: none;
+    font-size: 16px;
+    padding: 30px 0 20px 0;
+}
+
+
 .has-error .form-control:focus {
     border-bottom: 1px solid #FF0000;
     border-radius: 0;
@@ -419,17 +455,8 @@ fieldset[disabled] .btn { color: #C1C1C1 }
 .marketing p + h4 { margin-top: 28px }
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) { 
-    .container { max-width: 730px }
-    /* Remove the padding we set earlier */
-    .header,
-    .marketing,
-    .footer {
-        padding-left: 0;
-        padding-right: 0;
-    }
-    /* Space out the masthead */
-    .header { margin-bottom: 0px }
-    /* Remove the bottom border on the jumbotron for visual effect */
-    .jumbotron { border-bottom: 0 }
+    .container {width: 1000px}
+    .loginContainer {max-width: 730px}
+
 }
  
