@@ -350,7 +350,7 @@ func handleSetPassword(w http.ResponseWriter, req *http.Request) {
 			exitwithstatus.Message("Error: %v\n", err)
 		} else {
 			GlobalConfig = configs
-			api.SetBitmarkWebguiPassword(w, req, BitmarkWebguiConfigFile, GlobalConfig.Password, log)
+			api.SetBitmarkWebguiPassword(w, req, BitmarkWebguiConfigFile, GlobalConfig, log)
 		}
 	case `OPTIONS`:
 		return

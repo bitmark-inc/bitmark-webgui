@@ -228,7 +228,6 @@ func removeBitmarkCliConfigAndCookie(w http.ResponseWriter, filePath string, web
 		return
 	}
 
-
 	// remove cookie
 	cookie := &http.Cookie{
 		Name:   CookieName,

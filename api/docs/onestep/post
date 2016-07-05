@@ -3,7 +3,6 @@ Path: /api/onestep/status
 Method: POST
 Params example:
 {
-  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
   "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
   "network": "local"
 }
@@ -73,7 +72,6 @@ Method: POST
 Params example:
 {
   "network": "local",
-  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
   "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
   "identity": "test",
   "asset": "asset name",
@@ -120,7 +118,7 @@ Method: POST
 Params example:
 {
   "network": "local",
-  "cli_config":"/usr/home/bitmark/config/bitmark-cli/bitmark-cli-local.conf",
+
   "pay_config": "/usr/home/bitmark/config/bitmark-pay/bitmark-pay-local.xml",
   "identity": "test",
   "txid": "bitmakr transaction id",

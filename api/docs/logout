@@ -1,0 +1,15 @@
+Usage: logout bitmark-webgui
+Path: /api/logout
+Method: POST
+Return examples:
+failed:
+{
+  "ok": false,
+  "result": error msg
+}
+
+success:
+{
+  "ok": true,
+  "result": null
+}

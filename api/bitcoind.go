@@ -36,7 +36,6 @@ type bitcoindInfoResponse struct {
 // POST /api/bitcoind
 func Bitcoind(w http.ResponseWriter, req *http.Request, log *logger.L) {
 
-	log.Info("POST /api/bitcoind")
 	response := &Response{
 		Ok:     false,
 		Result: nil,
@@ -52,7 +51,8 @@ func Bitcoind(w http.ResponseWriter, req *http.Request, log *logger.L) {
 		}
 		return
 	}
-	log.Infof("bitcoind option: %s", request.Option)
+
+	log.Infof("POST /api/bitcoind/%s", request.Option)
 
 	apiErr := invalidValueErr
 	switch request.Option {
@@ -109,7 +109,6 @@ func Bitcoind(w http.ResponseWriter, req *http.Request, log *logger.L) {
 
 				response.Ok = true
 				response.Result = jsonInfo
-
 			}
 		}
 	default:

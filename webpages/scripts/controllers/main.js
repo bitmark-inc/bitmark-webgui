@@ -97,6 +97,7 @@ angular.module('bitmarkWebguiApp')
             allBitmarkdDisable();
             $scope.error.show = false;
             $interval.cancel(getInfoPromise);
+            $scope.bitmarkInfo = undefined;
             httpService.send("stopBitmarkd").then(
                 function(result){
                     if(result.search("stop running bitmarkd")>=0) {

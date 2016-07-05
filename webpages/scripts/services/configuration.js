@@ -2,7 +2,8 @@
 app.service('configuration', function () {
     var configuration = {
         chain: "testing",
-        bitmarkCliConfigFile: ""
+        bitmarkCliConfigFile: "",
+        mineFee: 205000 // bitmark mine: 20000 bitcoin mine: 5000
     };
 
     return {

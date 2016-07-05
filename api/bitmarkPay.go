@@ -36,9 +36,8 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			return
 		}
 
-		err := bitmarkPayService.Info(*request)
-		if nil != err {
-			response.Result = "bitmark-pay info error"
+		if err := bitmarkPayService.Info(*request); nil != err {
+			response.Result = err
 		} else {
 			response.Ok = true
 			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
@@ -50,9 +49,8 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			return
 		}
 
-		err := bitmarkPayService.Pay(*request)
-		if nil != err {
-			response.Result = "bitmark-pay pay error"
+		if err := bitmarkPayService.Pay(*request); nil != err {
+			response.Result = err
 		} else {
 			response.Ok = true
 			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
@@ -63,9 +61,8 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			return
 		}
 
-		err := bitmarkPayService.Encrypt(*request)
-		if nil != err {
-			response.Result = "bitmark-pay encrypt error"
+		if err := bitmarkPayService.Encrypt(*request); nil != err {
+			response.Result = err
 		} else {
 			response.Ok = true
 			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
@@ -76,8 +73,7 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			return
 		}
 
-		err := bitmarkPayService.Decrypt(*request)
-		if nil != err {
+		if err := bitmarkPayService.Decrypt(*request); nil != err {
 			response.Result = err
 		} else {
 			response.Ok = true
@@ -98,15 +94,15 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			return
 		}
 
-		output, err := bitmarkPayService.GetBitmarkPayJobResult(*request)
-		if nil != err {
-			response.Result = "bitmark-pay result error"
+		if output, err := bitmarkPayService.GetBitmarkPayJobResult(*request); nil != err {
+			response.Result = err
 		} else {
 			jobType := bitmarkPayService.GetBitmarkPayJobType(request.JobHash)
 			switch jobType {
 			case "info":
 				var jsonInfo BitmarkPayInfoResponse
 				if err := json.Unmarshal(output, &jsonInfo); nil != err {
+					response.Result = err
 					log.Errorf("Error: %v", err)
 				} else {
 					response.Ok = true
@@ -130,9 +126,9 @@ func bitmarkPayParseRequest(w http.ResponseWriter, req *http.Request, response *
 	var request services.BitmarkPayType
 
 	decoder = json.NewDecoder(req.Body)
-	err := decoder.Decode(&request)
-	if nil != err {
+	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
+		response.Result = err
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -166,15 +162,12 @@ func BitmarkPayKill(w http.ResponseWriter, req *http.Request, log *logger.L) {
 
 	request := bitmarkPayParseRequest(w, req, response, log)
 	if nil == request {
-		response.Result = "invalid request"
-		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			log.Errorf("Error: %v", err)
-		}
 		return
 	}
 
 	if request.JobHash != bitmarkPayService.GetBitmarkPayJobHash() {
 		response.Result = "invalid job hash"
+		log.Errorf("Invalid job hash, requset: %s, in service: %s", request.JobHash, bitmarkPayService.GetBitmarkPayJobHash())
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}

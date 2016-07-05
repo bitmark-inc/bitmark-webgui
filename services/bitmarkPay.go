@@ -284,7 +284,6 @@ func (bitmarkPay *BitmarkPay) Kill() error {
 func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string, logStdOut bool) error {
 	byteHash, err := time.Now().MarshalText()
 	if nil != err {
-		bitmarkPay.log.Errorf("get error: %v\n", err)
 		return err
 	}
 	hash := hex.EncodeToString(byteHash)
@@ -301,8 +300,8 @@ func (bitmarkPay *BitmarkPay) runBitmarkPayJob(cmd *exec.Cmd, cmdType string, lo
 			bitmarkPay.Lock()
 			defer bitmarkPay.Unlock()
 
-			bitmarkPay.log.Errorf("job fail: %s", bitmarkPay.asyncJob.hash)
-			bitmarkPay.asyncJob.result = nil
+			bitmarkPay.log.Errorf("job  %s fail, err: %v", bitmarkPay.asyncJob.hash, err)
+			bitmarkPay.asyncJob.result = []byte(err.Error())
 			bitmarkPay.asyncJob.command.Process.Kill()
 			bitmarkPay.asyncJob.command = nil
 		} else {

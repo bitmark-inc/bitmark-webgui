@@ -3,86 +3,83 @@ Path: /api/config
 Method: POST
 Params:
 {
-  "0k": true,
-  "result": {
-    "DataDirectory": "/var/lib/bitmarkd",
-    "PidFile": "/var/lib/bitmarkd/bitmarkd.pid",
-    "Chain": "testing",
-    "Database": {
-      "Directory": "/var/lib/bitmarkd/data",
-      "Name": "/var/lib/bitmarkd/data/testing.leveldb"
-    },
-    "ClientRPC": {
-      "MaximumConnections": 50,
-      "Listen": [
-        "127.0.0.1:2130",
-        "127.0.0.1:2131",
-        "[::1]:2132"
-      ],
-      "Certificate": "/var/lib/bitmarkd/bitmarkd-local-rpc.crt",
-      "PrivateKey": "/var/lib/bitmarkd/bitmarkd-local-rpc.key",
-      "Announce": null
-    },
-    "Peering": {
-      "MaximumConnections": 125,
-      "Listen": [
-        "0.0.0.0:2135",
-        "[::]:2136"
-      ],
-      "Connect": [
-        {
-          "PublicKey": ".*}yF[u7o]&#sgJrvLpC7pOW8Z+r^CHWasf14hs3",
-          "Address": "192.168.22.132:7564"
-        }
-      ],
-      "PrivateKey": "/var/lib/bitmarkd/bitmarkd-local.private",
-      "PublicKey": "k$34%)}]}FK%&EQ.cV3aTINVu4ydh!wAl<lv7X^1",
-      "Announce": null
-    },
-    "Mining": {
-      "MaximumConnections": 10,
-      "Listen": [
-        "0.0.0.0:2140",
-        "[::]:2141"
-      ],
-      "Certificate": "/var/lib/bitmarkd/bitmarkd-local-mine.crt",
-      "PrivateKey": "/var/lib/bitmarkd/bitmarkd-local-mine.key",
-      "Announce": null
-    },
-    "Bitcoin": {
-      "Username": "username",
-      "Password": "password",
-      "URL": "http://127.0.0.1:7315",
-      "CACertificate": "",
-      "Certificate": "",
-      "PrivateKey": "",
-      "Address": "n2fHZ9Su7WX2r255ZEfkmHMfbdzz6qKfkC",
-      "Fee": "0.0002"
-    },
-    "Logging": {
-      "Directory": "/var/lib/bitmarkd/log",
-      "File": "/var/lib/bitmarkd/log/bitmarkd.log",
-      "Size": 1048576,
-      "Count": 10,
-      "Levels": {
-        "*": "info",
-        "announcer": "info",
-        "bilateral": "info",
-        "bitcoin": "info",
-        "block": "info",
-        "client": "info",
-        "config": "info",
-        "main": "info",
-        "mine-bg": "info",
-        "mine-server": "info",
-        "mode": "info",
-        "payment": "info",
-        "peer": "info",
-        "responder": "info",
-        "rpc": "info",
-        "rpc-server": "info",
-        "transaction": "info"
+  "DataDirectory": "/var/lib/bitmarkd",
+  "PidFile": "/var/lib/bitmarkd/bitmarkd.pid",
+  "Chain": "testing",
+  "Database": {
+    "Directory": "/var/lib/bitmarkd/data",
+    "Name": "/var/lib/bitmarkd/data/testing.leveldb"
+  },
+  "ClientRPC": {
+    "MaximumConnections": 50,
+    "Listen": [
+      "127.0.0.1:2130",
+      "127.0.0.1:2131",
+      "[::1]:2132"
+    ],
+    "Certificate": "/var/lib/bitmarkd/bitmarkd-local-rpc.crt",
+    "PrivateKey": "/var/lib/bitmarkd/bitmarkd-local-rpc.key",
+    "Announce": null
+  },
+  "Peering": {
+    "MaximumConnections": 125,
+    "Listen": [
+      "0.0.0.0:2135",
+      "[::]:2136"
+    ],
+    "Connect": [
+      {
+        "PublicKey": ".*}yF[u7o]&#sgJrvLpC7pOW8Z+r^CHWasf14hs3",
+        "Address": "192.168.22.132:7564"
       }
+    ],
+    "PrivateKey": "/var/lib/bitmarkd/bitmarkd-local.private",
+    "PublicKey": "k$34%)}]}FK%&EQ.cV3aTINVu4ydh!wAl<lv7X^1",
+    "Announce": null
+  },
+  "Mining": {
+    "MaximumConnections": 10,
+    "Listen": [
+      "0.0.0.0:2140",
+      "[::]:2141"
+    ],
+    "Certificate": "/var/lib/bitmarkd/bitmarkd-local-mine.crt",
+    "PrivateKey": "/var/lib/bitmarkd/bitmarkd-local-mine.key",
+    "Announce": null
+  },
+  "Bitcoin": {
+    "Username": "username",
+    "Password": "password",
+    "URL": "http://127.0.0.1:7315",
+    "CACertificate": "",
+    "Certificate": "",
+    "PrivateKey": "",
+    "Address": "n2fHZ9Su7WX2r255ZEfkmHMfbdzz6qKfkC",
+    "Fee": "0.0002"
+  },
+  "Logging": {
+    "Directory": "/var/lib/bitmarkd/log",
+    "File": "/var/lib/bitmarkd/log/bitmarkd.log",
+    "Size": 1048576,
+    "Count": 10,
+    "Levels": {
+      "*": "info",
+      "announcer": "info",
+      "bilateral": "info",
+      "bitcoin": "info",
+      "block": "info",
+      "client": "info",
+      "config": "info",
+      "main": "info",
+      "mine-bg": "info",
+      "mine-server": "info",
+      "mode": "info",
+      "payment": "info",
+      "peer": "info",
+      "responder": "info",
+      "rpc": "info",
+      "rpc-server": "info",
+      "transaction": "info"
     }
   }
 }

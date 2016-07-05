@@ -1,0 +1,94 @@
+Usage: start bitcoind
+Path: /api/bitcoind
+Method: POST
+Params:
+{
+  "option" : "start"
+}
+Return examples:
+failed:
+{
+  "ok": false,
+  "result": "Failed to start bitcoind"
+}
+
+success:
+{
+  "ok": true,
+  "result": "start running bitcoind"
+}
+
+=============================================
+
+Usage: stop bitcoind
+Path: /api/bitcoind
+Method: POST
+Params:
+{
+  "option" : "stop"
+}
+Return examples:
+failed:
+{
+  "ok": false,
+  "result": "Failed to stop bitcoind"
+}
+
+success:
+{
+  "ok": true,
+  "result": "stop running bitcoind"
+}
+
+=============================================
+
+Usage: get bitcoind status
+Path: /api/bitcoind
+Method: POST
+Params:
+{
+  "option" : "status"
+}
+Return examples:
+success:
+{
+  "ok": true,
+  "result": "started/stopped"
+}
+
+=============================================
+
+Usage: get bitcoind info
+Path: /api/bitcoind
+Method: POST
+Params:
+{
+  "option" : "info"
+}
+Return examples:
+failed:
+{
+  "ok": false,
+  "result": "Already stoped bitcoind"
+}
+success:
+{
+  "ok": true,
+  "result": {
+    "version": 120000,
+    "protocolversion": 70012,
+    "walletversion": 60000,
+    "balance": 0,
+    "blocks": 0,
+    "timeoffset": 0,
+    "connections": 0,
+    "proxy": "",
+    "difficulty": 4.6565424e-10,
+    "testnet": false,
+    "keypoololdest": 1467019346,
+    "keypoolsize": 101,
+    "paytxfee": 0,
+    "relayfee": 1e-05,
+    "errors": ""
+  }
+}
