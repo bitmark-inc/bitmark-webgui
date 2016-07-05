@@ -1,5 +1,5 @@
-<div>
-  <h3>Logout</h3>
+<div style="text-align:center">
+  <h3 lass="login">LOGOUT</h3>
   <p>Use your passcode to logout completely</p>
   <uib-alert type="danger" close="error.show=false" ng-show="error.show">
     {{error.msg}}
@@ -10,11 +10,9 @@
     <button ng-click="killPayProcess(true)">Yes</button>
     <button ng-click="killPayProcess(false)">Later</button>
   </uib-alert>
-  
-  <p>Passcode</p>
-  <input type="password" ng-model="password">
-  <button ng-click="logout()">logout</button>
-
+  <input class="login-password" type="password" placeholder="PASSCODE" ng-model="password">
+  <br>
+  <button class="btn btn-primary btn-lg" ng-click="logout()">LOGOUT</button>
   <div>
     <p ng-repeat="(i, val) in msg">
       {{val}}

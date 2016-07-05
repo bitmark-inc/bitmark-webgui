@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Bitmark Node</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -21,28 +21,39 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
+
     <div class="header" ng-controller="NavbarCtrl" ng-init="init()">
-      <div class="navbar navbar-default" role="navigation">
+      <div ng-class="navbarClass" role="navigation">
         <div class="container">
+          
           <div class="navbar-header" ng-show="showNavItem">
-            <a class="navbar-brand" href="" ng-click="goUrl('/main')">bitmark</a>
+          
+            <a class="navbar-brand" href="" ng-click="goUrl('/main')" >
+                <img src="/images/bitmark-logo.png" class="logo" width="120px" height="28px" ></a>
           </div>
+
           <ul class="nav navbar-nav" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/issue')">Issue</a></li>
-            <li><a href="" ng-click="goUrl('/transfer')">Transfer</a></li>
+            <li class="active"><a href="" ng-click="goUrl('/main')">STATUS</a></li>
+            <li><a href="" ng-click="goUrl('/issue')">ISSUE</a></li>
+            <li><a href="" ng-click="goUrl('/transfer')">TRANSFER</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/network')">Network</a></li>
-            <li><a href="" ng-click="goUrl('/logout')">Logout</a></li>
+            <li><a href="" ng-click="goUrl('/network')">NETWORK</a></li>
+            <li><a href="" ng-click="goUrl('/logout')">LOGOUT</a></li>
           </ul>
         </div>
       </div>
     </div>
 
-    <div class="container">
-    <div ng-view=""></div>
-    </div>
 
+    <div class="container">
+             <div ng-view="">
+             </div>
+        </div>
+    </div>
+   
+
+ 
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->

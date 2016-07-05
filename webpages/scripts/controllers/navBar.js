@@ -7,6 +7,11 @@ angular.module('bitmarkWebguiApp')
         // to make the navbar item can show correctly
         $rootScope.$on('Authenticated', function(event, value){
             $rootScope.$broadcast('AppAuthenticated', value);
+            if(value) {
+                $scope.navbarClass = "navbar navbar-default";
+            } else {
+                $scope.navbarClass = "";
+            }
         });
 
         $scope.init = function(){
@@ -23,7 +28,11 @@ angular.module('bitmarkWebguiApp')
             });
         };
 
-
+        $(".nav a").on("click", function(){
+         $(".nav").find(".active").removeClass("active");
+          $(this).parent().addClass("active");
+        });
+        
         $scope.goUrl = function(path){
             $location.path(path);
         };

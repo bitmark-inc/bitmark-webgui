@@ -1,7 +1,14 @@
-<h3>Access Existing Bitmark Account</h3>
-<form name="bitmarkAccessForm" novalidate>
-  <div class="panel panel-default">
+<div class="container loginContainer">
+<h3>ACCESS EXISTING BITMARK ACCOUNT</h3>
+  <div class="panel panel-default" ng-show="panelConfig.showPart == 1">
+  <div class="row row-create">
+    <div class="col-md-3">
+       <div class="panel-heading create-title" style="font-weight: bold;">YOUR CHAIN</div>
+          <p class="create-sub" >Please select where you stores your chains</p>
+    </div>
+    <div class="col-md-8 col-md-offset-0">
     <div class="panel-body">
+<<<<<<< HEAD
       <uib-alert type="danger" close="generateConfig.error.show=false" ng-show="generateConfig.error.show">
         {{generateConfig.error.msg}}
       </uib-alert>
@@ -40,21 +47,36 @@
         </label>
       </p>
 
-      <p>
-        <b>Set passcode</b>
-        <label>
-          <password-set password="password" result="verifyPassword"></password-set>
+      <label class="create-select">
+        <input type="radio" ng-model="generateConfig.chain" value="local" ng-disabled="generateConfig.running">
+        LOCAL
+      </label>
+      <label class="create-select">
+        <input type="radio" ng-model="generateConfig.chain" value="testing" ng-disabled="generateConfig.running">
+        TESTING
+      </label>
+      <label class="create-select">
+        <input type="radio" ng-model="generateConfig.chain" value="bitmark" ng-disabled="generateConfig.running">
+        BITMARK
+      </label>
+      <div>Please enter your Private key</div>
+       <label>
+       <input class="accessinput" ng-model="privateKey" required></label>
+       <label>
+        <password-set class="accesspasscode" password="password" result="verifyPassword"></password-set>
         </label>
-      </p>
-
-      <div ng-show="generateConfig.running">
+      </div>
+     <div class="generating" ng-show="generateConfig.running">
         <p ng-repeat="(i, val) in generateConfig.msg">
           {{val}}
         </p>        
       </div>
+  </div>
+    <div class="col-md-3 col-md-offset-9">
+      <div class="panel-footer create-footer">
+      <button class="btn pull-right generate" ng-click="generate(false)" ng-disabled="bitmarkAccessForm.$invalid || !verifyPassword || generateConfig.running">GO » </button>
+      </div>
     </div>
-    <div class="panel-footer">
-      <button ng-click="generate(false)" ng-disabled="bitmarkAccessForm.$invalid || !verifyPassword || generateConfig.running">Go</button>
     </div>
   </div>
-</form>
+</div>
