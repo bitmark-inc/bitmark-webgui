@@ -1,19 +1,20 @@
 <div ng-init="init()">
   <h3 class="home" ng-if="showIssueView">ISSUE BITMARK</h3>
-  <h3 class="home" ng-if="!showIssueView">TRANSFER BITMARK</h3>
+  <h3 class="home" ng-if="!showIssueView">TRANS BITMARK</h3>
   <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
     <img src="images/hash_animation.gif" style=" width:20%; position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
   </div>
-          <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show">
+          <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show" style="font-weight: bold; display: block; text-align: center; padding: 20px;">
           {{infoErr.msg}}
         </uib-alert>
-        <uib-alert type="warning"  ng-show="infoAlert.show">
+        <uib-alert type="warning"  ng-show="infoAlert.show" style="font-weight: bold; display: block; text-align: center; padding: 20px;">
           {{infoAlert.msg}}
-          <button ng-click="killPayProcess(true)">Yes</button>
-          <button ng-click="killPayProcess(false)">Later</button>
+          <br>
+          <button style="text-align:center; color: black;font-weight: normal; margin: 8px 5px 0px;" ng-click="killPayProcess(true)">Yes</button>
+          <button style="text-align:center; color: black;font-weight: normal; margin: 8px 5px 0px;" ng-click="killPayProcess(false)">Later</button>
         </uib-alert>
 
-  <!-- INFO section -->
+<!-- INFO section -->
 <div class="row">
     <div class="col-md-4">   
           <div class="panel panel-default">
@@ -68,91 +69,109 @@
                       <div class="main-text">{{onestepStatusResult.pay_result.available_balance}}</div>
                   </div>  
             </div> 
-
         </div>
     </div> <!-- ol-md-8 col-md-offset-0 end -->
+</div><!-- INFO section -->
+
+<!-- Issue section -->
+<div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="showIssueView">
+    <div class="row rowblue">
+        <div class="col-md-4">   
+              <div class="main-title" style="font-weight: bold;">ISSUE ASSET</div>
+              </div> 
+        <div class="col-md-8 col-md-offset-0">
+              <div class="main-body">
+                  <!--  alert -->
+                  <uib-alert type="warning" ng-if="!bitmarkdAlert.isNormal">
+                    <b>{{bitmarkdAlert.msg}}</b>
+                  </uib-alert>
+                  <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null && issueResult.msg != ''">
+                    <b>{{issueResult.msg}}</b>
+                    <div ng-show="issueResult.cliResult != null">
+                      <span ng-repeat="index in issueResult.cliResult.issueIds track by $index">
+                          <b>
+                            {{$index+1}}
+                            <span ng-if="issueResult.failStart != null && $index >= issueResult.failStart">Pay Failed
+                            </span>
+                            <span ng-if="issueResult.failStart == null || $index < issueResult.failStart">Pay Success
+                            </span>
+                          </b>
+                          <b>txid</b>
+                          {{issueResult.cliResult.issueIds[$index]}}
+                          <b>currency</b>
+                          {{issueResult.cliResult.paymentAddress[0].currency}}
+                          <b>address</b>
+                          {{issueResult.cliResult.paymentAddress[0].address}}
+                      </span>
+                    </div>
+                  </uib-alert><!--  alert -->
+
+                  <div class="row row-text">
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text"><b>NAME</b>
+                          </div>
+                      </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text">
+                          <input type="text" ng-model="issueConfig.asset" required>
+                          </div>
+                      </div>  
+                  </div> 
+
+                  <div class="row row-text">
+                      <div class="col-xs-6 col-sm-3">
+                        <div class="main-text"><b>DESCRIPTION</b>
+                        </div>
+                      </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text">
+                          <textarea ng-model="issueConfig.description" required></textarea>
+                          </div>
+                      </div> 
+                  </div> 
+
+                <div class="row row-text">
+                    <div class="col-xs-6 col-sm-3">
+                      <div class="main-text"><b>FINGERPRINT</b></div>
+                    </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text">
+                          <fingerprint-input file="file" fingerprint="issueConfig.fingerprint"></fingerprint-input>
+                          {{issueConfig.fingerprint}}
+                          </div>
+                      </div>  
+                </div> 
+
+                <div class="row row-text">
+                    <div class="col-xs-6 col-sm-3">
+                      <div class="main-text"><b>QUANTITY</b></div>
+                    </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text"><input type="number" ng-model="issueConfig.quantity" required>
+                          </div>
+                      </div>  
+                </div> 
+
+                <div class="row row-text">
+                    <div class="col-xs-6 col-sm-3">
+                      <div class="main-text"><b>PASSCODE</b></div>
+                    </div>
+                    <div class="col-xs-6 col-sm-3">
+                        <div class="main-text"><input type="password" ng-model="issueConfig.password" required>
+                        </div>
+                    </div> 
+                </div>
+                <div class="row row-text">
+                      <div class="col-xs-6 col-sm-12">
+                      <button class="btn pull-right generate" ng-click="submitGeneral('issue')" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == '' || !bitmarkdAlert.isNormal">SUBMIT</button>
+                      </div>  
+                </div> 
+            </div>
+        </div> <!-- ol-md-8 col-md-offset-0 end -->
+    </div>
 </div>
 
-  <!-- Issue setction -->
-  <div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="showIssueView">
-    <div class="panel-heading">
-      Issue Asset
-    </div>
-    <div class="panel-body">
-      <!--  alert -->
-      <uib-alert type="warning" ng-if="!bitmarkdAlert.isNormal">
-        <b>{{bitmarkdAlert.msg}}</b>
-      </uib-alert>
 
-      <uib-alert type="{{issueResult.type}}" close="clearErrAlert('issue')" ng-if="issueResult != null && issueResult.msg != ''">
-        <b>{{issueResult.msg}}</b>
-        <div ng-show="issueResult.cliResult != null">
-          <span ng-repeat="index in issueResult.cliResult.issueIds track by $index">
-            <div>
-              <b>
-                {{$index+1}}
-                <span ng-if="issueResult.failStart != null && $index >= issueResult.failStart">
-                  Pay Failed
-                </span>
-                <span ng-if="issueResult.failStart == null || $index < issueResult.failStart">
-                    Pay Success
-                </span>
-              </b>
-            </div>
-            <div>
-              <b>txid</b>
-              {{issueResult.cliResult.issueIds[$index]}}
-            </div>
-            <div>
-              <b>currency</b>
-              {{issueResult.cliResult.paymentAddress[0].currency}}
-            </div>
-            <div>
-              <b>address</b>
-              {{issueResult.cliResult.paymentAddress[0].address}}
-            </div>
-          </span>
-        </div>
-      </uib-alert>
-      
-      <form name="issueForm">
-        <div class="panel-body">
-          <p>
-            <label>
-              Name
-              <input type="text" ng-model="issueConfig.asset" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Description
-              <textarea ng-model="issueConfig.description" required></textarea>
-            </label>
-          </p>
-          <p>
-            <fingerprint-input file="file" fingerprint="issueConfig.fingerprint"></fingerprint-input>
-            <label>
-              Fingerprint
-              {{issueConfig.fingerprint}}
-            </label>
-          </p>
-          <p>
-            <label>
-              Quantity
-              <input type="number" ng-model="issueConfig.quantity" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Passcode
-              <input type="password" ng-model="issueConfig.password" required>
-            </label>
-          </p>
-        </div>
-        <button ng-click="submitGeneral('issue')" ng-disabled="issueForm.$invalid || issueConfig.fingerprint == '' || !bitmarkdAlert.isNormal">submit</button>
-      </form>        
-    </div>
-  </div>
 
 
   <!-- Transfer setction -->
