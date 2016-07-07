@@ -1,16 +1,10 @@
 <div ng-init="init()">
-  <h3 ng-if="showIssueView">Issue Bitmark</h3>
-  <h3 ng-if="!showIssueView">Transfer Bitmark</h3>
+  <h3 class="home" ng-if="showIssueView">ISSUE BITMARK</h3>
+  <h3 class="home" ng-if="!showIssueView">TRANSFER BITMARK</h3>
   <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
-    <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+    <img src="images/hash_animation.gif" style=" width:20%; position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
   </div>
-
-  <!-- info section -->
-  <div class="panel panel-default">
-    <div class="panel-heading">Info</div>
-    <div class="panel-body">
-      <div>
-        <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show">
+          <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show">
           {{infoErr.msg}}
         </uib-alert>
         <uib-alert type="warning"  ng-show="infoAlert.show">
@@ -18,29 +12,66 @@
           <button ng-click="killPayProcess(true)">Yes</button>
           <button ng-click="killPayProcess(false)">Later</button>
         </uib-alert>
-        <p>
-          <b>Chain</b>
-          {{onestepStatusResult.cli_result.network}}
-        </p>
-        <p>
-          <b>Identity Publickey</b>
-          {{onestepStatusResult.cli_result.identities[0].public_key}}
-        </p>
-        <p>
-          <b>Bitcoin Address</b>
-          {{onestepStatusResult.pay_result.address}}
-        </p>
-        <p>
-          <b>Estimated Balance</b>
-          {{onestepStatusResult.pay_result.estimated_balance}}
-        </p>
-        <p>
-          <b>Available Balance</b>
-          {{onestepStatusResult.pay_result.available_balance}}
-        </p>
-      </div>
-    </div>
-  </div>
+
+  <!-- INFO section -->
+<div class="row">
+    <div class="col-md-4">   
+          <div class="panel panel-default">
+          <div class="main-title" style="font-weight: bold;">NODE INFO</div>
+          </div>
+          </div> 
+    <div class="col-md-8 col-md-offset-0">
+          <div class="main-body">
+              <div class="row row-text">
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text"><b>CHAIN</b>
+                      </div>
+                  </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text">{{onestepStatusResult.cli_result.network}}</div>
+                  </div>  
+              </div> 
+
+              <div class="row row-text">
+                  <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>IDENTITY PUBLICKEY</b>
+                    </div>
+                  </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text">{{onestepStatusResult.cli_result.identities[0].public_key}}</div>
+                  </div> 
+              </div> 
+
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                  <div class="main-text"><b>BITCOIN ADDRESS</b></div>
+                </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text">{{onestepStatusResult.pay_result.address}}</div>
+                  </div>  
+            </div> 
+
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                  <div class="main-text"><b>ESTIMATED BALANCE</b></div>
+                </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text">{{onestepStatusResult.pay_result.estimated_balance}}</div>
+                  </div>  
+            </div> 
+
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                  <div class="main-text"><b>AVAILABLE BALANCE</b></div>
+                </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text">{{onestepStatusResult.pay_result.available_balance}}</div>
+                  </div>  
+            </div> 
+
+        </div>
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
+</div>
 
   <!-- Issue setction -->
   <div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="showIssueView">

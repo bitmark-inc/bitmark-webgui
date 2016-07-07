@@ -1,29 +1,29 @@
-<div>
-  <h3 class="home">BITMARK NODE
+<h3 class="home">BITMARK NODE
     <div class="text-right">
        <button class="btn btn-primary-start" ng-click="startBitmark()" ng-disabled="disableStart">START</button>
        <button class="btn btn-primary-stop" ng-click="stopBitmark()" ng-disabled="disableStop">STOP</button>
        <button class="btn btn-primary-config " ng-click="goUrl('edit')" ng-disabled="disableStart">CONFIG</button>
     </div>  
-    </h3>
-</div>
+</h3>
+
  
 
- <div class="row row-status">
+<div class="row row-status">
     <div class="col-md-4">   
-          <div class="panel panel-default">
-            <div class="main-title" style="font-weight: bold;">STATUS</div>
-           </div>
+        <div class="panel panel-default">
+        <div class="main-title" style="font-weight: bold;">STATUS
+        </div>
+        </div>
     </div> 
     <div class="col-md-8 col-md-offset-0">
         <div class="main-body"> 
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-7">
-                 <div class="main-text" ng-show="error.show">{{ error.msg }}</div>
-              </div>
-              <div class="col-xs-6 col-sm-5">
+                <div class="col-xs-6 col-sm-7">
+                <div class="main-text" ng-show="error.show">{{ error.msg }}</div>
+                </div>
+                <div class="col-xs-6 col-sm-5">
                 <div class="status main-text" ng-style="bitmarkStatusStyle" >{{bitmarkStatus}}</div>
-              </div>  
+                </div>  
             </div> 
         </div>
     </div>
@@ -31,226 +31,237 @@
 
 <div class="row">
     <div class="col-md-4">
-      <div class="panel panel-default">
+        <div class="panel panel-default">
         <div class="main-title" style="font-weight: bold;">BITMARK INFO</div>
-      </div>
+        </div>
     </div>
     <div class="col-md-8 col-md-offset-0">
-    <div class="main-body" ng-show="!disableStart">
-      <p>Start bitmarkd to get its info</p>
-    </div>
-            <div class="row row-text">
+        <div class="main-body" ng-show="!disableStart">
+        <p>Start bitmarkd to get its info</p>
+        </div>
+        <div class="row row-text">
               <div class="col-xs-6 col-sm-3">
-              <div class="main-body main-text" ng-show="disableStart">
-                 <div ng-repeat="(key, val) in bitmarkInfo"><p class="main-text" style="text-transform: uppercase;">{{key}}</p></div>
-              </div>
+                  <div class="main-body main-text" ng-show="disableStart">
+                  <div ng-repeat="(key, val) in bitmarkInfo">
+                  <p class="main-text" style="text-transform: uppercase;">{{key}}</p>
+                  </div>
+                  </div>
               </div> 
-                <div class="col-xs-6 col-sm-3">
-              <div class="main-body main-text" ng-show="disableStart">
-                  <div ng-repeat="(key, val) in bitmarkInfo"><p class="main-text" style="text-transform: uppercase;">{{val}}</p></div>
-               </div> 
-              </div>
-            </div>
-     </div>
-  </div>
-
-
-
-<div class="row">
-     <div class="col-md-4">   
-          <div class="panel panel-default">
-            <div class="main-title" style="font-weight: bold;">BITMARK RPC</div>
-              </div>
+              <div class="col-xs-6 col-sm-3">
+                  <div class="main-body main-text" ng-show="disableStart">
+                  <div ng-repeat="(key, val) in bitmarkInfo">
+                  <p class="main-text" style="text-transform: uppercase;">{{val}}</p>
+                  </div>
                   </div> 
-    <div class="col-md-8 col-md-offset-0">
-        <div class="main-body">
-           <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>CHAIN</b></div>
               </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div class="main-text">{{ bitmarkConfig.Chain }}</div>
-              </div>  
-            </div> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>LISTEN</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-repeat="listen in bitmarkConfig.ClientRPC.Listen"> {{listen}} </li>
-                  </ul></div>
-              </div>  
-            </div> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>ANNOUNCE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div>
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-repeat="announce in bitmarkConfig.ClientRPC.Announce"> {{announce}} </li>
-                  </ul></div>
-              </div>  
-            </div> 
         </div>
-    </div>
-</div>
-        
-
-<div class="row">
-     <div class="col-md-4">   
-          <div class="panel panel-default">
-            <div class="main-title" style="font-weight: bold;">BITMARK PEER</div>
-              </div>
-     </div> 
-     <div class="col-md-8 col-md-offset-0">
-         <div class="main-body">
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>PUBLICKEY</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <ul style="list-style-type:none">
-                  <li class="main-list" ng-if="bitmarkConfig.Peering.PublicKey == ''">Please Generate Keypairs <button>Generate</button></li>
-                  <li class="main-list" ng-if="bitmarkConfig.Peering.PublicKey != ''"> {{bitmarkConfig.Peering.PublicKey}} </li>
-                  </ul>      
-              </div>  
-            </div> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>LISTEN</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-repeat="listen in bitmarkConfig.Peering.Listen"> {{listen}} </li>
-                  </ul></div>
-              </div>  
-            </div> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>ANNOUNCE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div>
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-repeat="announce in bitmarkConfig.Peering.Announce"> {{announce}} </li>
-                  </ul></div>
-              </div>  
-            </div> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>CONNECT</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-               <p><table class="main-table">
-                 <tr>
-                 <th style="font-weight:normal">PUBLICKEY</th>
-                 <th style="font-weight:normal">ADDRESS</th>
-                 </tr>
-                  <tr ng-repeat="connect in bitmarkConfig.Peering.Connect">
-                  <td>{{connect.PublicKey}}</td>
-                  <td>{{connect.Address}}</td>
-                 </tr>
-                 </table></p> 
-              </div>  
-            </div> 
-        </div>
-    </div>
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
 </div>
 
 
+  <!-- RPC section -->
 <div class="row">
     <div class="col-md-4">   
           <div class="panel panel-default">
-            <div class="main-title" style="font-weight: bold;">MINER</div>
-           </div>
+          <div class="main-title" style="font-weight: bold;">BITMARK RPC</div>
+          </div>
+          </div> 
+    <div class="col-md-8 col-md-offset-0">
+          <div class="main-body">
+              <div class="row row-text">
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text"><b>CHAIN</b>
+                      </div>
+                  </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <div class="main-text">{{ bitmarkConfig.Chain }}</div>
+                  </div>  
+              </div> 
+
+              <div class="row row-text">
+                  <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>LISTEN</b>
+                    </div>
+                  </div>
+                  <div class="col-xs-6 col-sm-3">
+                      <ul class="main-list" style="list-style-type:none">
+                      <li ng-repeat="listen in bitmarkConfig.ClientRPC.Listen">{{listen}}</li>
+                      </ul>
+                  </div>  
+              </div> 
+
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                  <div class="main-text"><b>ANNOUNCE</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                   <ul class="main-list" style="list-style-type:none">
+                   <li ng-repeat="announce in bitmarkConfig.ClientRPC.Announce">{{announce}}</li>
+                   </ul>
+                </div>  
+            </div>            
+        </div>
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
+</div>
+        
+  <!-- Peer section -->
+<div class="row">
+    <div class="col-md-4">   
+        <div class="panel panel-default">
+        <div class="main-title" style="font-weight: bold;">BITMARK PEER
+        </div>
+        </div>
+    </div> 
+    <div class="col-md-8 col-md-offset-0">
+        <div class="main-body">
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>PUBLICKEY</b>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul style="list-style-type:none">
+                    <li class="main-list" ng-if="bitmarkConfig.Peering.PublicKey == ''">Please Generate Keypairs <button>Generate</button></li>
+                    <li class="main-list" ng-if="bitmarkConfig.Peering.PublicKey != ''"> {{bitmarkConfig.Peering.PublicKey}}</li>
+                    </ul>      
+                </div>  
+            </div> 
+
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>LISTEN</b>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-repeat="listen in bitmarkConfig.Peering.Listen"> {{listen}} </li>
+                    </ul>
+                </div>  
+            </div> 
+
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>ANNOUNCE</b>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-repeat="announce in bitmarkConfig.Peering.Announce"> {{announce}} </li>
+                    </ul>
+                </div>  
+            </div> 
+            <div class="row row-text">
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>CONNECT</b>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <table class="main-table">
+                        <tr>
+                        <th style="font-weight:normal">PUBLICKEY</th>
+                        <th style="font-weight:normal">ADDRESS</th>
+                        </tr>
+                        <tr ng-repeat="connect in bitmarkConfig.Peering.Connect">
+                        <td>{{connect.PublicKey}}</td>
+                        <td>{{connect.Address}}</td>
+                        </tr>
+                    </table>
+                </div>  
+            </div> 
+        </div>
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
+</div>
+
+<!-- Miner section -->
+<div class="row">
+    <div class="col-md-4">   
+        <div class="panel panel-default">
+        <div class="main-title" style="font-weight: bold;">MINER
+        </div>
+        </div>
     </div> 
     <div class="col-md-8 col-md-offset-0">
         <div class="main-body"> 
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>LISTEN</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-repeat="listen in bitmarkConfig.Mining.Listen"> {{listen}} </li>
-                  </ul></div>
-              </div>  
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>LISTEN</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-repeat="listen in bitmarkConfig.Mining.Listen">{{listen}}</li>
+                    </ul>
+                </div>  
             </div> 
         </div>
-    </div>
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
 </div>
 
-
+<!-- Bitcoin section -->
 <div class="row">
     <div class="col-md-4">  
-      <div class="panel panel-default">
+        <div class="panel panel-default">
         <div class="main-title" style="font-weight: bold;">BITCOIN</div>
-       </div>
+        </div>
     </div>
     <div class="col-md-8 col-md-offset-0">
         <div class="main-body"> 
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>USERNAME</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.Username}}</li>
-                  </ul></div>
-              </div>  
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>USERNAME</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.Username}}</li>
+                    </ul>
+                </div>  
             </div>
+
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>PASSWORD</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-if="showOptionBitcoinItems">********</li>
-                </ul></div>
-              </div>  
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>PASSWORD</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-if="showOptionBitcoinItems">********</li>
+                    </ul>
+                </div>  
             </div>
+
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>URL</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.URL}}</li>
-                  </ul></div>
-              </div>  
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>URL</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.URL}}</li>
+                    </ul>
+                </div>  
             </div>
+
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>FEE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.Fee}}</li>
-                  </ul></div>
-              </div>  
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>FEE</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.Fee}}</li>
+                    </ul>
+                </div>  
             </div>
+
+
             <div class="row row-text">
-              <div class="col-xs-6 col-sm-3">
-                 <div class="main-text"><b>ADDRESS</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-3">
-                  <div >
-                  <ul class="main-list" style="list-style-type:none">
-                  <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.Address}}</li>
-                  </ul></div>
-              </div>  
+                <div class="col-xs-6 col-sm-3">
+                    <div class="main-text"><b>ADDRESS</b></div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <ul class="main-list" style="list-style-type:none">
+                    <li ng-if="showOptionBitcoinItems">{{bitmarkConfig.Bitcoin.Address}}</li>
+                    </ul>
+                </div>  
             </div>
-        </div>
-    </div>
+        </div> <!-- main body end -->
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
 </div>
 
 
