@@ -1,8 +1,8 @@
 <div ng-init="init()">
   <h3 class="home" ng-if="showIssueView">ISSUE BITMARK</h3>
   <h3 class="home" ng-if="!showIssueView">TRANS BITMARK</h3>
-  <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
-    <img src="images/hash_animation.gif" style=" width:20%; position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+  <div style="background: rgba(255, 255, 255, 0.9); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
+    <img src="images/hash_animation.gif" style=" width:5%; position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
   </div>
           <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show" style="font-weight: bold; display: block; text-align: center; padding: 20px;">
           {{infoErr.msg}}
@@ -39,7 +39,7 @@
                     </div>
                   </div>
                   <div class="col-xs-6 col-sm-3">
-                      <div class="main-text">{{onestepStatusResult.cli_result.identities[0].public_key}}</div>
+                      <div class="main-text" style="word-break:break-all; width:380px;">{{onestepStatusResult.cli_result.identities[0].public_key}}</div>
                   </div> 
               </div> 
 
@@ -113,7 +113,7 @@
                       </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <input type="text" ng-model="issueConfig.asset" required>
+                          <input class="inputform" type="text" ng-model="issueConfig.asset" required>
                           </div>
                       </div>  
                   </div> 
@@ -125,7 +125,7 @@
                       </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <textarea ng-model="issueConfig.description" required></textarea>
+                          <textarea class="inputform" ng-model="issueConfig.description" required></textarea>
                           </div>
                       </div> 
                   </div> 
@@ -136,8 +136,8 @@
                     </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <fingerprint-input file="file" fingerprint="issueConfig.fingerprint"></fingerprint-input>
-                          {{issueConfig.fingerprint}}
+                          <fingerprint-input class="inputform" file="file" fingerprint="issueConfig.fingerprint"></fingerprint-input>
+                          <div style="word-break: break-all; width: 420px;">{{issueConfig.fingerprint}}</div>
                           </div>
                       </div>  
                 </div> 
@@ -147,7 +147,8 @@
                       <div class="main-text"><b>QUANTITY</b></div>
                     </div>
                       <div class="col-xs-6 col-sm-3">
-                          <div class="main-text"><input type="number" ng-model="issueConfig.quantity" required>
+                          <div class="main-text">
+                          <input class="inputform" type="number" ng-model="issueConfig.quantity" required>
                           </div>
                       </div>  
                 </div> 
@@ -157,7 +158,8 @@
                       <div class="main-text"><b>PASSCODE</b></div>
                     </div>
                     <div class="col-xs-6 col-sm-3">
-                        <div class="main-text"><input type="password" ng-model="issueConfig.password" required>
+                        <div class="main-text">
+                        <input class="inputform" type="password" ng-model="issueConfig.password" required>
                         </div>
                     </div> 
                 </div>
@@ -209,7 +211,7 @@
                       </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <input type="text" ng-model="transferConfig.txid" required>
+                          <input class="inputform" type="text" ng-model="transferConfig.txid" required>
                           </div>
                       </div>  
                   </div> 
@@ -221,7 +223,7 @@
                       </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <input type="text" ng-model="transferConfig.receiver" required>
+                          <input class="inputform" type="text" ng-model="transferConfig.receiver" required>
                           </div>
                       </div> 
                   </div> 
@@ -232,7 +234,7 @@
                     </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <input type="password" ng-model="transferConfig.password" required>
+                          <input class="inputform" type="password" ng-model="transferConfig.password" required>
                           </div>
                       </div>  
                 </div> 

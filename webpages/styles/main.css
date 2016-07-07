@@ -355,11 +355,22 @@ fieldset[disabled] .btn { color: #C1C1C1 }
     border-bottom: 1px solid #FF0000;
     border-radius: 0;
     box-shadow: none;
+    width: 100%;
 }
 .form-control:focus {
     border-bottom: 1px solid #73CD3E;
     border-radius: 0;
     box-shadow: none;
+    width: 100%;
+}
+
+.inputform{
+    width: 280px;
+    border: 0.8px solid #EDF0F4;
+    height: 30px;
+    padding-left: 10px;
+    margin-top: 4px;
+    background-color: white;
 }
 ::-webkit-input-placeholder {
     /* WebKit, Blink, Edge */
