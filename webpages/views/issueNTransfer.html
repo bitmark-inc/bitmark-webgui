@@ -171,62 +171,79 @@
     </div>
 </div>
 
-
-
-
   <!-- Transfer setction -->
-  <div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="!showIssueView">
-    <div class="panel-heading">
-      Transfer Bitmark
-    </div>
-    
-    <div class="panel-body">
-      <!--  alert -->
-      <uib-alert type="warning" ng-if="!bitmarkdAlert.isNormal">
-        <b>{{bitmarkdAlert.msg}}</b>
-      </uib-alert>
+<div class="panel panel-default" ng-show="bitmarkCliInfoSuccess" ng-if="!showIssueView">
+    <div class="row rowblue">
+        <div class="col-md-4">   
+              <div class="main-title" style="font-weight: bold;">TRANSFER BITMARK</div>
+              </div> 
+        <div class="col-md-8 col-md-offset-0">
+              <div class="main-body">
+                   <!--  alert -->
+                      <uib-alert type="warning" ng-if="!bitmarkdAlert.isNormal">
+                        <b>{{bitmarkdAlert.msg}}</b>
+                      </uib-alert>
 
-      <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null && transferResult.msg != ''">
-      <b>{{transferResult.msg}}</b>
-      <div ng-show="transferResult.cliResult != null">
-        <div>
-          <b>txid</b>
-          {{transferResult.cliResult.transferId}}
-        </div>
-        <div>
-          <b>currency</b>
-          {{transferResult.cliResult.paymentAddress[0].currency}}
-        </div>
-          <div>
-            <b>address</b>
-            {{transferResult.cliResult.paymentAddress[0].address}}
-          </div>
-      </div>
-      </uib-alert>
-      
-      <form name="transferForm">
-        <div class="panel-body">
-          <p>
-            <label>
-              Transaction Id
-              <input type="text" ng-model="transferConfig.txid" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Receiver
-              <input type="text" ng-model="transferConfig.receiver" required>
-            </label>
-          </p>
-          <p>
-            <label>
-              Passcode
-              <input type="password" ng-model="transferConfig.password" required>
-            </label>
-          </p>
-        </div>
-        <button ng-click="submitGeneral('transfer')" ng-disabled="transferForm.$invalid || !bitmarkdAlert.isNormal">submit</button>
-      </form>  
+                      <uib-alert type="{{transferResult.type}}" close="clearErrAlert('transfer')" ng-if="transferResult != null && transferResult.msg != ''">
+                      <b>{{transferResult.msg}}</b>
+                      <div ng-show="transferResult.cliResult != null">
+                        <div>
+                          <b>txid</b>
+                          {{transferResult.cliResult.transferId}}
+                        </div>
+                        <div>
+                          <b>currency</b>
+                          {{transferResult.cliResult.paymentAddress[0].currency}}
+                        </div>
+                          <div>
+                            <b>address</b>
+                            {{transferResult.cliResult.paymentAddress[0].address}}
+                          </div>
+                      </div>
+                      </uib-alert><!--  alert -->
+
+                  <div class="row row-text">
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text"><b>TRANSACTION ID</b>
+                          </div>
+                      </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text">
+                          <input type="text" ng-model="transferConfig.txid" required>
+                          </div>
+                      </div>  
+                  </div> 
+
+                  <div class="row row-text">
+                      <div class="col-xs-6 col-sm-3">
+                        <div class="main-text"><b>RECEIVER</b>
+                        </div>
+                      </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text">
+                          <input type="text" ng-model="transferConfig.receiver" required>
+                          </div>
+                      </div> 
+                  </div> 
+
+                <div class="row row-text">
+                    <div class="col-xs-6 col-sm-3">
+                      <div class="main-text"><b>PASSCODE</b></div>
+                    </div>
+                      <div class="col-xs-6 col-sm-3">
+                          <div class="main-text">
+                          <input type="password" ng-model="transferConfig.password" required>
+                          </div>
+                      </div>  
+                </div> 
+
+                <div class="row row-text">
+                      <div class="col-xs-6 col-sm-12">
+                      <button class="btn pull-right generate" ng-click="submitGeneral('transfer')" ng-disabled="transferForm.$invalid || !bitmarkdAlert.isNormal">SUBMIT</button>
+                      </div>  
+                </div> 
+            </div>
+        </div> <!-- ol-md-8 col-md-offset-0 end -->
     </div>
-  </div>
 </div>
+
