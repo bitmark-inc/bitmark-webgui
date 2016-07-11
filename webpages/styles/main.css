@@ -31,7 +31,7 @@ body {
 h1,.h1,
 h2,.h2,
 h3,.h3 {
-    margin-top: 100px;
+    margin-top: 50px;
     margin-bottom: 8px;
     margin-left: 8px;
     font-size: 18px;
@@ -62,7 +62,7 @@ h3,.h3 {
 }
 /* login-logout */
 .login {
-    margin-top: 100px;
+    margin-top: 30px;
     margin-bottom: 13px;
     font-weight: bold;
 }
