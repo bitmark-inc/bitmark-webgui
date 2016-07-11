@@ -226,6 +226,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitmarkPay/decrypt", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
+	http.HandleFunc("/api/bitmarkPay/restore", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/status", handleBitmarkPay)
 	http.HandleFunc("/api/bitmarkPay/result", handleBitmarkPay)
 

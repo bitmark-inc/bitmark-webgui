@@ -16,7 +16,12 @@ func (mock *MockBitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) error {
 func (mock *MockBitmarkPay) Info(bitmarkPayType BitmarkPayType) error {
 	return nil
 }
+
 func (mock *MockBitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
+	return nil
+}
+
+func (mock *MockBitmarkPay) Restore(bitmarkPayType BitmarkPayType) error {
 	return nil
 }
 
@@ -31,6 +36,7 @@ func (mock *MockBitmarkPay) Kill() error {
 func (mock *MockBitmarkPay) GetBitmarkPayJobHash() string {
 	return "12345678"
 }
+
 func (mock *MockBitmarkPay) GetBitmarkPayJobResult(bitmarkPayType BitmarkPayType) ([]byte, error) {
 	return []byte("test"), nil
 }
