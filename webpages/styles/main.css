@@ -296,6 +296,7 @@ h3,.h3 {
     margin: 0 10px 16px 0;
     padding-left: 0;
     padding-top: 3px;
+    z-index: 800;
 }
 .privatekey {
     display: block;
@@ -367,7 +368,11 @@ fieldset[disabled] .btn { color: #C1C1C1 }
 .inputform{
     width: 280px;
     border: 0.8px solid #EDF0F4;
+    max-width: 280px;
+    min-width: 280px;
     height: 30px;
+    min-height: 30px;
+    max-height: 280px;
     padding-left: 10px;
     margin-top: 4px;
     background-color: white;
@@ -447,6 +452,8 @@ fieldset[disabled] .btn { color: #C1C1C1 }
     width: 980px;
     vertical-align: middle;
     margin: 0 auto;
+    position: relative;
+    z-index: 100;
 }
 .header { background-color: white }
 /* nav */
@@ -466,6 +473,7 @@ fieldset[disabled] .btn { color: #C1C1C1 }
     border-bottom: 0.5px solid #B2C1D8;
     background: rgba(255, 255, 255, 0.8);
     position: fixed;
+    z-index: 500;
 }
 .navbar-nav { margin: 4px 14px }
 .navbar-nav :hover { border-bottom: 2px solid #B2C1D8 }
