@@ -125,6 +125,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
             method: 'POST',
             url: hostApiPath+'/bitmarkPay/decrypt'
         },
+        restoreBitmarkPay: {
+            method: 'POST',
+            url: hostApiPath+'/bitmarkPay/restore'
+        },
         getBitmarkPayInfo: {
             method: 'POST',
             url: hostApiPath+'/bitmarkPay/info'

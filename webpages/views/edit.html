@@ -7,7 +7,7 @@
     </div>  
     </h3>
 </div>
-  <p ng-show="error.show">{{ error.msg }}</p>
+  <p ng-show="error.show" style="padding-left: 12px; color: rgb(255, 0, 0);">{{ error.msg }}</p>
 
 <div class="row">
      <div class="col-md-4">   
@@ -38,7 +38,7 @@
                 <div class="main-text">
                 <div ng-repeat="listen in bitmarkConfig.ClientRPC.Listen track by $index">
                {{$index+1}}
-                <input type="text" ng-model="bitmarkConfig.ClientRPC.Listen[$index]" ng-disabled="  bitmarkConfig.ClientRPC.Listen[$index] == BitmarkCliSetupConfig.connect" required>
+                <input class="inputform" type="text" ng-model="bitmarkConfig.ClientRPC.Listen[$index]" ng-disabled="  bitmarkConfig.ClientRPC.Listen[$index] == BitmarkCliSetupConfig.connect" required>
                <button ng-if="bitmarkConfig.ClientRPC.Listen[$index] != BitmarkCliSetupConfig.connect" ng-click="deleteItem(bitmarkConfig.ClientRPC.Listen, $index)">x</button>
                </div>
                </div>
@@ -53,7 +53,7 @@
                   <div class="main-text">
                   <div ng-repeat="announce in bitmarkConfig.ClientRPC.Announce track by $index">
                    {{$index+1}}
-                   <input type="text" ng-model="bitmarkConfig.ClientRPC.Announce[$index]" required>
+                   <input class="inputform" type="text" ng-model="bitmarkConfig.ClientRPC.Announce[$index]" required>
                    <button ng-click="deleteItem(bitmarkConfig.ClientRPC.Announce, $index)">x</button>
                    </div>
                </div>
@@ -91,7 +91,7 @@
                <div class="main-text">
                <div ng-repeat="listen in bitmarkConfig.Peering.Listen track by $index">
                {{$index+1}}
-               <input type="text" ng-model="bitmarkConfig.Peering.Listen[$index]" required>
+               <input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Listen[$index]" required>
                <button ng-if="bitmarkConfig.Peering.Listen.length>1" ng-click="deleteItem(bitmarkConfig.Peering.Listen, $index)">x</button>
                </div>
                </div>
@@ -106,7 +106,7 @@
                 <div class="main-text">
                 <div ng-repeat="announce in bitmarkConfig.Peering.Announce track by $index">
                 {{$index+1}}
-                <input type="text" ng-model="bitmarkConfig.Peering.Announce[$index]" required>
+                <input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Announce[$index]" required>
                  <button ng-click="deleteItem(bitmarkConfig.Peering.Announce, $index)">x</button>
                 </div>
                 </div>
@@ -127,8 +127,8 @@
                   </tr>
                 <tr ng-repeat="connect in bitmarkConfig.Peering.Connect track by $index">
                 <td>{{$index+1}}</td>
-                 <td><input type="text" ng-model="bitmarkConfig.Peering.Connect[$index].PublicKey" ng-pattern="publicKeyPattern" required name="peerConnectPublicKey{{$index}}"></td>
-                 <td><input type="text" ng-model="bitmarkConfig.Peering.Connect[$index].Address" required></td>
+                 <td><input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Connect[$index].PublicKey" ng-pattern="publicKeyPattern" required name="peerConnectPublicKey{{$index}}"></td>
+                 <td><input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Connect[$index].Address" required></td>
                   <td><button ng-click="deleteItem(bitmarkConfig.Peering.Connect, $index)">x</button></td>
                  </tr>
                 </table>
@@ -156,7 +156,7 @@
                 <div class="main-text">
                  <div ng-repeat="listen in bitmarkConfig.Mining.Listen track by $index">
                  {{$index+1}}
-                 <input type="text" ng-model="bitmarkConfig.Mining.Listen[$index]" required>
+                 <input class="inputform" type="text" ng-model="bitmarkConfig.Mining.Listen[$index]" required>
                  <button ng-if="bitmarkConfig.Mining.Listen.length>1" ng-click="deleteItem(bitmarkConfig.Mining.Listen, $index)">x</button>
                 </div>
                 </div>
@@ -206,7 +206,7 @@
                 </div>
                 <div class="col-xs-6 col-sm-8">
                   <div class="main-text">
-                  <input type="text" ng-model="localBitcoin.Username" required>
+                  <input class="inputform" type="text" ng-model="localBitcoin.Username" required>
                   </div>
                 </div>
             </div>
@@ -216,7 +216,7 @@
               </div>
               <div class="col-xs-6 col-sm-8">
               <div class="main-text">
-                  <input type="password" ng-model="localBitcoin.Password">
+                  <input class="inputform" type="password" ng-model="localBitcoin.Password">
                   <div ng-show="localBitcoin.Password.length > 0"><p>verify</p></div>
                   <div ng-show="localBitcoin.Password.length > 0"><input type="password" ng-model="verifyPassword">
                   <div ng-show="!bitcoinPasswordEqual">not equal</div>
@@ -229,7 +229,7 @@
               <div class="main-text"><b>URL</b></div>
               </div>
               <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input type="text" ng-model="localBitcoin.URL" required></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.URL" required></div>
               </div>  
             </div>
             <div class="row row-text">
@@ -237,7 +237,7 @@
               <div class="main-text"><b>FEE</b></div>
               </div>
               <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input type="text" ng-model="localBitcoin.Fee"></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.Fee"></div>
               </div>  
             </div>
             <div class="row row-text">
@@ -245,7 +245,7 @@
               <div class="main-text"><b>ADDRESS</b></div>
               </div>
               <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input type="text" ng-model="localBitcoin.Address"></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.Address"></div>
               </div>  
             </div>
       </div>
@@ -256,7 +256,7 @@
               <div class="main-text"><b>URL</b></div>
               </div>
               <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input type="text" ng-model="otherProxyTemp.URL" required></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="otherProxyTemp.URL" required></div>
               </div>  
             </div>
             <div class="row row-text">
@@ -272,7 +272,7 @@
               <div class="main-text"><b>ADDRESS</b></div>
               </div>
               <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input type="text" ng-model="otherProxyTemp.Address"></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="otherProxyTemp.Address"></div>
               </div>  
             </div>
       </div>
@@ -299,7 +299,7 @@
               <div class="main-text"><b>ADDRESS</b></div>
               </div>
               <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input type="text" ng-model="bitmarkTestNetProxyTemp.Address"></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="bitmarkTestNetProxyTemp.Address"></div>
               </div>  
             </div>
       </div>
@@ -326,7 +326,7 @@
               <div class="main-text"><b>ADDRESS</b></div>
               </div>
               <div class="col-xs-6 col-sm-9">
-              <div class="main-text"><input type="text" ng-model="bitmarkProxyTemp.Address"></div>
+              <div class="main-text"><input class="inputform" type="text" ng-model="bitmarkProxyTemp.Address"></div>
               </div>  
         </div>
       </div>

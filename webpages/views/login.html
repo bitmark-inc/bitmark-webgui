@@ -8,8 +8,8 @@
     <button class="btn btn-primary btn-lg" ng-click="login()">LOGIN</button>
   </div>
 
-  <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWarning">
-    <uib-alert type="warning" style="margin: 0; position:absolute; left:50%; transform: translate(-50%, 0%);">
+  <div style="position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWarning">
+    <uib-alert type="warning" style="padding: 25px; z-index: 10; margin: 60px 0px 0px;">
       You didn't logout properly last time or another session is running, we suggest you logout first.
       <button ng-click="goUrl('logout')">Yes</button>
       <button ng-click="goUrl('main')">No</button>

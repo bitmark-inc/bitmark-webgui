@@ -55,6 +55,18 @@ func BitmarkPay(w http.ResponseWriter, req *http.Request, log *logger.L, command
 			response.Ok = true
 			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
 		}
+	case "restore":
+		request := bitmarkPayParseRequest(w, req, response, log)
+		if nil == request {
+			return
+		}
+
+		if err := bitmarkPayService.Restore(*request); nil != err {
+			response.Result = err
+		} else {
+			response.Ok = true
+			response.Result = bitmarkPayService.GetBitmarkPayJobHash()
+		}
 	case "encrypt":
 		request := bitmarkPayParseRequest(w, req, response, log)
 		if nil == request {

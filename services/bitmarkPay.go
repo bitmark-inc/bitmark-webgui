@@ -21,6 +21,7 @@ type BitmarkPayInterface interface {
 	Decrypt(BitmarkPayType) error
 	Info(BitmarkPayType) error
 	Pay(BitmarkPayType) error
+	Restore(BitmarkPayType) error
 	Status(string) (string, error)
 	Kill() error
 	GetBitmarkPayJobHash() string
@@ -93,6 +94,7 @@ type BitmarkPayType struct {
 	Txid      string   `json:"txid"`
 	Addresses []string `json:"addresses"`
 	JobHash   string   `json:"job_hash"`
+	Seed      string   `json:"seed"`
 }
 
 func (bitmarkPay *BitmarkPay) Encrypt(bitmarkPayType BitmarkPayType) error {
@@ -196,6 +198,30 @@ func (bitmarkPay *BitmarkPay) Pay(bitmarkPayType BitmarkPayType) error {
 	)
 
 	return bitmarkPay.runBitmarkPayJob(cmd, "pay", true)
+}
+
+func (bitmarkPay *BitmarkPay) Restore(bitmarkPayType BitmarkPayType) error {
+	//check command process is not running
+	oldCmd := bitmarkPay.asyncJob.command
+	if nil != oldCmd && nil == oldCmd.ProcessState {
+		return fault.ErrBitmarkPayIsRunning
+	}
+
+	// check config, net, seed
+	if err := checkRequireStringParameters(bitmarkPayType.Config, bitmarkPayType.Net, bitmarkPayType.Seed); nil != err {
+		return err
+	}
+
+	cmd := exec.Command("java", "-jar",
+		"-Dorg.apache.logging.log4j.simplelog.StatusLogger.level=OFF",
+		bitmarkPay.bin,
+		"--net="+bitmarkPayType.Net,
+		"--config="+bitmarkPayType.Config,
+		"restore",
+		bitmarkPayType.Seed,
+	)
+
+	return bitmarkPay.runBitmarkPayJob(cmd, "restore", true)
 }
 
 func (bitmarkPay *BitmarkPay) Status(hashString string) (string, error) {

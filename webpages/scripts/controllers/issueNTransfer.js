@@ -180,7 +180,7 @@ angular.module('bitmarkWebguiApp')
                 }
             }, function(bitmarkInfoErr){
                 // bitmarkd is not running, disable issue and transfer and show warning
-                $scope.bitmarkdAlert.msg = "bitmarkd is not running, please go to bitmark page to start and wait until the mode is Normal";
+                $scope.bitmarkdAlert.msg = "Bitmarkd is not running, please go to bitmark page to start and wait until the mode is Normal";
             });
         };
 
