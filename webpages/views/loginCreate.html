@@ -1,9 +1,10 @@
 <div class="container loginContainer">
     <h3>CREATE NEW BITMARK ACCOUNT</h3>
 
-    <!-- <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="generateConfig.running"> -->
-    <!--   <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)"> -->
-    <!-- </div> -->
+    <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="diableDoneBtn">
+      <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+    </div>
+    
     <div class="panel panel-default" ng-show="panelConfig.showPart == 1">
       <div class="row row-create">
         <div class="col-md-3">
@@ -64,6 +65,7 @@
             <button class="btn pull-right generate" ng-click="generate(true)" ng-disabled="generateConfig.running">GENERATE » </button>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -96,24 +98,25 @@
             <div class="col-md-3">
                 <div class="panel-heading account-title" style="font-weight: bold;">SET PASSCODE</div>
                 <p class="create-sub" >To protect your private key, you need to setup a passcode, this passcode is just for this session, you will be asked to give a new one after you logout.</p>
+
             </div>
             <div class="col-md-8 col-md-offset-0">
                 <div class="panel-body">
-                <uib-alert type="danger" close="doneErr.show=false" ng-show="doneErr.show">
-                {{doneErr.msg}}
-                 </uib-alert>
-                <p>
-                <br>
-                <label>
-                <password-set password="password" result="verifyPassword"></password-set>
-                </label>
-                </p>
+                  <uib-alert type="danger" close="doneErr.show=false" ng-show="doneErr.show">
+                    {{doneErr.msg}}
+                  </uib-alert>
+                  <p>
+                    <br>
+                    <label>
+                      <password-set password="password" result="verifyPassword"></password-set>
+                    </label>
+                  </p>
                 </div>
                 <div class="col-md-3 col-md-offset-11">
-                    <div class="panel-footer create-footer">
-                    <button class="btn pull-right generate" ng-click="done()" ng-disabled="!verifyPassword">Done
+                  <div class="panel-footer create-footer">
+                    <button class="btn pull-right generate" ng-click="done()" ng-disabled="!verifyPassword || diableDoneBtn">Done
                     </button>
-                    </div>
+                  </div>
                 </div>
             </div>
         </div>

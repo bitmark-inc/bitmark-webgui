@@ -1,5 +1,9 @@
 <div class="container loginContainer">
   <h3>ACCESS EXISTING BITMARK ACCOUNT</h3>
+  <div style="background: rgba(222, 222, 222, 0.2); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="diableDoneBtn">
+    <img src="images/waiting.gif" style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+  </div>
+    
     <div class="panel panel-default" ng-show="panelConfig.showPart == 1">
       <div class="row row-create">
 
@@ -58,7 +62,7 @@
 
         <div class="col-md-3 col-md-offset-9">
           <div class="panel-footer create-footer">
-            <button class="btn pull-right generate" ng-click="generate(false)" ng-disabled="bitmarkAccessForm.$invalid || !verifyPassword || generateConfig.running">GO » </button>
+            <button class="btn pull-right generate" ng-click="done()" ng-disabled="bitmarkAccessForm.$invalid || !verifyPassword || diableDoneBtn">GO » </button>
           </div>
         </div>
     
