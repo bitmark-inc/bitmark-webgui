@@ -1,17 +1,17 @@
 <div ng-init="init()">
   <h3 class="home" ng-if="showIssueView">ISSUE BITMARK</h3>
-  <h3 class="home" ng-if="!showIssueView">TRANS BITMARK</h3>
-  <div style="background: rgba(255, 255, 255, 0.9); position:absolute; top:0; bottom:0;left:0; right:0; overflow:hidden;" ng-show="showWaiting">
-    <img src="images/hash_animation.gif" style=" width:5%; position: absolute; top: 33%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
+  <h3 class="home" ng-if="!showIssueView">TRANSFER BITMARK</h3>
+  <div style=" background:rgba(255, 255, 255, 0.6); position:fixed; top:0; bottom:0;left:0; right:0; overflow:hidden; z-index:999;" ng-show="showWaiting">
+    <img src="images/hash_animation.gif" style=" width:6%; position: fixed; top: 60%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%)">
   </div>
-          <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show" style="font-weight: bold; display: block; text-align: center; padding: 20px; z-index: 800;">
+          <uib-alert type="danger" close="infoErr.show=false" ng-show="infoErr.show" style=" display: block; text-align: center; padding: 20px; z-index: 800;">
           {{infoErr.msg}}
         </uib-alert>
-        <uib-alert type="warning"  ng-show="infoAlert.show" style="font-weight: bold; display: block; text-align: center; padding: 20px; z-index: 800;">
+        <uib-alert type="warning"  ng-show="infoAlert.show" style=" display: block; text-align: center; padding: 20px; z-index: 800;">
           {{infoAlert.msg}}
           <br>
-          <button style="text-align:center; color: black;font-weight: normal; margin: 8px 5px 0px;" ng-click="killPayProcess(true)">Yes</button>
-          <button style="text-align:center; color: black;font-weight: normal; margin: 8px 5px 0px;" ng-click="killPayProcess(false)">Later</button>
+          <button style="text-align:center; background-color:white; font-weight: normal; margin: 8px 5px 0px; width: 68px; height: 28px; border-radius: 2px;" ng-click="killPayProcess(true)">YES</button>
+          <button style="text-align:center; background-color:white; font-weight: normal; margin: 8px 5px 0px; width: 68px; height: 28px; border-radius: 2px;" ng-click="killPayProcess(false)">LATER</button>
         </uib-alert>
 
 <!-- INFO section -->
@@ -136,8 +136,8 @@
                     </div>
                       <div class="col-xs-6 col-sm-3">
                           <div class="main-text">
-                          <fingerprint-input class="inputform" file="file" fingerprint="issueConfig.fingerprint"></fingerprint-input>
-                          <div style="word-break: break-all; width: 280px;">{{issueConfig.fingerprint}}</div>
+                              <fingerprint-input class="inputform" file="file" fingerprint="issueConfig.fingerprint"></fingerprint-input>
+                              <div style="word-break: break-all; width: 280px;">{{issueConfig.fingerprint}}</div>
                           </div>
                       </div>  
                 </div> 
