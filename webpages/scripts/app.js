@@ -32,8 +32,7 @@ var app = angular
         })
         .constant("BitmarkdConfig", {
             "testing": "/etc/bitmarkd-TESTING.conf",
-            "bitmark": "/etc/bitmarkd-BITMARK.conf",
-            "local": "/etc/bitmarkd-LOCAL.conf"
+            "bitmark": "/etc/bitmarkd-BITMARK.conf"
         })
         .constant("BitmarkCliSetupConfig", {
             identity: "admin",
@@ -42,19 +41,15 @@ var app = angular
         })
         .constant("BitmarkCliConfig", {
             "testing": "/home/bitmark/config/bitmark-cli/bitmark-cli-TESTING.conf",
-            "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf",
-            "local": "/home/bitmark/config/bitmark-cli/bitmark-cli-LOCAL.conf"
+            "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf"
+            // "testing": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config"
 
-            // "testing": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config",
-            // "local": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-local.config"
         })
         .constant("BitmarkPayConfig", {
             "testing": "/home/bitmark/config/bitmark-pay/bitmark-pay-TESTING.xml",
-            "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.xml",
-            "local": "/home/bitmark/config/bitmark-pay/bitmark-pay-LOCAL.xml"
+            "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.xml"
 
-            // "testing": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml",
-            // "local": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-LOCAL.xml"
+            // "testing": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml"
 
         })
         .config(function ($routeProvider, $httpProvider) {
@@ -62,6 +57,10 @@ var app = angular
             delete $httpProvider.defaults.headers.common["X-Requested-With"];
 
             $routeProvider
+                .when('/chain', {
+                    templateUrl: 'views/chain.html',
+                    controller: 'ChainCtrl'
+                })
                 .when('/main', {
                     templateUrl: 'views/main.html',
                     controller: 'MainCtrl'
@@ -69,14 +68,6 @@ var app = angular
                 .when('/edit', {
                     templateUrl: 'views/edit.html',
                     controller: 'EditCtrl'
-                })
-                .when('/issue', {
-                    templateUrl: 'views/issueNTransfer.html',
-                    controller: 'IssueNTransferCtrl'
-                })
-                .when('/transfer', {
-                    templateUrl: 'views/issueNTransfer.html',
-                    controller: 'IssueNTransferCtrl'
                 })
                 .when('/network', {
                     templateUrl: 'views/network.html',
@@ -89,14 +80,6 @@ var app = angular
                 .when('/login', {
                     templateUrl: 'views/login.html',
                     controller: 'LoginCtrl'
-                })
-                .when('/login/create', {
-                    templateUrl: 'views/loginCreate.html',
-                    controller: 'LoginProcessCtrl'
-                })
-                .when('/login/access', {
-                    templateUrl: 'views/loginAccess.html',
-                    controller: 'LoginProcessCtrl'
                 })
                 .when('/logout', {
                     templateUrl: 'views/logout.html',

@@ -89,27 +89,7 @@ angular.module('bitmarkWebguiApp')
 
             // Check bitcoin if user choose loca chain
             $scope.generateConfig.msg.push("Checking bitcoind...");
-            if($scope.generateConfig.chain == "local"){
-                httpService.send("statusBitcoind").then(function(bitcoinStatus){
-                    if(bitcoinStatus == "stopped"){ // start bitcoind for the user
-                        $scope.generateConfig.msg.push("bitcoind is stopped, try to start it");
-
-                        httpService.send("startBitcoind").then(function(startSuccess){
-                            $scope.generateConfig.msg.push("bitcoind is started");
-                            runGenerate($scope.generateConfig.chain);
-                        }, function(startErr){
-                            $scope.generateConfig.error.show = true;
-                            $scope.generateConfig.error.msg = "failed to start bitcoind: "+startErr;
-                            $scope.generateConfig.running = false;
-                        });
-                    }else{
-                        $scope.generateConfig.msg.push("bitcoind is started...");
-                        runGenerate($scope.generateConfig.chain);
-                    }
-                });
-            } else {
-                runGenerate($scope.generateConfig.chain);
-            }
+            runGenerate($scope.generateConfig.chain);
         };
 
         $scope.killPayProcess = function(kill){
@@ -171,9 +151,7 @@ angular.module('bitmarkWebguiApp')
         var restoreWallet = function(chain){
             var restoreFinish = $q.defer();
             var net = chain;
-            if(chain == "local"){
-                net = "local_bitcoin_reg";
-            }
+
             httpService.send('restoreBitmarkPay', {
                 net: net,
                 config: BitmarkPayConfig[$scope.generateConfig.chain],
@@ -243,9 +221,7 @@ angular.module('bitmarkWebguiApp')
 
             $scope.generateConfig.msg.push("encrypting wallet...");
             var net = chain;
-            if(chain == "local"){
-                net = "local_bitcoin_reg";
-            }
+
             httpService.send("setupBitmarkPay", {
                 net: net,
                 config: BitmarkPayConfig[chain],

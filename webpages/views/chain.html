@@ -1,0 +1,44 @@
+<div class="container loginContainer" ng-init="init()">
+    <h3>START BITMARK NODE</h3>
+    
+    <div class="panel panel-default">
+      <div class="row row-create">
+        <div class="col-md-3">
+          <div class="panel-heading create-title" style="font-weight: bold;">SELECT CHAIN</div>
+          <p class="create-sub" >Bitmark provide two diffrent chains to let the bitmarkd join in. They are testing, bitmark.</p>
+        </div>
+        
+        <div class="col-md-8 col-md-offset-0">
+          <div class="panel-body">
+            <uib-alert type="danger" close="setErrorMsg(false, '')" ng-show="error.show">
+              {{error.msg}}
+            </uib-alert>
+
+            <label class="create-select">
+              <input type="radio" ng-model="request.chain" value="testing">
+              TESTING
+              <p class="create-des">
+                Link to public test bitmark network, to pay the transactions,<br> 
+                please contact us.
+              </p>
+            </label>
+
+            <label class="create-select">
+              <input type="radio" ng-model="request.chain" value="bitmark">
+              BITMARK
+              <p class="create-des">
+                Link to public bitmark network, pay the transactions with real bitcoin.
+              </p>
+            </label>
+          </div> <!--end of panel body -->
+        </div> <!--end of col-md-8 col-md-offset-0 -->
+        
+        <div class="col-md-3 col-md-offset-9">
+          <div class="panel-footer create-footer">
+            <button class="btn pull-right generate" ng-click="startNode()" ng-disabled="request.running">START NODE » </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
