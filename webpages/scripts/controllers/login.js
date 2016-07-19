@@ -12,49 +12,62 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginCtrl', ['$scope', '$location', '$cookies', 'httpService', '$log', 'configuration', function ($scope, $location, $cookies, httpService, $log, configuration) {
+    .controller('LoginCtrl', function ($scope, $location, $cookies, httpService, $log, configuration, utils) {
 
         $scope.request = {
             Password: ""
         };
-        $scope.errorMsg = "";
+
+        var checkBitmarkdStatus = function(){
+            httpService.send("statusBitmarkd").then(function(result){
+                if(result == "started") {
+                    // go to main view
+                    $scope.goUrl("main");
+                } else {
+                    // go to chain view
+                    $scope.goUrl("chain");
+                }
+            });
+        };
 
         $scope.init = function() {
             httpService.send("checkAuthenticate").then(
                 function(result){ // already login
-                    $scope.showWelcome = true;
-                    if(result.bitmark_cli_config_file.length != 0) {
-                        $scope.showWarning = true;
-                    }
+                    // check bitmarkd status
+                    checkBitmarkdStatus();
                 },function(){
                     $scope.$emit('Authenticated', false);
-                    $scope.showWelcome = false;
             });
+        };
+
+        $scope.error = {
+            show: false,
+            msg: ""
+        };
+
+        $scope.setErrorMsg = function(show, msg) {
+            utils.setErrorMsg($scope.error, show, msg);
         };
 
         $scope.login = function(){
             if($scope.request.Password == ""){
-                $scope.errorMsg = "Please enter your password.";
+                $scope.setErrorMsg(true, "Please enter your password.");
                 return;
             }
+
             // Clean cookie first
             $cookies.remove('bitmark-webgui');
             httpService.send('login', $scope.request).then(
                 function(result){
                     configuration.setChain(result.chain);
                     configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
-
-                    $scope.showWelcome = true;
-                    if(result.bitmark_cli_config_file.length != 0) {
-                        $scope.showWarning = true;
-                    }
+                    checkBitmarkdStatus();
                 }, function(result){
                     if (result == "Already logged in") {
-                        $log.error("Already login!");
-                        $scope.errorMsg = "Already login! should not see this page";
+                        $scope.setErrorMsg(true, "Already login! should not see this page");
                     }else{
                         $scope.$emit('Authenticated', false);
-                        $scope.errorMsg = "Login failed, please try again.";
+                        $scope.setErrorMsg(true, "Login failed, please try again.");
                     }
                 });
         };
@@ -62,19 +75,12 @@ angular.module('bitmarkWebguiApp')
 
         $scope.goUrl = function(type){
             switch(type){
-            case "create":
-                $location.path("/login/create");
-                break;
-            case "access":
-                $location.path("/login/access");
-                break;
-            case "logout":
-                $location.path("/logout");
-                break;
             case "main":
                 $scope.$emit('Authenticated', true);
                 $location.path("/main");
                 break;
+            case "chain":
+                $location.path("/chain");
             };
         };
-  }]);
+  });
