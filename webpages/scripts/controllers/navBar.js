@@ -19,21 +19,67 @@ angular.module('bitmarkWebguiApp')
                 function(result){
                     configuration.setChain(result.chain);
                     configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
-                    if(result.bitmark_cli_config_file.length != 0 )  {
-                        $scope.$emit('Authenticated', true);
-                    }
+                    $scope.$emit('Authenticated', true);
                 },function(){
                     $scope.$emit('Authenticated', false);
                     $location.path('/login');
             });
         };
 
-        $(".nav a").on("click", function(){
-         $(".nav").find(".active").removeClass("active");
-          $(this).parent().addClass("active");
-        });
-        
-        $scope.goUrl = function(path){
-            $location.path(path);
+        $scope.leftNavItems = [
+            {
+                url: "/main",
+                active: true,
+                name: "Node"
+            },
+            {
+                url: "/console",
+                active: false,
+                name: "Console"
+            }
+        ];
+
+        $scope.dropdownNavItems = [
+            {
+                url: "/chain",
+                active: false,
+                name: "Switch chain"
+            },
+            {
+                url: "/network",
+                active: false,
+                name: "Change password"
+            },
+            {
+                active: false,
+                divider: true
+            },
+            {
+                url: "/logout",
+                active: false,
+                name: "LOGOUT"
+            }
+        ];
+
+        $scope.goUrl = function(navItem, type){
+            for(var i=0; i<$scope.leftNavItems.length; i++){
+                var item = $scope.leftNavItems[i];
+                item.active = false;
+            }
+
+            for(var i=0; i<$scope.dropdownNavItems.length; i++){
+                var item = $scope.dropdownNavItems[i];
+                item.active = false;
+            }
+
+            if(type == 'dropdown') {
+                $scope.dropdownActive = true;
+            } else {
+                $scope.dropdownActive = false;
+            }
+
+            navItem.active = true;
+
+            $location.path(navItem.url);
         };
     });
