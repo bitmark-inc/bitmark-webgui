@@ -449,7 +449,7 @@ fieldset[disabled] .btn { color: #C1C1C1 }
 .marketing { margin: 40px 0 }
 .marketing p + h4 { margin-top: 28px }
 /* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) { 
+@media screen and (min-width: 768px) {
     .container {width: 1090px}
     .loginContainer {max-width: 730px}
 
@@ -498,3 +498,7 @@ fieldset[disabled] .btn { color: #C1C1C1 }
     padding-top: 16px;
 }
 /* nav */
+
+.uppercase-font {
+  text-transform: uppercase;
+}

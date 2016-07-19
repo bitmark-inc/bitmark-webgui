@@ -13,9 +13,6 @@
  */
 angular.module('bitmarkWebguiApp')
     .controller('EditCtrl', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp, BitmarkCliSetupConfig, configuration) {
-        if(configuration.getConfiguration().bitmarkCliConfigFile.length == 0){
-            $location.path('/login');
-        }
 
         $scope.BitmarkCliSetupConfig = BitmarkCliSetupConfig;
 
