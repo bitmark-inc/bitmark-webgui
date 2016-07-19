@@ -28,18 +28,23 @@
           
           <div class="navbar-header" ng-show="showNavItem">
           
-            <a class="navbar-brand" href="" ng-click="goUrl('/main')" >
-                <img src="/images/bitmark-logo.png" class="logo" width="120px" height="28px" ></a>
+            <span class="navbar-brand">
+                <img src="/images/bitmark-logo.png" class="logo" width="120px" height="28px" ></span>
           </div>
 
           <ul class="nav navbar-nav" ng-show="showNavItem">
-            <li class="active"><a href="" ng-click="goUrl('/main')">STATUS</a></li>
-            <li><a href="" ng-click="goUrl('/issue')">ISSUE</a></li>
-            <li><a href="" ng-click="goUrl('/transfer')">TRANSFER</a></li>
+            <li ng-repeat="item in leftNavItems" ng-class="{active:item.active}"><a href="" ng-click="goUrl(item, 'left')">{{item.name}}</a></li>
           </ul>
-          <ul class="nav navbar-nav navbar-right" ng-show="showNavItem">
-            <li><a href="" ng-click="goUrl('/network')">NETWORK</a></li>
-            <li><a href="" ng-click="goUrl('/logout')">LOGOUT</a></li>
+
+          <ul class="btn-group nav navbar-nav navbar-right" ng-show="showNavItem" uib-dropdown>
+            <li uib-dropdown-toggle ng-class="{active:dropdownActive}">
+              <a href="">admin <span class="caret"></span></a>
+            </li>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+              <li role="menuitem" ng-repeat="item in dropdownNavItems" ng-class="{divider:item.divider, active: item.active}">
+                <a href="" ng-click="goUrl(item, 'dropdown')">{{item.name}}</a>
+              </li>
+            </ul>
           </ul>
         </div>
       </div>
