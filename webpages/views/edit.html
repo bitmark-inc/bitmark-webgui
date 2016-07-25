@@ -1,14 +1,14 @@
 <div>
-  <h3 class="home">BITMARK CONFIGURATION
+  <h3 class="home">CONFIGURATION
     <div class="text-right">
        <button class="btn btn-primary-start" ng-click="saveConfig()">SAVE</button>
-       <button class="btn btn-primary-start" ng-click="saveConfigAndStart()">SAVE & START</button>
        <button class="btn btn-primary-stop " ng-click="goUrl('/main')">CANCEL</button>
-    </div>  
+    </div>
     </h3>
 </div>
   <p ng-show="error.show" style="padding-left: 12px; color: rgb(255, 0, 0);">{{ error.msg }}</p>
 
+<form name="bitmarkForm" novalidate>
 <div class="row">
      <div class="col-md-4">   
           <div class="panel panel-default">
@@ -24,7 +24,7 @@
               </div>
               <div class="col-xs-6 col-sm-8">
                   <div class="main-text">{{ bitmarkConfig.Chain }}
-                  <button uib-popover="Logout to change chain" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm">
+                  <button uib-popover="Click admin on navigator bar to switch chain" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm">
                   <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                    </button></div>
               </div>  
@@ -138,197 +138,208 @@
     </div>
 </div>
 
-<div class="row">
-  <div class="col-md-4">   
-      <div class="panel panel-default">
-      <div class="main-title" style="font-weight: bold;">MINER</div>
-      <p class="configuration-sub" >Max connections: {{bitmarkConfig.Mining.MaximumConnections}}</p>
-      </div>
-   </div> 
-    <div class="col-md-8 col-md-offset-0">
-        <div class="main-body"> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-                 <div class="main-text"><b>LISTEN</b>
-                 <button ng-click="addItem(bitmarkConfig.Mining.Listen, bitmarkConfig.Mining.MaximumConnections)">+</button></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-                <div class="main-text">
-                 <div ng-repeat="listen in bitmarkConfig.Mining.Listen track by $index">
-                 {{$index+1}}
-                 <input class="inputform" type="text" ng-model="bitmarkConfig.Mining.Listen[$index]" required>
-                 <button ng-if="bitmarkConfig.Mining.Listen.length>1" ng-click="deleteItem(bitmarkConfig.Mining.Listen, $index)">x</button>
-                </div>
-                </div>
-              </div>  
-            </div>
-        </div>
-    </div>
+
+<!-- <div class="row"> -->
+<!--   <div class="col-md-4">    -->
+<!--       <div class="panel panel-default"> -->
+<!--       <div class="main-title" style="font-weight: bold;">MINER</div> -->
+<!--       <p class="configuration-sub" >Max connections: {{bitmarkConfig.Mining.MaximumConnections}}</p> -->
+<!--       </div> -->
+<!--    </div>  -->
+<!--     <div class="col-md-8 col-md-offset-0"> -->
+<!--         <div class="main-body">  -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--                  <div class="main-text"><b>LISTEN</b> -->
+<!--                  <button ng-click="addItem(bitmarkConfig.Mining.Listen, bitmarkConfig.Mining.MaximumConnections)">+</button></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--                 <div class="main-text"> -->
+<!--                  <div ng-repeat="listen in bitmarkConfig.Mining.Listen track by $index"> -->
+<!--                  {{$index+1}} -->
+<!--                  <input class="inputform" type="text" ng-model="bitmarkConfig.Mining.Listen[$index]" required> -->
+<!--                  <button ng-if="bitmarkConfig.Mining.Listen.length>1" ng-click="deleteItem(bitmarkConfig.Mining.Listen, $index)">x</button> -->
+<!--                 </div> -->
+<!--                 </div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--         </div> -->
+<!--     </div> -->
+<!-- </div> -->
+
+<!-- <div class="row"> -->
+<!--   <div class="col-md-4">    -->
+<!--     <div class="panel panel-default"> -->
+<!--     <div class="main-title" style="font-weight: bold;">BITCOIN</div> -->
+<!--     </div> -->
+<!--   </div>  -->
+<!--   <div class="col-md-8 col-md-offset-0"> -->
+<!--       <div class="main-body"> -->
+<!--            <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-12"> -->
+<!--                 <div class="main-text"> -->
+<!--                    <span class="main-text"> -->
+<!--                      <label> -->
+<!--                      <input type="radio" ng-model="bitcoinUseProxy" value="local"> -->
+<!--                      <span>LOCAL-BITCOIN</span> -->
+<!--                      </label> -->
+<!--                      <label ng-hide="bitmarkConfig.Chain == 'local'"> -->
+<!--                      <input type="radio" ng-model="bitcoinUseProxy" value="other"> -->
+<!--                      PROXY -->
+<!--                      </label> -->
+<!--                      <label ng-hide="bitmarkConfig.Chain == 'local' || bitmarkConfig.Chain == 'bitmark'"> -->
+<!--                      <input type="radio" ng-model="bitcoinUseProxy" value="testing"> -->
+<!--                       BITMARKINC-PROXY -->
+<!--                       </label> -->
+<!--                        <button uib-popover="Trustworthy bitcoin proxy from Bitmark Inc, help you to get rid of setting up a full node bitcoin (around 50 GB). Bitmark RPC chain should be testing or bitmark" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm" ng-hide="bitmarkConfig.Chain == 'local'"> -->
+<!--                       <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> -->
+<!--                        </button> -->
+<!--                      </span> -->
+<!--                 </div> -->
+<!--               </div> -->
+<!--            </div> -->
+<!--         </div> -->
+<!--       <\!-- for local proxy -\-> -->
+<!--       <div class="row row-text" ng-show="bitcoinUseProxy == 'local'"> -->
+<!--             <div class="row row-text"> -->
+<!--                 <div class="col-xs-6 col-sm-4"> -->
+<!--                   <div class="main-text"><b>USERNAME</b></div> -->
+<!--                 </div> -->
+<!--                 <div class="col-xs-6 col-sm-8"> -->
+<!--                   <div class="main-text"> -->
+<!--                   <input class="inputform" type="text" ng-model="localBitcoin.Username" required> -->
+<!--                   </div> -->
+<!--                 </div> -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>PASSWORD</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"> -->
+<!--                   <input class="inputform" type="password" ng-model="localBitcoin.Password"> -->
+<!--                   <div ng-show="localBitcoin.Password.length > 0"><p>verify</p></div> -->
+<!--                   <div ng-show="localBitcoin.Password.length > 0"><input type="password" ng-model="verifyPassword"> -->
+<!--                   <div ng-show="!bitcoinPasswordEqual">not equal</div> -->
+<!--                   </div> -->
+<!--               </div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>URL</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.URL" required></div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>FEE</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.Fee"></div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>ADDRESS</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.Address"></div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--       </div> -->
+<!--         <\!-- for other proxy -\-> -->
+<!--       <div class="row row-text" ng-show="bitcoinUseProxy == 'other'" > -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>URL</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="otherProxyTemp.URL" required></div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>FEE</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text">{{ otherProxyTemp.Fee }}</div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>ADDRESS</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="otherProxyTemp.Address"></div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--       </div> -->
+<!--       <\!-- for bitmark testnet proxy -\-> -->
+<!--       <div class="row row-text" ng-show="bitcoinUseProxy == 'testing' && bitmarkConfig.Chain == 'testing'"> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>URL</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text">{{ bitmarkTestNetProxyTemp.URL }}</div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>FEE</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text">{{ bitmarkTestNetProxyTemp.Fee }}</div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>ADDRESS</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-8"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="bitmarkTestNetProxyTemp.Address"></div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--       </div> -->
+<!--       <\!-- for bitmark proxy -\-> -->
+<!--       <div class="row row-text" ng-show="bitcoinUseProxy == 'bitmark' && bitmarkConfig.Chain == 'bitmark'"> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>URL</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-9"> -->
+<!--               <div class="main-text">{{ bitmarkProxyTemp.URL }}</div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>FEE</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-9"> -->
+<!--               <div class="main-text">{{ bitmarkProxyTemp.Fee }}</div> -->
+<!--               </div>   -->
+<!--             </div> -->
+<!--             <div class="row row-text"> -->
+<!--               <div class="col-xs-6 col-sm-4"> -->
+<!--               <div class="main-text"><b>ADDRESS</b></div> -->
+<!--               </div> -->
+<!--               <div class="col-xs-6 col-sm-9"> -->
+<!--               <div class="main-text"><input class="inputform" type="text" ng-model="bitmarkProxyTemp.Address"></div> -->
+<!--               </div>   -->
+<!--         </div> -->
+<!--       </div> -->
+<!--   </div>  -->
+<!-- </div> -->
+</form>
+<br/><br/>
+
+<div class="text-right">
+  <button class="btn btn-primary-start" ng-click="saveConfig()">SAVE</button>
+  <button class="btn btn-primary-stop " ng-click="goUrl('/main')">CANCEL</button>
 </div>
 
-<div class="row">
-  <div class="col-md-4">   
-    <div class="panel panel-default">
-    <div class="main-title" style="font-weight: bold;">BITCOIN</div>
-    </div>
-  </div> 
-  <div class="col-md-8 col-md-offset-0">
-      <div class="main-body">
-           <div class="row row-text">
-              <div class="col-xs-6 col-sm-12">
-                <div class="main-text">
-                   <span class="main-text">
-                     <label>
-                     <input type="radio" ng-model="bitcoinUseProxy" value="local">
-                     <span>LOCAL-BITCOIN</span>
-                     </label>
-                     <label ng-hide="bitmarkConfig.Chain == 'local'">
-                     <input type="radio" ng-model="bitcoinUseProxy" value="other">
-                     PROXY
-                     </label>
-                     <label ng-hide="bitmarkConfig.Chain == 'local' || bitmarkConfig.Chain == 'bitmark'">
-                     <input type="radio" ng-model="bitcoinUseProxy" value="testing">
-                      BITMARKINC-PROXY
-                      </label>
-                       <button uib-popover="Trustworthy bitcoin proxy from Bitmark Inc, help you to get rid of setting up a full node bitcoin (around 50 GB). Bitmark RPC chain should be testing or bitmark" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm" ng-hide="bitmarkConfig.Chain == 'local'">
-                      <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                       </button>
-                     </span>
-                </div>
-              </div>
-           </div>
-        </div>
-      <!-- for local proxy -->
-      <div class="row row-text" ng-show="bitcoinUseProxy == 'local'">
-            <div class="row row-text">
-                <div class="col-xs-6 col-sm-4">
-                  <div class="main-text"><b>USERNAME</b></div>
-                </div>
-                <div class="col-xs-6 col-sm-8">
-                  <div class="main-text">
-                  <input class="inputform" type="text" ng-model="localBitcoin.Username" required>
-                  </div>
-                </div>
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>PASSWORD</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text">
-                  <input class="inputform" type="password" ng-model="localBitcoin.Password">
-                  <div ng-show="localBitcoin.Password.length > 0"><p>verify</p></div>
-                  <div ng-show="localBitcoin.Password.length > 0"><input type="password" ng-model="verifyPassword">
-                  <div ng-show="!bitcoinPasswordEqual">not equal</div>
-                  </div>
-              </div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>URL</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.URL" required></div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>FEE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.Fee"></div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>ADDRESS</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input class="inputform" type="text" ng-model="localBitcoin.Address"></div>
-              </div>  
-            </div>
-      </div>
-        <!-- for other proxy -->
-      <div class="row row-text" ng-show="bitcoinUseProxy == 'other'" >
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>URL</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input class="inputform" type="text" ng-model="otherProxyTemp.URL" required></div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>FEE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text">{{ otherProxyTemp.Fee }}</div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>ADDRESS</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input class="inputform" type="text" ng-model="otherProxyTemp.Address"></div>
-              </div>  
-            </div>
-      </div>
-      <!-- for bitmark testnet proxy -->
-      <div class="row row-text" ng-show="bitcoinUseProxy == 'testing' && bitmarkConfig.Chain == 'testing'">
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>URL</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text">{{ bitmarkTestNetProxyTemp.URL }}</div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>FEE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text">{{ bitmarkTestNetProxyTemp.Fee }}</div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>ADDRESS</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-              <div class="main-text"><input class="inputform" type="text" ng-model="bitmarkTestNetProxyTemp.Address"></div>
-              </div>  
-            </div>
-      </div>
-      <!-- for bitmark proxy -->
-      <div class="row row-text" ng-show="bitcoinUseProxy == 'bitmark' && bitmarkConfig.Chain == 'bitmark'">
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>URL</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-9">
-              <div class="main-text">{{ bitmarkProxyTemp.URL }}</div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>FEE</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-9">
-              <div class="main-text">{{ bitmarkProxyTemp.Fee }}</div>
-              </div>  
-            </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-              <div class="main-text"><b>ADDRESS</b></div>
-              </div>
-              <div class="col-xs-6 col-sm-9">
-              <div class="main-text"><input class="inputform" type="text" ng-model="bitmarkProxyTemp.Address"></div>
-              </div>  
-        </div>
-      </div>
-  </div> 
-</div>
+<br/>
+
