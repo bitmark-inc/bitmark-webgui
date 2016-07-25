@@ -100,19 +100,19 @@ angular.module('bitmarkWebguiApp')
         };
 
 
-        $scope.saveConfigAndStart = function(){
-            $scope.error.show = false;
-            // send config post api and start bitmark then return to main page
-            saveConfig(function(){
-                httpService.send("startBitmarkd").then(
-                    function(result){
-                        $scope.goUrl('/main');
-                    }, function(errorMsg){
-                        $scope.error.show = true;
-                        $scope.error.msg = errorMsg;
-                    });
-            });
-        };
+        // $scope.saveConfigAndStart = function(){
+        //     $scope.error.show = false;
+        //     // send config post api and start bitmark then return to main page
+        //     saveConfig(function(){
+        //         httpService.send("startBitmarkd").then(
+        //             function(result){
+        //                 $scope.goUrl('/main');
+        //             }, function(errorMsg){
+        //                 $scope.error.show = true;
+        //                 $scope.error.msg = errorMsg;
+        //             });
+        //     });
+        // };
 
         $scope.goUrl = function(path){
               $location.path(path);
