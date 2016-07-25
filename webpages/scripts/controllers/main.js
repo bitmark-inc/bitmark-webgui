@@ -14,17 +14,9 @@
 angular.module('bitmarkWebguiApp')
     .controller('MainCtrl', function ($scope, $location, httpService, ProxyTemp, $interval, configuration, utils) {
 
-        // var bitmarkStatusObj = {
-        //     "run": "● RUNNING",
-        //     "stop": "● STOPPED",
-        //     "error": "● ERROR",
-        //     "resync": "RESYNCHRONIZING.."
-        // };
-
         $scope.disableStart = true;
         $scope.disableStop = true;
-        // $scope.bitmarkStatus = bitmarkStatusObj.resync;
-        // $scope.bitmarkStatusStyle = {"color":"#4A90E2"};
+
         $scope.error = {
             show: false,
             msg: ""
@@ -39,11 +31,9 @@ angular.module('bitmarkWebguiApp')
 
         httpService.send('statusBitmarkd').then(
             function(result){
-                // TODO: check status and set disable button
+                // check status and set disable button
                 if(result.search("stop") >= 0) {
                     disableStartBitmarkBtn(false);
-                    // $scope.bitmarkStatus = bitmarkStatusObj.stop;
-                    // $scope.bitmarkStatusStyle.color = "#FF0000";
                 }else{ // bitmarkd is running
                     getBitmarkInfo();
                     getInfoPromise = $interval(getBitmarkInfo, intervalTime);
@@ -81,8 +71,6 @@ angular.module('bitmarkWebguiApp')
                     }
                 }, function(errorMsg){
                     disableStartBitmarkBtn(false);
-                    // $scope.bitmarkStatus = bitmarkStatusObj.error;
-                    // $scope.bitmarkStatusStyle.color = "#FF0000";
                     $scope.setErrorMsg(true, errorMsg);
                     $interval.cancel(getInfoPromise);
                 });
@@ -91,25 +79,29 @@ angular.module('bitmarkWebguiApp')
             allBitmarkdDisable();
             $scope.setErrorMsg(false, "");
             $interval.cancel(getInfoPromise);
+
+            // check bitmark mode
+            //  mode: resynchronize: show modal to alert
+
             $scope.bitmarkInfo = undefined;
             httpService.send("stopBitmarkd").then(
                 function(result){
                     if(result.search("stop running bitmarkd")>=0) {
-                        // $scope.bitmarkStatus = bitmarkStatusObj.stop;
-                        // $scope.bitmarkStatusStyle.color = "#FF0000";
                         disableStartBitmarkBtn(false);
                     }else{
                         disableStartBitmarkBtn(true);
                     }
                 }, function(errorMsg){
                     disableStartBitmarkBtn(true);
-                    // $scope.bitmarkStatus = bitmarkStatusObj.error;
-                    // $scope.bitmarkStatusStyle.color = "#FF0000";
                     $scope.setErrorMsg(true, errorMsg);
                 });
         };
-        $scope.goUrl = function(path){
-            $location.path(path);
+        $scope.configBitmark = function(){
+            // check bitmark mode
+            //  mode Resynchronise: show modal to alert user bitmarkd will be stopped and data will be removed
+            //  mode normal: show modal to alert user bitmarkd will be stopped
+
+            $location.path('/edit');
         };
 
         var disableStartBitmarkBtn = function(startDisableBool) {
@@ -129,12 +121,8 @@ angular.module('bitmarkWebguiApp')
                     $scope.bitmarkInfo = result;
                     if(result.mode == undefined){
                         allBitmarkdDisable();
-                        // $scope.bitmarkStatus = bitmarkStatusObj.resync;
-                        // $scope.bitmarkStatusStyle.color = "#4A90E2";
                     }else{
                         disableStartBitmarkBtn(true);
-                        // $scope.bitmarkStatus = bitmarkStatusObj.run;
-                        // $scope.bitmarkStatusStyle.color = "#7ED321";
                     }
                 },
                 function(errorMsg){
