@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('MainCtrl', function ($scope, $location, httpService, ProxyTemp, $interval, configuration, utils) {
+    .controller('MainCtrl', function ($scope, $location, $uibModal, httpService, ProxyTemp, $interval, configuration, utils) {
 
         $scope.disableStart = true;
         $scope.disableStop = true;
@@ -28,7 +28,7 @@ angular.module('bitmarkWebguiApp')
 
         var getInfoPromise;
         var intervalTime = 6 * 1000;
-
+        var bitmarkdisRunning = false;
         httpService.send('statusBitmarkd').then(
             function(result){
                 // check status and set disable button
@@ -100,16 +100,54 @@ angular.module('bitmarkWebguiApp')
             // check bitmark mode
             //  mode Resynchronise: show modal to alert user bitmarkd will be stopped and data will be removed
             //  mode normal: show modal to alert user bitmarkd will be stopped
+            if(bitmarkdisRunning){
+                showStopBitmarkdModal('config');
+            } else {
+                $location.path('/edit');
+            }
+        };
 
-            $location.path('/edit');
+
+        var showStopBitmarkdModal = function(type){
+            var modalInstance = $uibModal.open({
+                templateUrl: 'views/stopBitmarkdModal.html',
+                controller: 'StopBitmarkdModalCtrl',
+                resolve: {
+                    type: function () {
+                        return type;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function(){
+                // kill the stop
+                allBitmarkdDisable();
+                $scope.setErrorMsg(false, "");
+                $interval.cancel(getInfoPromise);
+                $scope.bitmarkInfo = undefined;
+                httpService.send("stopBitmarkd").then(
+                    function(result){
+                        if(result.search("stop running bitmarkd")>=0) {
+                            disableStartBitmarkBtn(false);
+                            $location.path('/edit');
+                        }else{
+                            disableStartBitmarkBtn(true);
+                        }
+                    }, function(errorMsg){
+                        disableStartBitmarkBtn(true);
+                        $scope.setErrorMsg(true, errorMsg);
+                    });
+            });
         };
 
         var disableStartBitmarkBtn = function(startDisableBool) {
+            bitmarkdisRunning = startDisableBool;
             $scope.disableStart = startDisableBool;
             $scope.disableStop = !startDisableBool;
         };
 
         var allBitmarkdDisable = function() {
+            bitmarkdisRunning = true;
             $scope.disableStart = true;
             $scope.disableStop = true;
         };
