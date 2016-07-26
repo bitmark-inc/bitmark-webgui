@@ -90,7 +90,6 @@ func SetBitmarkWebguiPassword(w http.ResponseWriter, req *http.Request, bitmarkW
 		return
 	}
 
-
 	configs.Password = string(encryptPassword)
 
 	response.Ok = true

@@ -49,7 +49,6 @@ func (bitmarkConsole *BitmarkConsole) Initialise(binFile string, crtFile string,
 	bitmarkConsole.crt = crtFile
 	bitmarkConsole.key = keyFile
 
-
 	bitmarkConsole.initialised = true
 
 	return nil
@@ -111,7 +110,7 @@ func (bitmarkConsole *BitmarkConsole) StartBitmarkConsole() error {
 					bitmarkConsole.log.Errorf("Error: %v", err)
 					return
 				}
-				if "" == url && strings.Contains(string(stde), "URL: http"){
+				if "" == url && strings.Contains(string(stde), "URL: http") {
 					url = string(stde)
 					tmpStrArr := strings.Split(url, ":")
 					url = tmpStrArr[len(tmpStrArr)-1]

@@ -187,12 +187,12 @@ func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 	}
 
 	// if err := bitmarkd.process.Signal(os.Interrupt); nil != err {
- 		// bitmarkd.log.Errorf("Send interrupt to bitmarkd failed: %v", err)
-		if err := bitmarkd.process.Signal(os.Kill); nil != err {
-			bitmarkd.log.Errorf("Send kill to bitmarkd failed: %v", err)
-			return err
-		}
- 	// }
+	// bitmarkd.log.Errorf("Send interrupt to bitmarkd failed: %v", err)
+	if err := bitmarkd.process.Signal(os.Kill); nil != err {
+		bitmarkd.log.Errorf("Send kill to bitmarkd failed: %v", err)
+		return err
+	}
+	// }
 
 	bitmarkd.log.Infof("Stop bitmarkd. PID: %d", bitmarkd.process.Pid)
 	bitmarkd.running = false
