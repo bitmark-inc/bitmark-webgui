@@ -20,6 +20,7 @@ const (
 	defaultBitmarkConfigFile    = "/etc/bitmarkd.conf"
 	defaultBitmarkCliConfigFile = ""
 	defaultBitmarkPayServiceBin = "./bin/bitmarkPayService"
+	defaultBitmarkConsoleBin    = "./bin/gotty"
 
 	defaultLogDirectory = "log"
 	defaultLogFile      = "bitmark-webgui.log"
@@ -56,6 +57,7 @@ type Configuration struct {
 	BitmarkConfigFile    string     `libucl:"bitmark_config_file"`
 	BitmarkCliConfigFile string     `libucl:"bitmark_cli_config_file"`
 	BitmarkPayServiceBin string     `libucl:"bitmark_pay_service_bin"`
+	BitmarkConsoleBin    string     `libucl:"bitmark_console_bin"`
 	Logging              LoggerType `libucl:"logging"`
 }
 
@@ -69,6 +71,7 @@ func GetDefaultConfiguration(dataDirectory string) (*Configuration, error) {
 		BitmarkConfigFile:    defaultBitmarkConfigFile,
 		BitmarkCliConfigFile: defaultBitmarkCliConfigFile,
 		BitmarkPayServiceBin: defaultBitmarkPayServiceBin,
+		BitmarkConsoleBin:    defaultBitmarkConsoleBin,
 		Logging:              *defaultLogger,
 	}
 

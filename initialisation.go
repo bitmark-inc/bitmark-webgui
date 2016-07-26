@@ -9,6 +9,7 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
 	"github.com/bitmark-inc/bitmarkd/background"
+	"github.com/bitmark-inc/bitmark-webgui/utils"
 )
 
 var backgroundService *background.T
@@ -16,6 +17,7 @@ var bitcoinService services.Bitcoind
 var bitmarkService services.Bitmarkd
 var bitmarkPayService services.BitmarkPay
 var bitmarkCliService services.BitmarkCli
+var bitmarkConsoleService services.BitmarkConsole
 
 // start service
 func InitialiseService(configs *configuration.Configuration) error {
@@ -34,6 +36,15 @@ func InitialiseService(configs *configuration.Configuration) error {
 		return err
 	}
 
+	cert, key, _, err := utils.GetTLSCertFile(configs.DataDirectory)
+	if nil != err {
+		return err
+	}
+
+	if err := bitmarkConsoleService.Initialise(configs.BitmarkConsoleBin, cert, key); nil != err {
+		return err
+	}
+
 	// create and start all background service
 	var processes = background.Processes{
 		bitcoinService.BitcoindBackground,
@@ -46,6 +57,7 @@ func InitialiseService(configs *configuration.Configuration) error {
 	api.Register(&bitmarkService)
 	api.Register(&bitmarkPayService)
 	api.Register(&bitmarkCliService)
+	api.Register(&bitmarkConsoleService)
 
 	return nil
 }
@@ -66,6 +78,10 @@ func FinaliseBackgroundService() error {
 	}
 
 	if err := bitmarkCliService.Finalise(); nil != err {
+		return err
+	}
+
+	if err := bitmarkConsoleService.Finalise(); nil != err {
 		return err
 	}
 

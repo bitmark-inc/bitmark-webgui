@@ -19,6 +19,7 @@ type ProcessError GenericError
 // common errors - keep in alphabetic order
 var (
 	ErrAlreadyInitialised               = ExistsError("already initialised")
+	ErrBitmarkConsoleIsNotRunning       = ProcessError("Bitmark console is not running")
 	ErrBitcoinAddress                   = InvalidError("Invalid bitcoin address")
 	ErrBitcoindIsNotRunning             = InvalidError("Bitcoind is not running")
 	ErrBitcoindIsRunning                = InvalidError("Bitcoind not running")
