@@ -1,5 +1,5 @@
 angular.module('bitmarkWebguiApp')
-    .controller('NavbarCtrl', function ($rootScope, $scope, $uibModal, $log, $location, httpService, configuration) {
+    .controller('NavbarCtrl', function ($rootScope, $scope, $window, $uibModal, $log, $location, httpService, configuration) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;
         });
@@ -61,8 +61,10 @@ angular.module('bitmarkWebguiApp')
             }
         ];
 
+        var consoleWindow;
         $scope.goUrl = function(navItem, type){
-            if(navItem.url == "/chain"){
+            switch(navItem.url){
+            case "/chain":
                 // check if bitmarkd is running
                 httpService.send('statusBitmarkd').then(
                     function(result){
@@ -94,9 +96,25 @@ angular.module('bitmarkWebguiApp')
                     }, function(errorMsg){
                         $log.error(errorMsg);
                     });
-            } else {
+                break;
+            case "/logout":
+                httpService.send("logout").then(
+                    function(){
+                        $scope.$emit('Authenticated', false);
+                        $scope.goUrl('/login');
+                    }, function(errorMsg){
+                        $scope.$emit('Authenticated', true);
+                    });
+                break;
+            case "/console":
+                if (consoleWindow == undefined || consoleWindow.closed) {
+                    consoleWindow = $window.open("https://localhost:8080", "", "width=1080,height=900,location=no,menubar=no,left=150,status=0,titlebar=0,toolbar=0");
+                }
+                consoleWindow.focus();
+                break;
+            default:
                 activeUrl(navItem, type);
-            }
+            };
         };
 
         var activeUrl = function(navItem, type){
