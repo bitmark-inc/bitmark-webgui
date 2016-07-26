@@ -501,7 +501,6 @@ func handleBitmarkConsole(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-
 func handleOnestep(w http.ResponseWriter, req *http.Request) {
 	log := logger.New("api-onestep")
 	api.SetCORSHeader(w, req)

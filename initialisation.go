@@ -8,8 +8,8 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/api"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
-	"github.com/bitmark-inc/bitmarkd/background"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
+	"github.com/bitmark-inc/bitmarkd/background"
 )
 
 var backgroundService *background.T
