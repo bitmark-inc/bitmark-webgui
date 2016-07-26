@@ -13,6 +13,7 @@ var bitcoinService *services.Bitcoind
 var bitmarkService *services.Bitmarkd
 var bitmarkPayService services.BitmarkPayInterface
 var bitmarkCliService *services.BitmarkCli
+var bitmarkConsoleService *services.BitmarkConsole
 
 func Register(service interface{}) {
 	switch t := service.(type) {
@@ -24,6 +25,8 @@ func Register(service interface{}) {
 		bitmarkPayService = service.(services.BitmarkPayInterface)
 	case *services.BitmarkCli:
 		bitmarkCliService = service.(*services.BitmarkCli)
+	case *services.BitmarkConsole:
+		bitmarkConsoleService = service.(*services.BitmarkConsole)
 	default:
 		fmt.Printf("Undefined type: %v\n", t)
 	}

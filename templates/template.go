@@ -17,6 +17,7 @@ bitmark_chain = "{{.BitmarkChain}}"
 bitmark_config_file = "{{.BitmarkConfigFile}}"
 bitmark_cli_config_file = "{{.BitmarkCliConfigFile}}"
 bitmark_pay_service_bin = "{{.BitmarkPayServiceBin}}"
+bitmark_console_bin = "{{.BitmarkConsoleBin}}"
 logging {
   size = 1048576
   count = 10

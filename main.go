@@ -242,6 +242,8 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/onestep/issue", handleOnestep)
 	http.HandleFunc("/api/onestep/transfer", handleOnestep)
 
+	http.HandleFunc("/api/bitmarkConsole", handleBitmarkConsole)
+
 	server := &http.Server{
 		Addr:           host + ":" + port,
 		ReadTimeout:    20 * time.Second,
@@ -480,6 +482,25 @@ func handleBitmarkCli(w http.ResponseWriter, req *http.Request) {
 		log.Error("Error: Unknow method")
 	}
 }
+
+func handleBitmarkConsole(w http.ResponseWriter, req *http.Request) {
+	log := logger.New("api-bitmarkConsole")
+	api.SetCORSHeader(w, req)
+
+	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+		return
+	}
+
+	switch req.Method {
+	case `POST`:
+		api.BitmarkConsole(w, req, log)
+	case `OPTIONS`:
+		return
+	default:
+		log.Error("Error: Unknow method")
+	}
+}
+
 
 func handleOnestep(w http.ResponseWriter, req *http.Request) {
 	log := logger.New("api-onestep")

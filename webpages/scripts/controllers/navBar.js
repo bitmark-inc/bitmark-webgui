@@ -100,6 +100,9 @@ angular.module('bitmarkWebguiApp')
             case "/logout":
                 httpService.send("logout").then(
                     function(){
+                        if (consoleWindow != undefined && !consoleWindow.closed) {
+                            consoleWindow.close();
+                        }
                         $scope.$emit('Authenticated', false);
                         $scope.goUrl('/login');
                     }, function(errorMsg){
@@ -108,9 +111,15 @@ angular.module('bitmarkWebguiApp')
                 break;
             case "/console":
                 if (consoleWindow == undefined || consoleWindow.closed) {
-                    consoleWindow = $window.open("https://localhost:8080", "", "width=1080,height=900,location=no,menubar=no,left=150,status=0,titlebar=0,toolbar=0");
+                    httpService.send("startBitmarkConsole").then(
+                        function(result){
+                            consoleWindow = $window.open("https://"+$location.host()+":"+result, "", "width=1080,height=900,location=no,menubar=no,left=150,status=0,titlebar=0,toolbar=0");
+                        }
+                    );
+                } else {
+                    consoleWindow.focus();
                 }
-                consoleWindow.focus();
+
                 break;
             default:
                 activeUrl(navItem, type);
