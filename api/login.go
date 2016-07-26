@@ -94,7 +94,27 @@ type logoutRequset struct {
 
 // POST /api/logout
 func LogoutBitmarkWebgui(w http.ResponseWriter, req *http.Request, filePath string, webguiConfiguration *configuration.Configuration, log *logger.L) {
-	removeBitmarkCliConfigAndCookie(w, filePath, webguiConfiguration, log)
+	response := &Response{
+		Ok:     false,
+		Result: "logout error",
+	}
+
+	cookie := &http.Cookie{
+		Name:   CookieName,
+		Secure: true,
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cookie)
+
+	response.Ok = true
+	response.Result = nil
+
+	w.Header().Set("Content-Type", "text/json; charset=utf-8")
+	if b, err := json.MarshalIndent(response, "", "  "); nil != err {
+		log.Errorf("Error: %v", fault.ErrJsonParseFail)
+	} else {
+		w.Write(b)
+	}
 }
 
 // POST /api/logoutOnestep
