@@ -104,7 +104,7 @@ angular.module('bitmarkWebguiApp')
                             consoleWindow.close();
                         }
                         $scope.$emit('Authenticated', false);
-                        $scope.goUrl('/login');
+                        $location.path('/login');
                     }, function(errorMsg){
                         $scope.$emit('Authenticated', true);
                     });
