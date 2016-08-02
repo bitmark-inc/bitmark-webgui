@@ -18,6 +18,19 @@ angular.module('bitmarkWebguiApp')
             httpService.send("checkAuthenticate").then(
                 function(result){
                     $scope.$emit('Authenticated', true);
+
+                    // for(var i=0; i<$scope.leftNavItems; i++ ){
+                    //     var navItem = $scope.leftNavItem[i];
+                    //     if(navItem.url == $location.path()){
+                    //             activeUrl(navItem, "left");
+                    //         }
+                    // }
+                    // for(var i=0; i<$scope.dropdownNavItems; i++ ){
+                    //     var navItem = $scope.leftNavItem[i];
+                    //     if(navItem.url == $location.path()){
+                    //             activeUrl(navItem, "dropdown");
+                    //         }
+                    // }
                 },function(){
                     $scope.$emit('Authenticated', false);
                     $location.path('/login');

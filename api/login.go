@@ -16,7 +16,6 @@ import (
 	"time"
 )
 
-
 // GET /api/login
 func LoginStatus(w http.ResponseWriter, configuration *configuration.Configuration, log *logger.L) {
 

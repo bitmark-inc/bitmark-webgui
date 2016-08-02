@@ -13,16 +13,16 @@ import (
 	"github.com/bitmark-inc/logger"
 	"github.com/codegangsta/cli"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/websocket"
+	"io"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
-	"net/http/httputil"
-	"net/url"
-	"golang.org/x/net/websocket"
-	"io"
 )
 
 var GlobalConfig *configuration.Configuration
@@ -225,9 +225,8 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitcoind", handleBitcoind)
 	http.HandleFunc("/api/bitmarkd", handleBitmarkd)
 
-
 	// serve console proxy and web socket
-	bitmarkConsoleUrlStr := "http://localhost:"+bitmarkConsoleService.Port()
+	bitmarkConsoleUrlStr := "http://localhost:" + bitmarkConsoleService.Port()
 	bitmarkConsoleUrl, err := url.Parse(bitmarkConsoleUrlStr)
 	if err != nil {
 		panic(err)
@@ -235,7 +234,6 @@ func startWebServer(configs *configuration.Configuration) error {
 	bitmarkConsoleProxy = httputil.NewSingleHostReverseProxy(bitmarkConsoleUrl)
 	http.Handle("/console/ws", handleBitmarkConsoleWS())
 	http.HandleFunc("/console/", handleBitmarkConsole)
-
 
 	server := &http.Server{
 		Addr:           host + ":" + port,
@@ -444,7 +442,7 @@ func handleBitmarkConsole(w http.ResponseWriter, req *http.Request) {
 
 	req.URL.Path = req.URL.Path[8:]
 	retry := 3
-	for i:=0; i < retry; i++ {
+	for i := 0; i < retry; i++ {
 		if !bitmarkConsoleService.IsRunning() {
 			if err := bitmarkConsoleService.StartBitmarkConsole(); nil != err {
 				log.Errorf("start bitmarkConsole server fail: %v\n", err)
@@ -464,9 +462,9 @@ func handleBitmarkConsole(w http.ResponseWriter, req *http.Request) {
 func handleBitmarkConsoleWS() websocket.Handler {
 	log := logger.New("api-bitmarkConsoleWS")
 
-	return websocket.Handler(func (w *websocket.Conn) {
-		origin := "http://localhost:"+bitmarkConsoleService.Port()+"/"
-		url := "ws://localhost:"+bitmarkConsoleService.Port()+"/ws"
+	return websocket.Handler(func(w *websocket.Conn) {
+		origin := "http://localhost:" + bitmarkConsoleService.Port() + "/"
+		url := "ws://localhost:" + bitmarkConsoleService.Port() + "/ws"
 		ws, err := websocket.Dial(url, "", origin)
 		if err != nil {
 			log.Errorf("websocket dial fail: %v\n", err)
