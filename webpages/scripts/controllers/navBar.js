@@ -1,5 +1,5 @@
 angular.module('bitmarkWebguiApp')
-    .controller('NavbarCtrl', function ($rootScope, $scope, $window, $uibModal, $log, $location, httpService, configuration) {
+    .controller('NavbarCtrl', function ($rootScope, $scope, $window, $uibModal, $log, $location, httpService) {
         $scope.$on('AppAuthenticated', function(event, value){
             $scope.showNavItem = value;
         });
@@ -17,8 +17,6 @@ angular.module('bitmarkWebguiApp')
         $scope.init = function(){
             httpService.send("checkAuthenticate").then(
                 function(result){
-                    configuration.setChain(result.chain);
-                    configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
                     $scope.$emit('Authenticated', true);
                 },function(){
                     $scope.$emit('Authenticated', false);
@@ -61,7 +59,6 @@ angular.module('bitmarkWebguiApp')
             }
         ];
 
-        var consoleWindow;
         $scope.goUrl = function(navItem, type){
             switch(navItem.url){
             case "/chain":
@@ -100,9 +97,6 @@ angular.module('bitmarkWebguiApp')
             case "/logout":
                 httpService.send("logout").then(
                     function(){
-                        if (consoleWindow != undefined && !consoleWindow.closed) {
-                            consoleWindow.close();
-                        }
                         $scope.$emit('Authenticated', false);
                         $location.path('/login');
                     }, function(errorMsg){

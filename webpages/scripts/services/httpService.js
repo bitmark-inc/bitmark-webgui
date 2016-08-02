@@ -93,87 +93,10 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
                 option: "info"
             }
         },
-        generateBitmarkKeyPair: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkCli/generate'
-        },
-        getBitmarkKeyPair: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkCli/keypair'
-        },
-        getBitmarkCliInfo: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkCli/info'
-        },
-        setupBitmarkCli: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkCli/setup'
-        },
-        issueBitmark: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkCli/issue'
-        },
-        transferBitmark: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkCli/transfer'
-        },
-        setupBitmarkPay: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/encrypt'
-        },
-        decryptBitmarkPay: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/decrypt'
-        },
-        restoreBitmarkPay: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/restore'
-        },
-        getBitmarkPayInfo: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/info'
-        },
-        payBitmark: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/pay'
-        },
-        getBitmarkPayStatus: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/status'
-        },
-        getBitmarkPayResult: {
-            method: 'POST',
-            url: hostApiPath+'/bitmarkPay/result'
-        },
-        stopBitmarkPayProcess: {
-            method: 'DELETE',
-            url: hostApiPath+'/bitmarkPay/'
-        },
-        getBitmarkPayJob: {
-            method: 'GET',
-            url: hostApiPath+'/bitmarkPay/'
-        },
         startBitmarkConsole: {
             method: 'POST',
             url: hostApiPath+'/bitmarkConsole'
-        },
-        onestepStatus: {
-            method: 'POST',
-            url: hostApiPath+'/onestep/status'
-        },
-        onestepSetup: {
-            method: 'POST',
-            url: hostApiPath+'/onestep/setup'
-        },
-        onestepIssue: {
-            method: 'POST',
-            url: hostApiPath+'/onestep/issue'
-        },
-        onestepTransfer: {
-            method: 'POST',
-            url: hostApiPath+'/onestep/transfer'
         }
-
     };
 
     return {

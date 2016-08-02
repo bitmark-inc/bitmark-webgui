@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('ChainCtrl', function ($scope, $location, httpService, configuration, BitmarkdConfig, BitmarkCliConfig, utils) {
+    .controller('ChainCtrl', function ($scope, $location, httpService, BitmarkdConfig, utils) {
 
         $scope.init = function(){
             // check bitmarkd status
@@ -46,7 +46,6 @@ angular.module('bitmarkWebguiApp')
             httpService.send('setupBitmarkd', {
                 config_file: BitmarkdConfig[$scope.request.chain]
             }).then(function(setupBitmarkdResult){
-                configuration.setBitmarkCliConfigFile(BitmarkCliConfig[$scope.request.chain]);
                 // start bitmarkd
                 httpService.send("startBitmarkd").then(
                     function(result){

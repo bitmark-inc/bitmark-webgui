@@ -12,9 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('EditCtrl', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp, BitmarkCliSetupConfig, configuration) {
-
-        $scope.BitmarkCliSetupConfig = BitmarkCliSetupConfig;
+    .controller('EditCtrl', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp) {
 
         $scope.error = {
             show: false,

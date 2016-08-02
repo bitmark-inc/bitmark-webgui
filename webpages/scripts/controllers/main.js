@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('MainCtrl', function ($scope, $location, $uibModal, httpService, ProxyTemp, $interval, configuration, utils) {
+    .controller('MainCtrl', function ($scope, $location, $uibModal, httpService, ProxyTemp, $interval, utils) {
 
         $scope.disableStart = true;
         $scope.disableStop = true;

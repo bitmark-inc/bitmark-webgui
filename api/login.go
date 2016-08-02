@@ -16,22 +16,15 @@ import (
 	"time"
 )
 
-type LoginResponse struct {
-	Chain                string `json:"chain"`
-	BitmarkCliConfigFile string `json:"bitmark_cli_config_file"`
-}
 
 // GET /api/login
 func LoginStatus(w http.ResponseWriter, configuration *configuration.Configuration, log *logger.L) {
 
 	log.Info("GET /api/login: check login status")
-	loginResponse := &LoginResponse{
-		Chain:                configuration.BitmarkChain,
-		BitmarkCliConfigFile: configuration.BitmarkCliConfigFile,
-	}
+
 	response := &Response{
 		Ok:     true,
-		Result: loginResponse,
+		Result: nil,
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -71,13 +64,8 @@ func LoginBitmarkWebgui(w http.ResponseWriter, req *http.Request, configuration 
 		return
 	}
 
-	loginResponse := &LoginResponse{
-		Chain:                configuration.BitmarkChain,
-		BitmarkCliConfigFile: configuration.BitmarkCliConfigFile,
-	}
-
 	response.Ok = true
-	response.Result = loginResponse
+	response.Result = nil
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
 		log.Errorf("Error: %v", err)
 	}

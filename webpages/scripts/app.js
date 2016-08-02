@@ -34,24 +34,6 @@ var app = angular
             "testing": "/etc/bitmarkd-TESTING.conf",
             "bitmark": "/etc/bitmarkd-BITMARK.conf"
         })
-        .constant("BitmarkCliSetupConfig", {
-            identity: "admin",
-            connect: "127.0.0.1:2130",
-            description: "bitmark-webgui generated"
-        })
-        .constant("BitmarkCliConfig", {
-            "testing": "/home/bitmark/config/bitmark-cli/bitmark-cli-TESTING.conf",
-            "bitmark": "/home/bitmark/config/bitmark-cli/bitmark-cli-BITMARK.conf"
-            // "testing": "/home/yuntai/testWebgui/config/bitmark-cli/bitmark-cli-testing.config"
-
-        })
-        .constant("BitmarkPayConfig", {
-            "testing": "/home/bitmark/config/bitmark-pay/bitmark-pay-TESTING.xml",
-            "bitmark": "/home/bitmark/config/bitmark-pay/bitmark-pay-BITMARK.xml"
-
-            // "testing": "/home/yuntai/testWebgui/config/bitmark-pay/bitmark-pay-TESTING.xml"
-
-        })
         .config(function ($routeProvider, $httpProvider) {
             $httpProvider.defaults.withCredentials = true;
             delete $httpProvider.defaults.headers.common["X-Requested-With"];

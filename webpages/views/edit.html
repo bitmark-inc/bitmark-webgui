@@ -38,8 +38,8 @@
                 <div class="main-text">
                 <div ng-repeat="listen in bitmarkConfig.ClientRPC.Listen track by $index">
                {{$index+1}}
-                <input class="inputform" type="text" ng-model="bitmarkConfig.ClientRPC.Listen[$index]" ng-disabled="  bitmarkConfig.ClientRPC.Listen[$index] == BitmarkCliSetupConfig.connect" required>
-               <button ng-if="bitmarkConfig.ClientRPC.Listen[$index] != BitmarkCliSetupConfig.connect" ng-click="deleteItem(bitmarkConfig.ClientRPC.Listen, $index)">x</button>
+                <input class="inputform" type="text" ng-model="bitmarkConfig.ClientRPC.Listen[$index]" ng-disabled="bitmarkConfig.ClientRPC.Listen[$index] == '127.0.0.1:2130'" required>
+               <button ng-if="bitmarkConfig.ClientRPC.Listen[$index] != '127.0.0.1:2130'" ng-click="deleteItem(bitmarkConfig.ClientRPC.Listen, $index)">x</button>
                </div>
                </div>
               </div>  

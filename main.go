@@ -17,7 +17,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 	"net/http/httputil"
@@ -226,27 +225,8 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/bitcoind", handleBitcoind)
 	http.HandleFunc("/api/bitmarkd", handleBitmarkd)
 
-	http.HandleFunc("/api/bitmarkPay/", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/encrypt", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/decrypt", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/info", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/pay", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/restore", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/status", handleBitmarkPay)
-	http.HandleFunc("/api/bitmarkPay/result", handleBitmarkPay)
 
-	http.HandleFunc("/api/bitmarkCli/generate", handleBitmarkCli)
-	http.HandleFunc("/api/bitmarkCli/info", handleBitmarkCli)
-	http.HandleFunc("/api/bitmarkCli/setup", handleBitmarkCli)
-	http.HandleFunc("/api/bitmarkCli/issue", handleBitmarkCli)
-	http.HandleFunc("/api/bitmarkCli/transfer", handleBitmarkCli)
-	http.HandleFunc("/api/bitmarkCli/keypair", handleBitmarkCli)
-
-	http.HandleFunc("/api/onestep/status", handleOnestep)
-	http.HandleFunc("/api/onestep/setup", handleOnestep)
-	http.HandleFunc("/api/onestep/issue", handleOnestep)
-	http.HandleFunc("/api/onestep/transfer", handleOnestep)
-
+	// serve console proxy and web socket
 	bitmarkConsoleUrlStr := "http://localhost:"+bitmarkConsoleService.Port()
 	bitmarkConsoleUrl, err := url.Parse(bitmarkConsoleUrlStr)
 	if err != nil {
@@ -454,48 +434,6 @@ func handleBitmarkd(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func handleBitmarkPay(w http.ResponseWriter, req *http.Request) {
-	log := logger.New("api-bitmarkPay")
-	api.SetCORSHeader(w, req)
-
-	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
-		return
-	}
-
-	switch req.Method {
-	case `GET`:
-		api.BitmarkPayJobHash(w, req, log)
-	case `POST`:
-		reqUriArr := strings.Split(req.RequestURI, "/")
-		api.BitmarkPay(w, req, log, reqUriArr[3])
-	case `DELETE`:
-		api.BitmarkPayKill(w, req, log)
-	case `OPTIONS`:
-		return
-	default:
-		log.Error("Error: Unknow method")
-	}
-}
-
-func handleBitmarkCli(w http.ResponseWriter, req *http.Request) {
-	log := logger.New("api-bitmarkCli")
-	api.SetCORSHeader(w, req)
-
-	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
-		return
-	}
-
-	switch req.Method {
-	case `POST`:
-		reqUriArr := strings.Split(req.RequestURI, "/")
-		api.BitmarkCliExec(w, req, log, reqUriArr[3], BitmarkWebguiConfigFile, GlobalConfig)
-	case `OPTIONS`:
-		return
-	default:
-		log.Error("Error: Unknow method")
-	}
-}
-
 func handleBitmarkConsole(w http.ResponseWriter, req *http.Request) {
 	log := logger.New("api-bitmarkConsoleProxy")
 	api.SetCORSHeader(w, req)
@@ -542,23 +480,4 @@ func handleBitmarkConsoleWS() websocket.Handler {
 		go io.Copy(w, ws)
 		io.Copy(ws, w)
 	})
-}
-
-func handleOnestep(w http.ResponseWriter, req *http.Request) {
-	log := logger.New("api-onestep")
-	api.SetCORSHeader(w, req)
-
-	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
-		return
-	}
-
-	switch req.Method {
-	case `POST`:
-		reqUriArr := strings.Split(req.RequestURI, "/")
-		api.OnestepExec(w, req, log, reqUriArr[3], BitmarkWebguiConfigFile, GlobalConfig)
-	case `OPTIONS`:
-		return
-	default:
-		log.Error("Error: Unknow method")
-	}
 }

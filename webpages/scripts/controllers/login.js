@@ -12,7 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('LoginCtrl', function ($scope, $location, $cookies, httpService, $log, configuration, utils) {
+    .controller('LoginCtrl', function ($scope, $location, $cookies, httpService, $log, utils) {
 
         $scope.request = {
             Password: ""
@@ -59,8 +59,6 @@ angular.module('bitmarkWebguiApp')
             $cookies.remove('bitmark-webgui');
             httpService.send('login', $scope.request).then(
                 function(result){
-                    configuration.setChain(result.chain);
-                    configuration.setBitmarkCliConfigFile(result.bitmark_cli_config_file);
                     checkBitmarkdStatus();
                 }, function(result){
                     if (result == "Already logged in") {
