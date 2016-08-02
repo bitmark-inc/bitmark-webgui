@@ -20,12 +20,17 @@ import (
 	"strings"
 	"syscall"
 	"time"
+	"net/http/httputil"
+	"net/url"
+	"golang.org/x/net/websocket"
+	"io"
 )
 
 var GlobalConfig *configuration.Configuration
 var BitmarkWebguiConfigFile string
 
 var mainLog *logger.L
+var bitmarkConsoleProxy *httputil.ReverseProxy
 
 func main() {
 	// ensure exit handler is first
@@ -242,7 +247,15 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/onestep/issue", handleOnestep)
 	http.HandleFunc("/api/onestep/transfer", handleOnestep)
 
-	http.HandleFunc("/api/bitmarkConsole", handleBitmarkConsole)
+	bitmarkConsoleUrlStr := "http://localhost:"+bitmarkConsoleService.Port()
+	bitmarkConsoleUrl, err := url.Parse(bitmarkConsoleUrlStr)
+	if err != nil {
+		panic(err)
+	}
+	bitmarkConsoleProxy = httputil.NewSingleHostReverseProxy(bitmarkConsoleUrl)
+	http.Handle("/console/ws", handleBitmarkConsoleWS())
+	http.HandleFunc("/console/", handleBitmarkConsole)
+
 
 	server := &http.Server{
 		Addr:           host + ":" + port,
@@ -409,9 +422,9 @@ func handleBitcoind(w http.ResponseWriter, req *http.Request) {
 	log := logger.New("api-bitcoind")
 	api.SetCORSHeader(w, req)
 
-	// if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
-	// 	return
-	// }
+	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+		return
+	}
 
 	switch req.Method {
 	case `POST`:
@@ -484,21 +497,51 @@ func handleBitmarkCli(w http.ResponseWriter, req *http.Request) {
 }
 
 func handleBitmarkConsole(w http.ResponseWriter, req *http.Request) {
-	log := logger.New("api-bitmarkConsole")
+	log := logger.New("api-bitmarkConsoleProxy")
 	api.SetCORSHeader(w, req)
 
 	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
 		return
 	}
 
-	switch req.Method {
-	case `POST`:
-		api.BitmarkConsole(w, req, log)
-	case `OPTIONS`:
-		return
-	default:
-		log.Error("Error: Unknow method")
+	req.URL.Path = req.URL.Path[8:]
+	retry := 3
+	for i:=0; i < retry; i++ {
+		if !bitmarkConsoleService.IsRunning() {
+			if err := bitmarkConsoleService.StartBitmarkConsole(); nil != err {
+				log.Errorf("start bitmarkConsole server fail: %v\n", err)
+
+			} else {
+				break
+			}
+		} else {
+			break
+		}
+		time.Sleep(time.Second * 2)
 	}
+
+	bitmarkConsoleProxy.ServeHTTP(w, req)
+}
+
+func handleBitmarkConsoleWS() websocket.Handler {
+	log := logger.New("api-bitmarkConsoleWS")
+
+	return websocket.Handler(func (w *websocket.Conn) {
+		origin := "http://localhost:"+bitmarkConsoleService.Port()+"/"
+		url := "ws://localhost:"+bitmarkConsoleService.Port()+"/ws"
+		ws, err := websocket.Dial(url, "", origin)
+		if err != nil {
+			log.Errorf("websocket dial fail: %v\n", err)
+			return
+		}
+		defer func() {
+			ws.Close()
+			bitmarkConsoleService.StopBitmarkConsole()
+		}()
+
+		go io.Copy(w, ws)
+		io.Copy(ws, w)
+	})
 }
 
 func handleOnestep(w http.ResponseWriter, req *http.Request) {

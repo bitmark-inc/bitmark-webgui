@@ -109,18 +109,6 @@ angular.module('bitmarkWebguiApp')
                         $scope.$emit('Authenticated', true);
                     });
                 break;
-            case "/console":
-                if (consoleWindow == undefined || consoleWindow.closed) {
-                    httpService.send("startBitmarkConsole").then(
-                        function(result){
-                            consoleWindow = $window.open("https://"+$location.host()+":"+result, "", "width=1080,height=900,location=no,menubar=no,left=150,status=0,titlebar=0,toolbar=0");
-                        }
-                    );
-                } else {
-                    consoleWindow.focus();
-                }
-
-                break;
             default:
                 activeUrl(navItem, type);
             };

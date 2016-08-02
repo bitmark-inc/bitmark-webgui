@@ -8,7 +8,6 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/api"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/services"
-	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/bitmarkd/background"
 )
 
@@ -35,13 +34,7 @@ func InitialiseService(configs *configuration.Configuration) error {
 	if err := bitmarkCliService.Initialise(); nil != err {
 		return err
 	}
-
-	cert, key, _, err := utils.GetTLSCertFile(configs.DataDirectory)
-	if nil != err {
-		return err
-	}
-
-	if err := bitmarkConsoleService.Initialise(configs.BitmarkConsoleBin, cert, key); nil != err {
+	if err := bitmarkConsoleService.Initialise(configs.BitmarkConsoleBin); nil != err {
 		return err
 	}
 
@@ -57,7 +50,6 @@ func InitialiseService(configs *configuration.Configuration) error {
 	api.Register(&bitmarkService)
 	api.Register(&bitmarkPayService)
 	api.Register(&bitmarkCliService)
-	api.Register(&bitmarkConsoleService)
 
 	return nil
 }
