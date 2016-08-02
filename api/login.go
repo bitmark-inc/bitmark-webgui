@@ -102,6 +102,7 @@ func LogoutBitmarkWebgui(w http.ResponseWriter, req *http.Request, filePath stri
 	cookie := &http.Cookie{
 		Name:   CookieName,
 		Secure: true,
+		Path:   "/",
 		MaxAge: -1,
 	}
 	http.SetCookie(w, cookie)
