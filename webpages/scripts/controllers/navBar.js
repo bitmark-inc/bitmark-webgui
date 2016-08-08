@@ -9,6 +9,19 @@ angular.module('bitmarkWebguiApp')
             $rootScope.$broadcast('AppAuthenticated', value);
             if(value) {
                 $scope.navbarClass = "navbar navbar-default";
+
+                for(var i=0; i<$scope.leftNavItems.length; i++ ){
+                    var navItem = $scope.leftNavItems[i];
+                    if(navItem.url == $location.path()){
+                        activeUrl(navItem, "left");
+                    }
+                }
+                for(var i=0; i<$scope.dropdownNavItems.length; i++ ){
+                    var navItem = $scope.dropdownNavItems[i];
+                    if(navItem.url == $location.path()){
+                        activeUrl(navItem, "dropdown");
+                    }
+                }
             } else {
                 $scope.navbarClass = "";
             }
@@ -19,18 +32,6 @@ angular.module('bitmarkWebguiApp')
                 function(result){
                     $scope.$emit('Authenticated', true);
 
-                    // for(var i=0; i<$scope.leftNavItems; i++ ){
-                    //     var navItem = $scope.leftNavItem[i];
-                    //     if(navItem.url == $location.path()){
-                    //             activeUrl(navItem, "left");
-                    //         }
-                    // }
-                    // for(var i=0; i<$scope.dropdownNavItems; i++ ){
-                    //     var navItem = $scope.leftNavItem[i];
-                    //     if(navItem.url == $location.path()){
-                    //             activeUrl(navItem, "dropdown");
-                    //         }
-                    // }
                 },function(){
                     $scope.$emit('Authenticated', false);
                     $location.path('/login');
