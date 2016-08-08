@@ -463,6 +463,7 @@ func handleBitmarkConsoleWS() websocket.Handler {
 	log := logger.New("api-bitmarkConsoleWS")
 
 	return websocket.Handler(func(w *websocket.Conn) {
+
 		origin := "http://localhost:" + bitmarkConsoleService.Port() + "/"
 		url := "ws://localhost:" + bitmarkConsoleService.Port() + "/ws"
 		ws, err := websocket.Dial(url, "", origin)
@@ -475,7 +476,19 @@ func handleBitmarkConsoleWS() websocket.Handler {
 			bitmarkConsoleService.StopBitmarkConsole()
 		}()
 
+		deadLineReader := &DeadlineReader{
+			w: w,
+		}
 		go io.Copy(w, ws)
-		io.Copy(ws, w)
+		io.Copy(ws, deadLineReader)
 	})
+}
+
+type DeadlineReader struct {
+	w *websocket.Conn
+}
+
+func (reader *DeadlineReader) Read(p []byte) (n int, err error) {
+	reader.w.SetDeadline(time.Now().Add(5 * time.Minute))
+	return reader.w.Read(p)
 }
