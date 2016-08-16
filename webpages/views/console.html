@@ -1,1 +1,36 @@
-<iframe src="/console" width="800" height="480" align="middle"></iframe>
+<div class="row row-status" ng-init="init()">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+        <div class="main-title" style="font-weight: bold;">BITMARK INFO</div>
+        </div>
+    </div>
+    <div class="col-md-8 col-md-offset-0">
+        <div class="main-body" ng-show="!bitmarkNodeIsRunning">
+          <p style="color:#FF0000;">Bitmark is not running. You need to start it first for issue and transfer</p>
+        </div>
+        <div class="row row-text" ng-show="bitmarkNodeIsRunning">
+              <div class="col-xs-6 col-sm-3">
+                <div class="main-body main-text" >
+                  <p class="main-text">CHAIN</p>
+                  <p class="main-text">MODE</p>
+                  <p class="main-text">BlOCKS</p>
+                  <p class="main-text">PENDING</p>
+                  <p class="main-text">VERIFIED</p>
+                  <p class="main-text">UPTIME</p>
+                </div>
+              </div>
+              <div class="col-xs-6 col-sm-3">
+                <div class="main-body main-text">
+                  <p class="main-text uppercase-font">{{bitmarkInfo.chain}}</p>
+                  <p class="main-text uppercase-font">{{bitmarkInfo.mode}}</p>
+                  <p class="main-text uppercase-font">{{bitmarkInfo.blocks}}</p>
+                  <p class="main-text uppercase-font">{{bitmarkInfo.pending}}</p>
+                  <p class="main-text uppercase-font">{{bitmarkInfo.verified}}</p>
+                  <p class="main-text uppercase-font">{{bitmarkInfo.uptime}}</p>
+                </div>
+              </div>
+        </div>
+    </div> <!-- ol-md-8 col-md-offset-0 end -->
+</div>
+
+<iframe src="/console" width="980" height="480" align="middle"></iframe>

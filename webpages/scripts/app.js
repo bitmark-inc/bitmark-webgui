@@ -52,7 +52,8 @@ var app = angular
                     controller: 'EditCtrl'
                 })
                 .when('/console', {
-                    templateUrl: 'views/console.html'
+                    templateUrl: 'views/console.html',
+                    controller: 'ConsoleCtrl'
                 })
                 .when('/network', {
                     templateUrl: 'views/network.html',
