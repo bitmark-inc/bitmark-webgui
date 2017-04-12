@@ -12,30 +12,31 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('NetworkCtrl', function ($scope, $http, $location, httpService) {
+  .controller('NetworkCtrl', function ($scope, $http, $location, httpService) {
 
-        $scope.request = {
-            Origin: "",
-            New: ""
-        };
-        $scope.verifyPassword = true;
-        $scope.bitmarkWebguiPasswordEqual = true;
-        $scope.errorMsg = "";
+    $scope.request = {
+      Origin: "",
+      New: ""
+    };
+    $scope.verifyPassword = true;
+    $scope.bitmarkWebguiPasswordEqual = true;
+    $scope.errorMsg = "";
 
-        $scope.save = function(){
-            if($scope.request.Origin == "" || $scope.request.New == "" || !$scope.verifyPassword){
-                $scope.errorMsg = "All fields should be filled";
-                return;
-            }
-            httpService.send('updateBitmarkWebguiPassword', $scope.request).then(
-                function(result){
-                    $scope.goUrl('/main');
-                }, function(errorMsg){
-                    $scope.errorMsg = "Set password failed";
-                });
-        };
+    $scope.save = function () {
+      if ($scope.request.Origin == "" || $scope.request.New == "" || !$scope.verifyPassword) {
+        $scope.errorMsg = "All fields should be filled";
+        return;
+      }
+      httpService.send('updateBitmarkWebguiPassword', $scope.request).then(
+        function (result) {
+          $scope.goUrl('/main');
+        },
+        function (errorMsg) {
+          $scope.errorMsg = "Set password failed";
+        });
+    };
 
-        $scope.goUrl = function(path){
-            $location.path(path);
-        };
+    $scope.goUrl = function (path) {
+      $location.path(path);
+    };
   });

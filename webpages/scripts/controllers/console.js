@@ -12,40 +12,40 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-    .controller('ConsoleCtrl', function ($scope, $interval, httpService) {
-        $scope.bitmarkNodeIsRunning = false;
+  .controller('ConsoleCtrl', function ($scope, $interval, httpService) {
+    $scope.bitmarkNodeIsRunning = false;
 
-        var getInfoPromise;
-        var intervalTime = 6 * 1000;
+    var getInfoPromise;
+    var intervalTime = 6 * 1000;
 
 
-        $scope.init = function(){
-            // check bitmarkd status
-            httpService.send("statusBitmarkd").then(function(result){
-                if(result == "started") {
-                    $scope.bitmarkNodeIsRunning = true;
-                    getInfoPromise = $interval(getBitmarkInfo, intervalTime);
-                } else {
-                    $scope.bitmarkNodeIsRunning = false;
-                }
-            });
-        };
+    $scope.init = function () {
+      // check bitmarkd status
+      httpService.send("statusBitmarkd").then(function (result) {
+        if (result == "started") {
+          $scope.bitmarkNodeIsRunning = true;
+          getInfoPromise = $interval(getBitmarkInfo, intervalTime);
+        } else {
+          $scope.bitmarkNodeIsRunning = false;
+        }
+      });
+    };
 
-        var getBitmarkInfo = function(){
-            httpService.send("getBitmarkdInfo").then(
-                function(result){
-                    $scope.bitmarkInfo = result;
-                },
-                function(errorMsg){
-                    if(errorMsg != "Failed to connect to bitmarkd") {
-                        $interval.cancel(getInfoPromise);
-                    }
-                });
-        };
-
-        $scope.$on('$destroy', function(){
+    var getBitmarkInfo = function () {
+      httpService.send("getBitmarkdInfo").then(
+        function (result) {
+          $scope.bitmarkInfo = result;
+        },
+        function (errorMsg) {
+          if (errorMsg != "Failed to connect to bitmarkd") {
             $interval.cancel(getInfoPromise);
+          }
         });
+    };
+
+    $scope.$on('$destroy', function () {
+      $interval.cancel(getInfoPromise);
+    });
 
 
   });
