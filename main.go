@@ -273,19 +273,18 @@ func startWebServer(configs *configuration.Configuration) error {
 			return err
 		}
 	} else {
-		// turn Signals into channel messages
-		ch := make(chan os.Signal)
-		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-		go func() {
-			sig := <-ch
-			mainLog.Infof("received signal: %v", sig)
-		}()
-
 		mainLog.Info("Starting http server...")
 		if err := server.ListenAndServe(); nil != err {
 			return err
 		}
 	}
+	// turn Signals into channel messages
+	ch := make(chan os.Signal)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-ch
+		mainLog.Infof("received signal: %v", sig)
+	}()
 
 	return nil
 }

@@ -16,7 +16,9 @@ import (
 	netrpc "net/rpc"
 	"os"
 	"os/exec"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -112,64 +114,75 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 		return fault.ErrNotFoundConfigFile
 	}
 
-	// start bitmarkd as sub process
-	cmd := exec.Command("bitmarkd", "--config-file="+bitmarkd.configFile)
-	// start bitmarkd as sub process
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		bitmarkd.log.Errorf("Error: %v", err)
-		return err
-	}
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		bitmarkd.log.Errorf("Error: %v", err)
-		return err
-	}
-	if err := cmd.Start(); nil != err {
-		return err
-	}
-
 	bitmarkd.running = true
-	bitmarkd.process = cmd.Process
-	bitmarkd.log.Infof("process id: %d", cmd.Process.Pid)
+	stopped := make(chan bool, 1)
 
 	go func() {
+		ch := make(chan os.Signal)
+		signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+		select {
+		case <-stopped:
+			return
+		case <-ch:
+			bitmarkd.stopBitmarkd()
+		}
+	}()
 
-		stdeReader := bufio.NewReader(stderr)
-		stdoReader := bufio.NewReader(stdout)
-		stderrDone := make(chan bool, 1)
-		stdoutDone := make(chan bool, 1)
-
-		go func() {
-			defer close(stderrDone)
-			for {
-				stde, err := stdeReader.ReadString('\n')
-				bitmarkd.log.Errorf("bitmarkd stderr: %q", stde)
-				if nil != err {
-					bitmarkd.log.Errorf("Error: %v", err)
-					return
-				}
+	go func() {
+		for bitmarkd.running {
+			// start bitmarkd as sub process
+			cmd := exec.Command("bitmarkd", "--config-file="+bitmarkd.configFile)
+			// start bitmarkd as sub process
+			stderr, err := cmd.StderrPipe()
+			if err != nil {
+				bitmarkd.log.Errorf("Error: %v", err)
+				continue
 			}
-		}()
-
-		go func() {
-			defer close(stdoutDone)
-			for {
-				stdo, err := stdoReader.ReadString('\n')
-				bitmarkd.log.Infof("bitmarkd stdout: %q", stdo)
-				if nil != err {
-					bitmarkd.log.Errorf("Error: %v", err)
-					return
-				}
+			stdout, err := cmd.StdoutPipe()
+			if err != nil {
+				bitmarkd.log.Errorf("Error: %v", err)
+				continue
 			}
-		}()
+			if err := cmd.Start(); nil != err {
+				continue
+			}
 
-		<-stderrDone
-		<-stdoutDone
-		if err := cmd.Wait(); nil != err {
-			bitmarkd.log.Errorf("Start bitmarkd failed: %v", err)
-			bitmarkd.running = false
-			bitmarkd.process = nil
+			bitmarkd.process = cmd.Process
+			bitmarkd.log.Infof("process id: %d", cmd.Process.Pid)
+			stdeReader := bufio.NewReader(stderr)
+			stdoReader := bufio.NewReader(stdout)
+
+			go func() {
+				for {
+					stde, err := stdeReader.ReadString('\n')
+					bitmarkd.log.Errorf("bitmarkd stderr: %q", stde)
+					if nil != err {
+						bitmarkd.log.Errorf("Error: %v", err)
+						return
+					}
+				}
+			}()
+
+			go func() {
+				for {
+					stdo, err := stdoReader.ReadString('\n')
+					bitmarkd.log.Infof("bitmarkd stdout: %q", stdo)
+					if nil != err {
+						bitmarkd.log.Errorf("Error: %v", err)
+						return
+					}
+				}
+			}()
+
+			if err := cmd.Wait(); nil != err {
+				if bitmarkd.running {
+					bitmarkd.log.Errorf("bitmarkd has terminated unexpectedly. failed: %v", err)
+					bitmarkd.log.Errorf("bitmarkd will be restarted in 1 second...")
+					time.Sleep(time.Second)
+				}
+				bitmarkd.process = nil
+				stopped <- true
+			}
 		}
 	}()
 
@@ -184,6 +197,7 @@ func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 		bitmarkd.log.Errorf("Stop bitmarkd failed: %v", fault.ErrBitmarkdIsNotRunning)
 		return fault.ErrBitmarkdIsNotRunning
 	}
+	bitmarkd.running = false
 
 	// if err := bitmarkd.process.Signal(os.Interrupt); nil != err {
 	// bitmarkd.log.Errorf("Send interrupt to bitmarkd failed: %v", err)
@@ -194,7 +208,6 @@ func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 	// }
 
 	bitmarkd.log.Infof("Stop bitmarkd. PID: %d", bitmarkd.process.Pid)
-	bitmarkd.running = false
 	bitmarkd.process = nil
 	return nil
 }
