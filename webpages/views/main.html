@@ -1,21 +1,10 @@
 <uib-alert type="danger" close="setErrorMsg(false, '')" ng-show="error.show">{{error.msg}}</uib-alert>
 
-<h3 class="home">BITMARK NODE
-    <div class="text-right">
-       <button class="btn btn-primary-start" ng-click="startBitmark()" ng-disabled="disableStart">START</button>
-       <button class="btn btn-primary-stop" ng-click="stopBitmark()" ng-disabled="disableStop">STOP</button>
-       <button class="btn btn-primary-config " ng-click="configBitmark()">CONFIG</button>
-    </div>  
-</h3>
 
-<div class="row">
-    <div class="col-md-2">   
-        <div class="panel panel-default">
-        <div class="main-title" style="font-weight: bold;">CURRENT CHAIN
-        </div>
-        </div>
-    </div> 
-    <div class="col-md-10">
+
+<h3 class="home">CURRENT CHAIN
+<div class="row row-text">
+    <div class="col-md-12">
         <div class="main-body"> 
             <div class="row row-text">
                 <div class="col-md-12">
@@ -25,6 +14,14 @@
         </div>
     </div>
 </div> 
+
+<h3 class="home">BITMARK NODE
+    <div class="text-right">
+       <button class="btn btn-primary-start" ng-click="startBitmark()" ng-disabled="disableStart">START</button>
+       <button class="btn btn-primary-stop" ng-click="stopBitmark()" ng-disabled="disableStop">STOP</button>
+       <button class="btn btn-primary-config " ng-click="configBitmark()">CONFIG</button>
+    </div>  
+</h3>
 
 <div class="row row-status">
     <div class="col-md-2">
