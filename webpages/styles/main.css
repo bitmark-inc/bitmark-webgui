@@ -128,15 +128,13 @@ h3,.h3 {
 .main-body { margin: 22px 0 20px 0 }
 .main-body > b { font-size: 12px }
 .main-text {
-    margin-left: -10px;
     font-size: 14px;
 }
 .main-text > b {
-    margin-left: -10px;
     font-size: 14px;
     font-weight: normal;
 }
-.main-list { margin-left: -50px }
+.main-list { padding: 0; margin-bottom: 0; }
 .main-table {
     margin-top: -13px;
     margin-left: -12px;
