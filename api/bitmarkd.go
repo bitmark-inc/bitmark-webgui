@@ -116,7 +116,8 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 }
 
 func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, string) {
-	bitmarkConfig, err := bitmarkdConfig.GetConfiguration(bitmarkConfigFile)
+	bitmarkConfig := &Configuration{}
+	err := bitmarkdConfig.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfig)
 	if nil != err {
 		log.Errorf("Failed to get bitmarkd configuration: %v", err)
 		return nil, bitmarkdGetConfigErr

@@ -11,12 +11,51 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/templates"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/bitmarkd/configuration"
+	"github.com/bitmark-inc/bitmarkd/payment/bitcoin"
+	"github.com/bitmark-inc/bitmarkd/peer"
+	"github.com/bitmark-inc/bitmarkd/proof"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
+
+type RPCType struct {
+	MaximumConnections int      `libucl:"maximum_connections"`
+	Listen             []string `libucl:"listen"`
+	Certificate        string   `libucl:"certificate"`
+	PrivateKey         string   `libucl:"private_key"`
+	Announce           []string `libucl:"announce"`
+}
+
+type LoggerType struct {
+	Directory string            `libucl:"directory"`
+	File      string            `libucl:"file"`
+	Size      int               `libucl:"size"`
+	Count     int               `libucl:"count"`
+	Levels    map[string]string `libucl:"levels"`
+}
+
+type DatabaseType struct {
+	Directory string `libucl:"directory"`
+	Name      string `libucl:"name"`
+}
+
+type Configuration struct {
+	DataDirectory string       `libucl:"data_directory"`
+	PidFile       string       `libucl:"pidfile"`
+	Chain         string       `libucl:"chain"`
+	Nodes         string       `libucl:"nodes"`
+	Database      DatabaseType `libucl:"database"`
+
+	ClientRPC RPCType               `libucl:"client_rpc"`
+	Peering   peer.Configuration    `libucl:"peering"`
+	Proofing  proof.Configuration   `libucl:"proofing"`
+	Bitcoin   bitcoin.Configuration `libucl:"bitcoin"`
+	Logging   LoggerType            `libucl:"logging"`
+}
 
 // Get /api/config
 func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
@@ -25,13 +64,15 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile stri
 		Ok:     false,
 		Result: bitmarkdConfigGetErr,
 	}
-	if bitmarkConfigs, err := configuration.GetConfiguration(bitmarkConfigFile); nil != err {
+
+	bitmarkConfigs := &Configuration{}
+	if err := configuration.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = err
 	} else {
-
-		bitmarkConfigs.Bitcoin.Password = ""
-		if peerPublicKey, err := getPeerPublicKey(bitmarkConfigs.Peering.PublicKey); nil != err {
+		bitmarkConfDir := filepath.Dir(bitmarkConfigFile)
+		pubKeyFile := filepath.Join(bitmarkConfDir, bitmarkConfigs.Peering.PublicKey)
+		if peerPublicKey, err := getPeerPublicKey(pubKeyFile); nil != err {
 			response.Result = err
 		} else {
 			response.Ok = true
@@ -55,22 +96,10 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	var request configuration.Configuration
+	var request Configuration
 	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = err
-		if err := writeApiResponseAndSetCookie(w, response); nil != err {
-			log.Errorf("Error: %v", err)
-		}
-		return
-	}
-
-	// check bitcoin address is valid
-	if err := utils.CheckBitcoinAddress(request.Bitcoin.Address); nil != err {
-		log.Errorf("Error: %v", err)
-		response.Result = map[string][]string{
-			"invalid_field": {"Bitcoin.Address"},
-		}
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
@@ -134,7 +163,7 @@ func getPeerPublicKey(filePath string) (*string, error) {
 }
 
 // read existed bitmark config file to string, and set it
-func prepareBitmarkConfig(request configuration.Configuration, bitmarkConfigFile string) (*[]string, error) {
+func prepareBitmarkConfig(request Configuration, bitmarkConfigFile string) (*[]string, error) {
 
 	input, err := ioutil.ReadFile(bitmarkConfigFile)
 	if nil != err {
@@ -166,19 +195,14 @@ func prepareBitmarkConfig(request configuration.Configuration, bitmarkConfigFile
 			if err := updateConfigString(lines, i, "listen", listens); nil != err {
 				return nil, err
 			}
-			// Set announce
-			announces := prepareBitmarkField("announce", request.Peering.Announce)
-			if err := updateConfigString(lines, i, "announce", announces); nil != err {
-				return nil, err
-			}
+			// // Set announce
+			// announces := prepareBitmarkField("announce", []string{"127.0.0.1:2130"})
+			// if err := updateConfigString(lines, i, "announce", announces); nil != err {
+			// 	return nil, err
+			// }
 			// Set connect
 			connections := prepareConnectField(request.Peering.Connect)
 			if err := updateConfigString(lines, i, "connect", connections); nil != err {
-				return nil, err
-			}
-		} else if strings.Index(line, "mining") == 0 {
-			listens := prepareBitmarkField("listen", request.Mining.Listen)
-			if err := updateConfigString(lines, i, "listen", listens); nil != err {
 				return nil, err
 			}
 		} else if strings.Index(line, "bitcoin") == 0 {
@@ -188,7 +212,6 @@ func prepareBitmarkConfig(request configuration.Configuration, bitmarkConfigFile
 			if err := updateConfigString(lines, i, "username", ifItem); nil != err {
 				return nil, err
 			}
-
 			// password
 			if request.Bitcoin.Password != "" {
 				item = []string{request.Bitcoin.Password}
@@ -197,23 +220,10 @@ func prepareBitmarkConfig(request configuration.Configuration, bitmarkConfigFile
 					return nil, err
 				}
 			}
-
-			// url
+			// url - use spoon api url
 			item = []string{request.Bitcoin.URL}
 			ifItem = prepareBitmarkField("url", item)
 			if err := updateConfigString(lines, i, "url", ifItem); nil != err {
-				return nil, err
-			}
-			// fee
-			item = []string{request.Bitcoin.Fee}
-			ifItem = prepareBitmarkField("fee", item)
-			if err := updateConfigString(lines, i, "fee", ifItem); nil != err {
-				return nil, err
-			}
-
-			item = []string{request.Bitcoin.Address}
-			ifItem = prepareBitmarkField("address", item)
-			if err := updateConfigString(lines, i, "address", ifItem); nil != err {
 				return nil, err
 			}
 		}
@@ -256,7 +266,7 @@ func prepareBitmarkField(field string, source []string) []interface{} {
 	return interfaceBitmarkFields
 }
 
-func prepareConnectField(source []configuration.Connection) []interface{} {
+func prepareConnectField(source []peer.Connection) []interface{} {
 	localSrc := make([]interface{}, 0)
 	for _, src := range source {
 		if src.PublicKey != "" && src.Address != "" {
