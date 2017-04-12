@@ -65,6 +65,11 @@ func main() {
 					Value: "",
 					Usage: "the direcotry of web and log",
 				},
+				cli.StringFlag{
+					Name:  "password, P",
+					Value: "webgui",
+					Usage: "the password for the service",
+				},
 			},
 			Action: func(c *cli.Context) error {
 				runSetup(c, configFile)
@@ -107,8 +112,11 @@ func runSetup(c *cli.Context, configFile string) {
 
 	// Check if file exist
 	if !utils.EnsureFileExists(configFile) {
-
-		encryptPassword, err := bcrypt.GenerateFromPassword([]byte(defaultConfig.Password), bcrypt.DefaultCost)
+		password := c.String("password")
+		if "" == password {
+			password = defaultConfig.Password
+		}
+		encryptPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if nil != err {
 			mainLog.Errorf("Encrypt password failed: %v", err)
 			exitwithstatus.Message("Error: %v\n", err)
