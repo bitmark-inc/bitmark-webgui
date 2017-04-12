@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"syscall"
 	"time"
@@ -87,6 +88,9 @@ func runSetup(c *cli.Context, configFile string) {
 
 	// set data-directory
 	dataDir := c.String("data-directory")
+	if "" == dataDir {
+		dataDir = filepath.Dir(configFile)
+	}
 	defaultConfig, err := configuration.GetDefaultConfiguration(dataDir)
 	if nil != err {
 		exitwithstatus.Message("Error: %v\n", err)
