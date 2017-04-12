@@ -60,7 +60,7 @@ func (bitcoind *Bitcoind) IsRunning() bool {
 	return bitcoind.running
 }
 
-func (bitcoind *Bitcoind) BitcoindBackground(args interface{}, shutdown <-chan bool, finished chan<- bool) {
+func (bitcoind *Bitcoind) Run(args interface{}, shutdown <-chan struct{}) {
 loop:
 	for {
 		select {
@@ -78,7 +78,6 @@ loop:
 
 	}
 	close(bitcoind.ModeStart)
-	close(finished)
 }
 
 func (bitcoind *Bitcoind) startBitcoind() error {

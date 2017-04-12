@@ -80,7 +80,7 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile strin
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
 
-func (bitmarkd *Bitmarkd) BitmarkdBackground(args interface{}, shutdown <-chan bool, finished chan<- bool) {
+func (bitmarkd *Bitmarkd) Run(args interface{}, shutdown <-chan struct{}) {
 loop:
 	for {
 		select {
@@ -97,7 +97,6 @@ loop:
 
 	}
 	close(bitmarkd.ModeStart)
-	close(finished)
 }
 
 func (bitmarkd *Bitmarkd) startBitmarkd() error {

@@ -32,8 +32,8 @@ func InitialiseService(configs *configuration.Configuration) error {
 
 	// create and start all background service
 	var processes = background.Processes{
-		bitcoinService.BitcoindBackground,
-		bitmarkService.BitmarkdBackground,
+		&bitcoinService,
+		&bitmarkService,
 	}
 	backgroundService = background.Start(processes, nil)
 
@@ -60,6 +60,6 @@ func FinaliseBackgroundService() error {
 	}
 
 	// stop backgrond services
-	background.Stop(backgroundService)
+	backgroundService.Stop()
 	return nil
 }
