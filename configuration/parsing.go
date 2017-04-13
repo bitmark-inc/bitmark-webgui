@@ -18,6 +18,7 @@ const (
 	defaultEnableHttps          = true
 	defaultBitmarkChain         = "testing"
 	defaultBitmarkConfigFile    = "/etc/bitmarkd.conf"
+	defaultProoferdConfigFile   = "/etc/prooferd.conf"
 	defaultBitmarkCliConfigFile = ""
 	defaultBitmarkPayServiceBin = "./bin/bitmarkPayService"
 	defaultBitmarkConsoleBin    = "./bin/gotty"
@@ -55,6 +56,7 @@ type Configuration struct {
 	EnableHttps          bool       `libucl:"enable_https"`
 	BitmarkChain         string     `libucl:"bitmark_chain"`
 	BitmarkConfigFile    string     `libucl:"bitmark_config_file"`
+	ProoferdConfigFile   string     `libucl:"prooferd_config_file"`
 	BitmarkCliConfigFile string     `libucl:"bitmark_cli_config_file"`
 	BitmarkPayServiceBin string     `libucl:"bitmark_pay_service_bin"`
 	BitmarkConsoleBin    string     `libucl:"bitmark_console_bin"`
@@ -69,6 +71,7 @@ func GetDefaultConfiguration(dataDirectory string) (*Configuration, error) {
 		EnableHttps:          defaultEnableHttps,
 		BitmarkChain:         defaultBitmarkChain,
 		BitmarkConfigFile:    defaultBitmarkConfigFile,
+		ProoferdConfigFile:   defaultProoferdConfigFile,
 		BitmarkCliConfigFile: defaultBitmarkCliConfigFile,
 		BitmarkPayServiceBin: defaultBitmarkPayServiceBin,
 		BitmarkConsoleBin:    defaultBitmarkConsoleBin,

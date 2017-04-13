@@ -6,6 +6,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/structs"
 	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
@@ -13,12 +14,15 @@ import (
 	"github.com/bitmark-inc/logger"
 	"net/http"
 	"net/rpc/jsonrpc"
+	"os"
+	"path/filepath"
 	"time"
 )
 
 type bitmarkdRequest struct {
-	Option     string `json:"option"`
-	ConfigFile string `json:"config_file"`
+	Option  string `json:"option"`
+	Network string `json:"network"`
+	// ConfigFile string `json:"config_file"`
 }
 
 // POST /api/bitmarkd
@@ -96,8 +100,13 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 		if bitmarkService.IsRunning() {
 			response.Result = bitmarkdAlreadyStartErr
 		} else {
-			if err := bitmarkService.Setup(request.ConfigFile, webguiFilePath, webguiConfig); nil != err {
-				response.Result = err
+			bitmarkConfigFile := filepath.Join(filepath.Dir(webguiConfig.BitmarkConfigFile), fmt.Sprintf("bitmarkd-%s.conf", request.Network))
+			if err := bitmarkService.Setup(bitmarkConfigFile, webguiFilePath, webguiConfig); nil != err {
+				if os.IsNotExist(err) {
+					response.Result = "bitmarkd config not found"
+				} else {
+					response.Result = err
+				}
 			} else {
 				response.Ok = true
 				response.Result = nil

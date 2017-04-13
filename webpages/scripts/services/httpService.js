@@ -93,6 +93,13 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
                 option: "info"
             }
         },
+        setupProoferd: {
+            method: 'POST',
+            url: hostApiPath+'/prooferd',
+            data: {
+                option: "setup"
+            }
+        },
         startProoferd: {
             method: 'POST',
             url: hostApiPath+'/prooferd',
@@ -136,7 +143,7 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
             $http(apiConfig).then(function successCallback(response) {
                 if (response.data.ok) {
                     deferred.resolve(response.data.result);
-                }else {
+                } else {
                     var errorMsg = "";
                     switch(api){
                     case 'getBitmarkConfig':

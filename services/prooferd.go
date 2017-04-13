@@ -8,7 +8,9 @@ import (
 	"bufio"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
+	"github.com/bitmark-inc/bitmark-webgui/structs"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
+	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/logger"
 	"os"
 	"os/exec"
@@ -72,9 +74,18 @@ func (prooferd *Prooferd) Setup(prooferdConfigFile string, webguiConfigFile stri
 		return fault.ErrProoferdIsRunning
 	}
 
+	prooferdConfigs := &structs.ProoferdConfiguration{}
+	if _, err := os.Stat(prooferdConfigFile); err != nil {
+		return err
+	} else {
+		if err := bitmarkdConfig.ParseConfigurationFile(prooferdConfigFile, prooferdConfigs); nil != err {
+			return err
+		}
+	}
+
 	prooferd.configFile = prooferdConfigFile
 
-	webguiConfig.BitmarkConfigFile = prooferdConfigFile
+	webguiConfig.ProoferdConfigFile = prooferdConfigFile
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
 

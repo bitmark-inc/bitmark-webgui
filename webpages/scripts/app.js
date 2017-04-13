@@ -30,6 +30,10 @@ var app = angular
             Fee: "0.0002",
             Address: ""
         })
+        .constant("BitmarkdNetwork", {
+            "testing": "testnet",
+            "bitmark": "livenet"
+        })
         .constant("BitmarkdConfig", {
             "testing": "/etc/bitmarkd-TESTING.conf",
             "bitmark": "/etc/bitmarkd-BITMARK.conf"

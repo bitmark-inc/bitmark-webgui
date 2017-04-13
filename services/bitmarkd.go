@@ -9,7 +9,9 @@ import (
 	"crypto/tls"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
+	"github.com/bitmark-inc/bitmark-webgui/structs"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
+	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net"
@@ -74,6 +76,15 @@ func (bitmarkd *Bitmarkd) IsRunning() bool {
 func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
 	if bitmarkd.running {
 		return fault.ErrBitmarkdIsRunning
+	}
+
+	bitmarkConfigs := &structs.BitmarkdConfiguration{}
+	if _, err := os.Stat(bitmarkConfigFile); err != nil {
+		return err
+	} else {
+		if err := bitmarkdConfig.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
+			return err
+		}
 	}
 
 	bitmarkd.configFile = bitmarkConfigFile

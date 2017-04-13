@@ -14,14 +14,6 @@ type RPCType struct {
 	Announce           []string `libucl:"announce"`
 }
 
-type LoggerType struct {
-	Directory string            `libucl:"directory"`
-	File      string            `libucl:"file"`
-	Size      int               `libucl:"size"`
-	Count     int               `libucl:"count"`
-	Levels    map[string]string `libucl:"levels"`
-}
-
 type DatabaseType struct {
 	Directory string `libucl:"directory"`
 	Name      string `libucl:"name"`

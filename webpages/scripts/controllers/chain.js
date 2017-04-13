@@ -12,8 +12,7 @@
  * Controller of the bitmarkWebguiApp
  */
 angular.module('bitmarkWebguiApp')
-  .controller('ChainCtrl', function ($scope, $location, httpService, BitmarkdConfig, utils) {
-
+  .controller('ChainCtrl', function ($scope, $location, $q, httpService, BitmarkdNetwork, utils) {
     $scope.init = function () {
       // check bitmarkd status
       httpService.send("statusBitmarkd").then(function (result) {
@@ -43,22 +42,40 @@ angular.module('bitmarkWebguiApp')
       $scope.request.running = true;
       $scope.setErrorMsg(false, '');
       // setup bitmarkd config
-      httpService.send('setupBitmarkd', {
-        config_file: BitmarkdConfig[$scope.request.chain]
-      }).then(function (setupBitmarkdResult) {
-        // start bitmarkd
-        httpService.send("startBitmarkd").then(
-          function (result) {
+
+      var setupBitmarkdPromise = httpService.send('setupBitmarkd', {
+        network: BitmarkdNetwork[$scope.request.chain]
+      }).catch(function (error) {
+        return {
+          error: error
+        }
+      })
+      var setupProoferdPromise = httpService.send('setupProoferd', {
+        network: BitmarkdNetwork[$scope.request.chain]
+      }).catch(function (error) {
+        return {
+          error: error
+        }
+      })
+
+      function isConfigNotFoundError(err) {
+        return err.search('not found') >= 0
+      }
+
+      $q.all([setupBitmarkdPromise, setupProoferdPromise])
+        .then(function (results) {
+          var setupBitmarkdResult = results[0],
+              setupProoferdResult = results[1];
+          if (setupBitmarkdResult.error || setupProoferdResult.error) {
+            $location.path("/edit");
+          } else {
             $location.path("/main");
             $scope.$emit('Authenticated', true);
-          },
-          function (errorMsg) {
-            $scope.setErrorMsg(true, errorMsg);
-            $scope.request.running = false;
-          });
-      }, function (setupBitmarkdErr) {
-        $scope.setErrorMsg(true, setupBitmarkdErr);
-        $scope.request.running = false;
-      });
+          }
+        })
+        .catch(function (errors) {
+          $scope.setErrorMsg(true, errors);
+          $scope.request.running = false;
+        });
     };
   });

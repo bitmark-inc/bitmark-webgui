@@ -6,16 +6,18 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
-	// bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/logger"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 )
 
 type prooferdRequest struct {
-	Option     string `json:"option"`
-	ConfigFile string `json:"config_file"`
+	Option  string `json:"option"`
+	Network string `json:"network"`
 }
 
 // POST /api/bitmarkd
@@ -28,7 +30,7 @@ func Prooferd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	var request bitmarkdRequest
+	var request prooferdRequest
 	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = err
@@ -79,16 +81,21 @@ func Prooferd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 			response.Result = prooferdStopped
 		}
 	case `setup`:
-		// if prooferdService.IsRunning() {
-		// 	response.Result = prooferdAlreadyStartErr
-		// } else {
-		// 	if err := prooferdService.Setup(request.ConfigFile, webguiFilePath, webguiConfig); nil != err {
-		// 		response.Result = err
-		// 	} else {
-		// 		response.Ok = true
-		// 		response.Result = nil
-		// 	}
-		// }
+		if prooferdService.IsRunning() {
+			response.Result = prooferdAlreadyStartErr
+		} else {
+			prooferdConfigFile := filepath.Join(filepath.Dir(webguiConfig.ProoferdConfigFile), fmt.Sprintf("prooferd-%s.conf", request.Network))
+			if err := prooferdService.Setup(prooferdConfigFile, webguiFilePath, webguiConfig); nil != err {
+				if os.IsNotExist(err) {
+					response.Result = "prooferd config not found"
+				} else {
+					response.Result = err
+				}
+			} else {
+				response.Ok = true
+				response.Result = nil
+			}
+		}
 	default:
 		response.Result = apiErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
