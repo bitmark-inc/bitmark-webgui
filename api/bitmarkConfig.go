@@ -8,12 +8,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
+	"github.com/bitmark-inc/bitmark-webgui/structs"
 	"github.com/bitmark-inc/bitmark-webgui/templates"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
 	"github.com/bitmark-inc/bitmarkd/configuration"
-	"github.com/bitmark-inc/bitmarkd/payment/bitcoin"
 	"github.com/bitmark-inc/bitmarkd/peer"
-	"github.com/bitmark-inc/bitmarkd/proof"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"net/http"
@@ -21,41 +20,6 @@ import (
 	"strings"
 	"text/template"
 )
-
-type RPCType struct {
-	MaximumConnections int      `libucl:"maximum_connections"`
-	Listen             []string `libucl:"listen"`
-	Certificate        string   `libucl:"certificate"`
-	PrivateKey         string   `libucl:"private_key"`
-	Announce           []string `libucl:"announce"`
-}
-
-type LoggerType struct {
-	Directory string            `libucl:"directory"`
-	File      string            `libucl:"file"`
-	Size      int               `libucl:"size"`
-	Count     int               `libucl:"count"`
-	Levels    map[string]string `libucl:"levels"`
-}
-
-type DatabaseType struct {
-	Directory string `libucl:"directory"`
-	Name      string `libucl:"name"`
-}
-
-type Configuration struct {
-	DataDirectory string       `libucl:"data_directory"`
-	PidFile       string       `libucl:"pidfile"`
-	Chain         string       `libucl:"chain"`
-	Nodes         string       `libucl:"nodes"`
-	Database      DatabaseType `libucl:"database"`
-
-	ClientRPC RPCType               `libucl:"client_rpc"`
-	Peering   peer.Configuration    `libucl:"peering"`
-	Proofing  proof.Configuration   `libucl:"proofing"`
-	Bitcoin   bitcoin.Configuration `libucl:"bitcoin"`
-	Logging   LoggerType            `libucl:"logging"`
-}
 
 // Get /api/config
 func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
@@ -65,7 +29,7 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile stri
 		Result: bitmarkdConfigGetErr,
 	}
 
-	bitmarkConfigs := &Configuration{}
+	bitmarkConfigs := &structs.BitmarkdConfiguration{}
 	if err := configuration.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = err
@@ -96,7 +60,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	var request Configuration
+	var request structs.BitmarkdConfiguration
 	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = err
@@ -163,7 +127,7 @@ func getPeerPublicKey(filePath string) (*string, error) {
 }
 
 // read existed bitmark config file to string, and set it
-func prepareBitmarkConfig(request Configuration, bitmarkConfigFile string) (*[]string, error) {
+func prepareBitmarkConfig(request structs.BitmarkdConfiguration, bitmarkConfigFile string) (*[]string, error) {
 
 	input, err := ioutil.ReadFile(bitmarkConfigFile)
 	if nil != err {

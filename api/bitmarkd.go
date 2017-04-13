@@ -7,6 +7,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
+	"github.com/bitmark-inc/bitmark-webgui/structs"
 	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
@@ -116,7 +117,7 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 }
 
 func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, string) {
-	bitmarkConfig := &Configuration{}
+	bitmarkConfig := &structs.BitmarkdConfiguration{}
 	err := bitmarkdConfig.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfig)
 	if nil != err {
 		log.Errorf("Failed to get bitmarkd configuration: %v", err)
