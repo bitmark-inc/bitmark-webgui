@@ -14,16 +14,20 @@ import (
 var backgroundService *background.T
 var bitcoinService services.Bitcoind
 var bitmarkService services.Bitmarkd
+var prooferdService services.Prooferd
 var bitmarkConsoleService services.BitmarkConsole
 
 // start service
 func InitialiseService(configs *configuration.Configuration) error {
 
 	// initialise all  services
-	if err := bitcoinService.Initialise(); nil != err {
+	// if err := bitcoinService.Initialise(); nil != err {
+	// 	return err
+	// }
+	if err := bitmarkService.Initialise(configs.BitmarkConfigFile); nil != err {
 		return err
 	}
-	if err := bitmarkService.Initialise(configs.BitmarkConfigFile); nil != err {
+	if err := prooferdService.Initialise(configs.BitmarkConfigFile); nil != err {
 		return err
 	}
 	if err := bitmarkConsoleService.Initialise(configs.BitmarkConsoleBin); nil != err {
@@ -32,14 +36,16 @@ func InitialiseService(configs *configuration.Configuration) error {
 
 	// create and start all background service
 	var processes = background.Processes{
-		&bitcoinService,
+		// &bitcoinService,
 		&bitmarkService,
+		&prooferdService,
 	}
 	backgroundService = background.Start(processes, nil)
 
 	// register services to api
-	api.Register(&bitcoinService)
+	// api.Register(&bitcoinService)
 	api.Register(&bitmarkService)
+	api.Register(&prooferdService)
 
 	return nil
 }

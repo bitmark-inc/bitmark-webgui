@@ -25,6 +25,8 @@ var (
 	ErrBitcoindIsRunning                = InvalidError("Bitcoind not running")
 	ErrBitmarkdIsNotRunning             = InvalidError("Bitmarkd is not running")
 	ErrBitmarkdIsRunning                = InvalidError("Bitmarkd is running")
+	ErrProoferdIsNotRunning             = InvalidError("Prooferd is not running")
+	ErrProoferdIsRunning                = InvalidError("Prooferd is running")
 	ErrBitmarkPayIsRunning              = InvalidError("Bitmark-pay is running")
 	ErrCertificateFileAlreadyExists     = ExistsError("certificate file already exists")
 	ErrConfigFileExited                 = ExistsError("Config file is existed")

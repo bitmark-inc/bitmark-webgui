@@ -11,6 +11,7 @@ import (
 
 var bitcoinService *services.Bitcoind
 var bitmarkService *services.Bitmarkd
+var prooferdService *services.Prooferd
 var bitmarkPayService services.BitmarkPayInterface
 var bitmarkCliService *services.BitmarkCli
 
@@ -20,6 +21,8 @@ func Register(service interface{}) {
 		bitcoinService = service.(*services.Bitcoind)
 	case *services.Bitmarkd:
 		bitmarkService = service.(*services.Bitmarkd)
+	case *services.Prooferd:
+		prooferdService = service.(*services.Prooferd)
 	case services.BitmarkPayInterface:
 		bitmarkPayService = service.(services.BitmarkPayInterface)
 	case *services.BitmarkCli:

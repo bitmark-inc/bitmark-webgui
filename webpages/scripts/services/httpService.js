@@ -93,6 +93,27 @@ app.factory('httpService', function($http, $q, $location, $rootScope){
                 option: "info"
             }
         },
+        startProoferd: {
+            method: 'POST',
+            url: hostApiPath+'/prooferd',
+            data:{
+                option: "start"
+            }
+        },
+        stopProoferd: {
+            method: 'POST',
+            url: hostApiPath+'/prooferd',
+            data:{
+                option: "stop"
+            }
+        },
+        statusProoferd: {
+            method: 'POST',
+            url: hostApiPath+'/prooferd',
+            data:{
+                option: "status"
+            }
+        },
         startBitmarkConsole: {
             method: 'POST',
             url: hostApiPath+'/bitmarkConsole'

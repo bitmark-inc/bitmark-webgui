@@ -43,7 +43,22 @@ const (
 	bitmarkdAlreadyStopErr  = `Already stoped bitmarkd`
 	bitmarkdConnectErr      = `Failed to connect to bitmarkd`
 	bitmarkdGetInfoErr      = `Failed to get bitmarkd info`
-	bitmarkdGetConfigErr    = `Failed to get bitamrkd configuration`
+	bitmarkdGetConfigErr    = `Failed to get bitmarkd configuration`
+
+	// prooferd api
+	prooferdStartSuccess = `start running prooferd`
+	prooferdStopSuccess  = `stop running prooferd`
+	prooferdStarted      = `started`
+	prooferdStopped      = `stopped`
+
+	// prooferd error
+	prooferdStartErr        = `Failed to start prooferd`
+	prooferdStopErr         = `Failed to stop prooferd`
+	prooferdAlreadyStartErr = `Already started prooferd`
+	prooferdAlreadyStopErr  = `Already stoped prooferd`
+	prooferdConnectErr      = `Failed to connect to prooferd`
+	prooferdGetInfoErr      = `Failed to get prooferd info`
+	prooferdGetConfigErr    = `Failed to get prooferd configuration`
 	// login
 	loginErr = `Failed to log in`
 

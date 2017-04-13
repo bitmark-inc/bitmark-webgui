@@ -236,6 +236,7 @@ func startWebServer(configs *configuration.Configuration) error {
 	http.HandleFunc("/api/logout", handleLogout)
 	http.HandleFunc("/api/bitcoind", handleBitcoind)
 	http.HandleFunc("/api/bitmarkd", handleBitmarkd)
+	http.HandleFunc("/api/prooferd", handleProoferd)
 
 	// serve console proxy and web socket
 	bitmarkConsoleUrlStr := "http://localhost:" + bitmarkConsoleService.Port()
@@ -436,6 +437,24 @@ func handleBitmarkd(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case `POST`:
 		api.Bitmarkd(w, req, BitmarkWebguiConfigFile, GlobalConfig, log)
+	case `OPTIONS`:
+		return
+	default:
+		log.Error("Error: Unknow method")
+	}
+}
+
+func handleProoferd(w http.ResponseWriter, req *http.Request) {
+	log := logger.New("api-prooferd")
+	api.SetCORSHeader(w, req)
+
+	if req.Method == "OPTIONS" || !checkAuthorization(w, req, true, log) {
+		return
+	}
+
+	switch req.Method {
+	case `POST`:
+		api.Prooferd(w, req, BitmarkWebguiConfigFile, GlobalConfig, log)
 	case `OPTIONS`:
 		return
 	default:

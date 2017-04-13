@@ -14,8 +14,10 @@
 angular.module('bitmarkWebguiApp')
   .controller('MainCtrl', function ($scope, $location, $uibModal, httpService, ProxyTemp, $interval, utils) {
 
-    $scope.disableStart = true;
-    $scope.disableStop = true;
+    $scope.disableBitmarkdStart = true;
+    $scope.disableBitmarkdStop = true;
+    $scope.disableProoferdStart = true;
+    $scope.disableProoferdStop = true;
 
     $scope.error = {
       show: false,
@@ -27,8 +29,10 @@ angular.module('bitmarkWebguiApp')
     };
 
     var getInfoPromise;
+    var getProoferdStatusPromise;
     var intervalTime = 6 * 1000;
     var bitmarkdisRunning = false;
+    var prooferdisRunning = false;
     httpService.send('statusBitmarkd').then(
       function (result) {
         // check status and set disable button
@@ -44,6 +48,8 @@ angular.module('bitmarkWebguiApp')
         $interval.cancel(getInfoPromise);
       });
 
+    getProoferdStatus()
+    getProoferdStatusPromise = $interval(getProoferdStatus, intervalTime);
 
     httpService.send('getBitmarkConfig').then(
       function (result) {
@@ -111,6 +117,46 @@ angular.module('bitmarkWebguiApp')
       }
     };
 
+    $scope.startProoferd = function () {
+      allProoferdDisable();
+      $scope.setErrorMsg(false, "");
+      httpService.send("startProoferd").then(
+        function (result) {
+          // disable bitmark start button
+          if (result.search("start running prooferd") >= 0) {
+            $scope.prooferdStatus = "running"
+          } else {
+            disableStartProoferdBtn(false);
+          }
+        },
+        function (errorMsg) {
+          disableStartProoferdBtn(false);
+          $scope.setErrorMsg(true, errorMsg);
+        });
+    }
+
+    $scope.stopProoferd = function () {
+      allProoferdDisable();
+      $scope.setErrorMsg(false, "");
+
+      $scope.bitmarkInfo = undefined;
+      httpService.send("stopProoferd").then(
+        function (result) {
+          if (result.search("stop running prooferd") >= 0) {
+            disableStartProoferdBtn(false);
+          } else {
+            disableStartProoferdBtn(true);
+          }
+        },
+        function (errorMsg) {
+          disableStartProoferdBtn(true);
+          $scope.setErrorMsg(true, errorMsg);
+        });
+    }
+
+    $scope.configProoferd = function () {
+
+    }
 
     var showStopBitmarkdModal = function (type) {
       var modalInstance = $uibModal.open({
@@ -147,15 +193,44 @@ angular.module('bitmarkWebguiApp')
 
     var disableStartBitmarkBtn = function (startDisableBool) {
       bitmarkdisRunning = startDisableBool;
-      $scope.disableStart = startDisableBool;
-      $scope.disableStop = !startDisableBool;
+      $scope.disableBitmarkdStart = startDisableBool;
+      $scope.disableBitmarkdStop = !startDisableBool;
     };
 
     var allBitmarkdDisable = function () {
       bitmarkdisRunning = true;
-      $scope.disableStart = true;
-      $scope.disableStop = true;
+      $scope.disableBitmarkdStart = true;
+      $scope.disableBitmarkdStop = true;
     };
+
+
+    var disableStartProoferdBtn = function (startDisableBool) {
+      prooferdisRunning = startDisableBool;
+      $scope.disableProoferdStart = startDisableBool;
+      $scope.disableProoferdStop = !startDisableBool;
+    };
+
+
+    var allProoferdDisable = function () {
+      prooferdisRunning = true;
+      $scope.disableProoferdStart = true;
+      $scope.disableProoferdStop = true;
+    };
+
+
+    function getProoferdStatus () {
+      httpService.send('statusProoferd').then(
+        function (result) {
+          if (result.search("stop") >= 0) {
+            disableStartProoferdBtn(false);
+          } else {
+            disableStartProoferdBtn(true);
+          }
+        },
+        function (errorMsg) {
+          $scope.setErrorMsg(true, errorMsg);
+        });
+    }
 
     var getBitmarkInfo = function () {
       httpService.send("getBitmarkdInfo").then(
