@@ -21,7 +21,7 @@ const (
 	defaultProoferdConfigFile   = "/etc/prooferd.conf"
 	defaultBitmarkCliConfigFile = ""
 	defaultBitmarkPayServiceBin = "./bin/bitmarkPayService"
-	defaultBitmarkConsoleBin    = "./bin/gotty"
+	defaultBitmarkConsoleBin    = "/go/bin/gotty"
 
 	defaultLogDirectory = "log"
 	defaultLogFile      = "bitmark-webgui.log"
