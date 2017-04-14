@@ -58,16 +58,28 @@ angular.module('bitmarkWebguiApp')
         }
       })
 
-      function isConfigNotFoundError(err) {
-        return err.search('not found') >= 0
+      function isNotFoundError(err) {
+        return err.search("not found") >= 0
       }
 
       $q.all([setupBitmarkdPromise, setupProoferdPromise])
         .then(function (results) {
           var setupBitmarkdResult = results[0],
-              setupProoferdResult = results[1];
-          if (setupBitmarkdResult.error || setupProoferdResult.error) {
-            $location.path("/edit");
+            setupProoferdResult = results[1];
+          if (setupBitmarkdResult || setupProoferdResult) {
+            var otherErrors = []
+            if ((setupBitmarkdResult && !isNotFoundError(setupBitmarkdResult.error))) {
+              otherErrors.push(setupBitmarkdResult.error)
+            }
+            if ((setupProoferdResult && !isNotFoundError(setupProoferdResult.error))) {
+              otherErrors.push(setupProoferdResult.error)
+            }
+            if (otherErrors.length > 0) {
+              $scope.setErrorMsg(true, otherErrors);
+            } else {
+              $location.path("/edit");
+              $scope.$emit('Authenticated', true);
+            }
           } else {
             $location.path("/main");
             $scope.$emit('Authenticated', true);
