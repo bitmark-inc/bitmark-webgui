@@ -78,18 +78,19 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile strin
 		return fault.ErrBitmarkdIsRunning
 	}
 
-	bitmarkConfigs := &structs.BitmarkdConfiguration{}
-	if _, err := os.Stat(bitmarkConfigFile); err != nil {
+	bitmarkd.configFile = bitmarkConfigFile
+	webguiConfig.BitmarkConfigFile = bitmarkConfigFile
+
+	err := EnsureFile(bitmarkConfigFile)
+	if err != nil {
 		return err
-	} else {
-		if err := bitmarkdConfig.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
-			return err
-		}
 	}
 
-	bitmarkd.configFile = bitmarkConfigFile
+	bitmarkConfigs := &structs.BitmarkdConfiguration{}
+	if err := bitmarkdConfig.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
+		return err
+	}
 
-	webguiConfig.BitmarkConfigFile = bitmarkConfigFile
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
 

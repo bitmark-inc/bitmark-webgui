@@ -100,12 +100,12 @@ func Bitmarkd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 		if bitmarkService.IsRunning() {
 			response.Result = bitmarkdAlreadyStartErr
 		} else {
-			bitmarkConfigFile := filepath.Join(filepath.Dir(webguiConfig.BitmarkConfigFile), fmt.Sprintf("bitmarkd-%s.conf", request.Network))
+			bitmarkConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("bitmarkd-%s", request.Network), "bitmarkd.conf")
 			if err := bitmarkService.Setup(bitmarkConfigFile, webguiFilePath, webguiConfig); nil != err {
 				if os.IsNotExist(err) {
 					response.Result = "bitmarkd config not found"
 				} else {
-					response.Result = err
+					response.Result = err.Error()
 				}
 			} else {
 				response.Ok = true

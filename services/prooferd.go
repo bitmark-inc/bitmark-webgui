@@ -74,18 +74,19 @@ func (prooferd *Prooferd) Setup(prooferdConfigFile string, webguiConfigFile stri
 		return fault.ErrProoferdIsRunning
 	}
 
-	prooferdConfigs := &structs.ProoferdConfiguration{}
-	if _, err := os.Stat(prooferdConfigFile); err != nil {
+	prooferd.configFile = prooferdConfigFile
+	webguiConfig.ProoferdConfigFile = prooferdConfigFile
+
+	err := EnsureFile(prooferdConfigFile)
+	if err != nil {
 		return err
-	} else {
-		if err := bitmarkdConfig.ParseConfigurationFile(prooferdConfigFile, prooferdConfigs); nil != err {
-			return err
-		}
 	}
 
-	prooferd.configFile = prooferdConfigFile
+	prooferdConfigs := &structs.ProoferdConfiguration{}
+	if err := bitmarkdConfig.ParseConfigurationFile(prooferdConfigFile, prooferdConfigs); nil != err {
+		return err
+	}
 
-	webguiConfig.ProoferdConfigFile = prooferdConfigFile
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
 

@@ -27,7 +27,7 @@ func InitialiseService(configs *configuration.Configuration) error {
 	if err := bitmarkService.Initialise(configs.BitmarkConfigFile); nil != err {
 		return err
 	}
-	if err := prooferdService.Initialise(configs.BitmarkConfigFile); nil != err {
+	if err := prooferdService.Initialise(configs.ProoferdConfigFile); nil != err {
 		return err
 	}
 	if err := bitmarkConsoleService.Initialise(configs.BitmarkConsoleBin); nil != err {

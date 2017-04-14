@@ -16,33 +16,51 @@ import (
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 )
 
 // Get /api/config
-func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
+func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile, prooferdConfigFile string, log *logger.L) {
 	log.Info("GET /api/config")
-	response := &Response{
-		Ok:     false,
-		Result: bitmarkdConfigGetErr,
-	}
+	results := map[string]interface{}{}
 
 	bitmarkConfigs := &structs.BitmarkdConfiguration{}
+	prooferdConfig := &structs.ProoferdConfiguration{}
+
 	if err := configuration.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
 		log.Errorf("Error: %v", err)
-		response.Result = err
+		results["bitmarkd"] = err
 	} else {
-		bitmarkConfDir := filepath.Dir(bitmarkConfigFile)
-		pubKeyFile := filepath.Join(bitmarkConfDir, bitmarkConfigs.Peering.PublicKey)
+		confDir := filepath.Dir(bitmarkConfigFile)
+		pubKeyFile := filepath.Join(confDir, bitmarkConfigs.Peering.PublicKey)
 		if peerPublicKey, err := getPeerPublicKey(pubKeyFile); nil != err {
-			response.Result = err
+			results["bitmarkd"] = err
 		} else {
-			response.Ok = true
 			bitmarkConfigs.Peering.PublicKey = *peerPublicKey
-			response.Result = bitmarkConfigs
+			results["bitmarkd"] = bitmarkConfigs
 		}
+	}
+
+	if err := configuration.ParseConfigurationFile(prooferdConfigFile, prooferdConfig); nil != err {
+		log.Errorf("Error: %v", err)
+		results["prooferd"] = err
+	} else {
+		confDir := filepath.Dir(prooferdConfigFile)
+		pubKeyFile := filepath.Join(confDir, prooferdConfig.Peering.PublicKey)
+		if peerPublicKey, err := getPeerPublicKey(pubKeyFile); nil != err {
+			results["prooferd"] = err
+		} else {
+			prooferdConfig.Peering.PublicKey = *peerPublicKey
+			results["prooferd"] = prooferdConfig
+		}
+	}
+
+	response := &Response{
+		Ok:     true,
+		Result: results,
 	}
 
 	if err := writeApiResponseAndSetCookie(w, response); nil != err {
@@ -51,16 +69,19 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile stri
 }
 
 // Post /api/config
-func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile string, log *logger.L) {
+func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfigFile, prooferdConfigFile string, log *logger.L) {
 
 	log.Info("POST /api/config")
 	response := &Response{
 		Ok:     false,
-		Result: bitmarkdConfigUpdateErr,
+		Result: nil,
 	}
 
 	decoder := json.NewDecoder(req.Body)
-	var request structs.BitmarkdConfiguration
+	var request struct {
+		BitmarkConfig  structs.BitmarkdConfiguration
+		ProoferdConfig structs.ProoferdConfiguration
+	}
 	if err := decoder.Decode(&request); nil != err {
 		log.Errorf("Error: %v", err)
 		response.Result = err
@@ -70,33 +91,28 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 		return
 	}
 
-	// Prepare bitmarkConfig
-	linesPtr, err := prepareBitmarkConfig(request, bitmarkConfigFile)
-	if nil != err {
-		log.Errorf("Error: %v", err)
-		response.Result = err
+	fileBitmarkdConf, err := os.OpenFile(bitmarkConfigFile, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Errorf("Error: %s, %v", bitmarkdConfigUpdateErr, err)
+		response.Result = bitmarkdConfigUpdateErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {
 			log.Errorf("Error: %v", err)
 		}
 		return
 	}
-
-	// remove redundant lines
-	lines := *linesPtr
-	outputLines := make([]string, 0)
-	for i := 0; i < len(lines); i++ {
-		if lines[i] != "" {
-			outputLines = append(outputLines, lines[i])
-		} else {
-			if i+1 < len(lines) && lines[i+1] != "" {
-				outputLines = append(outputLines, lines[i])
-			}
+	defer fileBitmarkdConf.Close()
+	fileProoferdConf, err := os.OpenFile(prooferdConfigFile, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Errorf("Error: %s, %v", bitmarkdConfigUpdateErr, err)
+		response.Result = bitmarkdConfigUpdateErr
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
 		}
+		return
 	}
+	defer fileBitmarkdConf.Close()
 
-	// Write result to bitmark config file
-	output := strings.Join(outputLines, "\n")
-	err = ioutil.WriteFile(bitmarkConfigFile, []byte(output), 0644)
+	bitmarkdConfig, err := structs.NewBitmarkdConfiguration(bitmarkConfigFile)
 	if nil != err {
 		log.Errorf("Error: %s, %v", bitmarkdConfigUpdateErr, err)
 		response.Result = bitmarkdConfigUpdateErr
@@ -105,6 +121,25 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile st
 		}
 		return
 	}
+	bitmarkdConfig.Chain = chain
+	bitmarkdConfig.ClientRPC = request.BitmarkConfig.ClientRPC
+	bitmarkdConfig.Peering = request.BitmarkConfig.Peering
+	bitmarkdConfig.Proofing = request.BitmarkConfig.Proofing
+	bitmarkdConfig.SaveToJson(fileBitmarkdConf)
+
+	prooferdConfig, err := structs.NewProoferdConfiguration(prooferdConfigFile)
+	if nil != err {
+		log.Errorf("Error: %s, %v", prooferdConfigUpdateErr, err)
+		response.Result = prooferdConfigUpdateErr
+
+		if err := writeApiResponseAndSetCookie(w, response); nil != err {
+			log.Errorf("Error: %v", err)
+		}
+		return
+	}
+	prooferdConfig.Chain = chain
+	prooferdConfig.Peering = request.ProoferdConfig.Peering
+	prooferdConfig.SaveToJson(fileProoferdConf)
 
 	response.Ok = true
 	response.Result = nil

@@ -93,16 +93,27 @@ angular.module('bitmarkWebguiApp')
 
                 modalInstance.result.then(function () {
                   // stop bitmarkd
-                  httpService.send("stopBitmarkd").then(
-                    function (result) {
+                  httpService.send("stopBitmarkd")
+                    .then(function () {
                       if (result.search("stop running bitmarkd") >= 0) {
-                        activeUrl(navItem, type);
+                        return httpService.send("stopProoferd")
+                      } else {
+                        throw new Error("can not stop bitmarkd")
                       }
-                    },
-                    function (errorMsg) {
-                      $log.error("stopBitmarkd error: " + errorMsg);
+                    })
+                    .then(function () {
+                      if (result.search("stop running prooferd") >= 0) {
+                        activeUrl(navItem, type);
+                      } else {
+                        throw new Error("can not stop prooferd")
+                      }
+                    })
+                    .catch(function (errorMsg) {
+                      $log.error("fail to clean up services. error: " + errorMsg);
                     });
                 });
+
+
               }
             },
             function (errorMsg) {

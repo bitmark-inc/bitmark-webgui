@@ -11,6 +11,44 @@
  * # EditCtrl
  * Controller of the bitmarkWebguiApp
  */
+
+var defaultBitmarkConfig = {
+  "ClientRPC": {
+    "MaximumConnections": 50,
+    "Listen": ["127.0.0.1:2130"],
+    "Announce": ["127.0.0.1:2130"]
+  },
+  "Peering": {
+    "MaximumConnections": 50,
+    "Broadcast": ["127.0.0.1:2135"],
+    "Listen": ["127.0.0.1:2136"],
+    "Announce": {
+      "Broadcast": [""],
+      "Listen": [""]
+    }
+  },
+  "Proofing": {
+    "MaximumConnections": 50,
+    "Publish": ["127.0.0.1:2140"],
+    "Submit": ["127.0.0.1:2141"]
+  },
+  "Bitcoin": {
+    "username": "",
+    "password": "",
+    "url": ""
+  }
+}
+
+var defaultProoferdConfig = {
+  "Peering": {
+    "MaximumConnections": 50,
+    "Connect": [{
+      "Blocks": "127.0.0.1:2140",
+      "Submit": "127.0.0.1:2141"
+    }]
+  }
+}
+
 angular.module('bitmarkWebguiApp')
   .controller('EditCtrl', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp) {
 
@@ -135,15 +173,24 @@ angular.module('bitmarkWebguiApp')
           break;
       }
 
-      var result = checkBitmarkConfig($scope.bitmarkConfig);
-      if (result.error !== "") {
+      var bitmarkConfig = checkConfig($scope.bitmarkConfig);
+      if (bitmarkConfig.error !== "") {
+        $scope.error.show = true;
+        $scope.error.msg = result.error;
+        return;
+      }
+      var prooferdConfig = checkConfig($scope.prooferdConfig);
+      if (prooferdConfig.error !== "") {
         $scope.error.show = true;
         $scope.error.msg = result.error;
         return;
       }
 
-      var bitmarkConfig = result.bitmarkConfig;
-      httpService.send('updateBitmarkConfig', bitmarkConfig).then(
+      var configs = {
+        bitmarkConfig: bitmarkConfig.config,
+        prooferdConfig: prooferdConfig.config
+      };
+      httpService.send('updateBitmarkConfig', configs).then(
         function (result) {
           if (callBackFunc != undefined) {
             callBackFunc();
@@ -157,42 +204,37 @@ angular.module('bitmarkWebguiApp')
 
     var getAndSetBitmarkConfig = function () {
       httpService.send('getBitmarkConfig').then(
-        function (result) {
-          $scope.bitmarkConfig = initBitmarkConfig(result);
+        function (results) {
+          if (results.bitmarkd.Err || Object.keys(results.bitmarkd).length == 0) {
+            $scope.bitmarkConfig = defaultBitmarkConfig;
+          } else {
+            $scope.bitmarkConfig = initConfig(results.bitmarkd);
+          }
 
-          // setup bitmark proxy
-          switch ($scope.bitmarkConfig.Bitcoin.URL) {
-            case $scope.bitmarkTestNetProxyTemp.URL:
-              $scope.bitcoinUseProxy = proxyType.testing;
-              angular.extend($scope.bitmarkTestNetProxyTemp, $scope.bitmarkConfig.Bitcoin);
-              break;
-            case $scope.bitmarkProxyTemp.URL:
-              $scope.bitcoinUseProxy = proxyType.bitmark;
-              angular.extend($scope.bitmarkProxyTemp, $scope.bitmarkConfig.Bitcoin);
-              break;
-            default:
-              if ($scope.bitmarkConfig.Bitcoin.Username == ProxyTemp.Username) {
-                $scope.bitcoinUseProxy = proxyType.other;
-                angular.extend($scope.otherProxyTemp, $scope.bitmarkConfig.Bitcoin);
-              } else {
-                $scope.bitcoinUseProxy = proxyType.local;
-                angular.extend($scope.localBitcoin, $scope.bitmarkConfig.Bitcoin);
-              }
+          if (results.prooferd.Err || Object.keys(results.prooferd).length == 0) {
+            $scope.prooferdConfig = defaultProoferdConfig
+          } else {
+            $scope.prooferdConfig = initConfig(results.prooferd);
           }
         },
         function (errorMsg) {
           $scope.error.show = true;
           $scope.error.msg = errorMsg;
+          $scope.bitmarkConfig = defaultBitmarkConfig;
+          $scope.prooferdConfig = defaultProoferdConfig;
         });
     };
 
-    var initBitmarkConfig = function (bitmarkConfig) {
+    var initConfig = function (bitmarkConfig) {
       // give empty array for null field
       var checkItems = ["ClientRPC", "Peering"];
       var checkFields = ["Listen", "Announce", "Connect", "Broadcast"];
 
       for (var i = 0; i < checkItems.length; i++) {
         var checkItem = checkItems[i];
+        if (!bitmarkConfig[checkItem]) {
+          continue
+        }
         for (var j = 0; j < checkFields.length; j++) {
           var checkField = checkFields[j];
           if (bitmarkConfig[checkItem][checkField] !== undefined && bitmarkConfig[checkItem][checkField] == null) {
@@ -211,25 +253,11 @@ angular.module('bitmarkWebguiApp')
     };
 
     // return {bitmarkConfig:{}, error:""}
-    var checkBitmarkConfig = function (bitmarkConfig) {
+    var checkConfig = function (config) {
       var result = {
-        bitmarkConfig: {},
+        config: {},
         error: ""
       };
-
-      // check bitcoin password
-      if ($scope.bitcoinUseProxy == 'local' && !passwordVerified(bitmarkConfig.Bitcoin.Password, $scope.verifyPassword)) {
-        result.error = "ErrPasswordNotEqual";
-        return result;
-      }
-
-      // check publicKey
-      for (var i = 0; i < bitmarkConfig.Peering.Connect.length; i++) {
-        if ($scope.bitmarkForm["peerConnectPublicKey" + i].$invalid) {
-          result.error = "Bitmark Peer Connect PublicKey invalid: #" + (i + 1);
-          return result;
-        }
-      }
 
       // delete empty element
       var checkItems = ["ClientRPC", "Peering"];
@@ -237,10 +265,13 @@ angular.module('bitmarkWebguiApp')
 
       for (var i = 0; i < checkItems.length; i++) {
         var checkItem = checkItems[i];
+        if (!config[checkItem]) {
+          continue
+        }
         for (var j = 0; j < checkFields.length; j++) {
           var checkField = checkFields[j];
-          if (bitmarkConfig[checkItem][checkField] != undefined) {
-            var fields = bitmarkConfig[checkItem][checkField];
+          if (config[checkItem][checkField] != undefined) {
+            var fields = config[checkItem][checkField];
             for (var k = fields.length - 1; k > 0; k--) {
               if (fields[k] == "") {
                 fields.splice(k, 1);
@@ -251,7 +282,7 @@ angular.module('bitmarkWebguiApp')
       }
 
 
-      result.bitmarkConfig = bitmarkConfig;
+      result.config = config;
       return result;
     };
   });

@@ -9,8 +9,25 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
+	"os"
 	"os/exec"
+	"path/filepath"
 )
+
+func EnsureFile(filename string) error {
+	fileDir := filepath.Dir(filename)
+
+	err := os.MkdirAll(fileDir, 0700)
+	if err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(filename); err != nil {
+		_, err := os.OpenFile(filename, os.O_CREATE, 0600)
+		return err
+	}
+	return nil
+}
 
 // logStdOut determines print result from stdout or not
 func getCmdOutput(cmd *exec.Cmd, cmdType string, log *logger.L, logStdOut bool) ([]byte, error) {

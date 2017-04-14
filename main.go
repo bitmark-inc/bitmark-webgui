@@ -326,12 +326,12 @@ func handleConfig(w http.ResponseWriter, req *http.Request) {
 		if !checkAuthorization(w, req, true, log) {
 			return
 		}
-		api.ListConfig(w, req, GlobalConfig.BitmarkConfigFile, log)
+		api.ListConfig(w, req, GlobalConfig.BitmarkConfigFile, GlobalConfig.ProoferdConfigFile, log)
 	case `POST`:
 		if !checkAuthorization(w, req, true, log) {
 			return
 		}
-		api.UpdateConfig(w, req, GlobalConfig.BitmarkConfigFile, log)
+		api.UpdateConfig(w, req, GlobalConfig.BitmarkChain, GlobalConfig.BitmarkConfigFile, GlobalConfig.ProoferdConfigFile, log)
 	case `OPTIONS`:
 		return
 	default:

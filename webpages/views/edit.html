@@ -2,7 +2,7 @@
   <h3 class="home">CONFIGURATION
     <div class="text-right">
        <button class="btn btn-primary-start" ng-click="saveConfig()">SAVE</button>
-       <button class="btn btn-primary-stop " ng-click="goUrl('/main')">CANCEL</button>
+       <button class="btn btn-primary-stop" ng-click="goUrl('/main')">CANCEL</button>
     </div>
     </h3>
 </div>
@@ -10,12 +10,12 @@
 
 <form name="bitmarkForm" novalidate>
 <div class="row">
-     <div class="col-md-4">   
+     <div class="col-md-4">
           <div class="panel panel-default">
             <div class="main-title" style="font-weight: bold;">BITMARK RPC</div>
             <p class="configuration-sub" >Max connections:{{bitmarkConfig.ClientRPC.MaximumConnections}}</p>
               </div>
-                  </div> 
+                  </div>
     <div class="col-md-8 col-md-offset-0">
         <div class="main-body">
            <div class="row row-text">
@@ -27,8 +27,8 @@
                   <button uib-popover="Click admin on navigator bar to switch chain" popover-trigger="mouseenter" popover-placement="right" type="button" class="btn btn-sm">
                   <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                    </button></div>
-              </div>  
-            </div> 
+              </div>
+            </div>
             <div class="row row-text">
               <div class="col-xs-6 col-sm-4">
                  <div class="main-text"><b>LISTEN</b>
@@ -39,11 +39,11 @@
                 <div ng-repeat="listen in bitmarkConfig.ClientRPC.Listen track by $index">
                {{$index+1}}
                 <input class="inputform" type="text" ng-model="bitmarkConfig.ClientRPC.Listen[$index]" ng-disabled="bitmarkConfig.ClientRPC.Listen[$index] == '127.0.0.1:2130'" required>
-               <button ng-if="bitmarkConfig.ClientRPC.Listen[$index] != '127.0.0.1:2130'" ng-click="deleteItem(bitmarkConfig.ClientRPC.Listen, $index)">x</button>
+               <button ng-if="bitmarkConfig.ClientRPC.Listen.length > 1" ng-click="deleteItem(bitmarkConfig.ClientRPC.Listen, $index)">x</button>
                </div>
                </div>
-              </div>  
-            </div> 
+              </div>
+            </div>
             <div class="row row-text">
               <div class="col-xs-6 col-sm-4">
                  <div class="main-text"><b>ANNOUNCE</b>
@@ -54,22 +54,22 @@
                   <div ng-repeat="announce in bitmarkConfig.ClientRPC.Announce track by $index">
                    {{$index+1}}
                    <input class="inputform" type="text" ng-model="bitmarkConfig.ClientRPC.Announce[$index]" required>
-                   <button ng-click="deleteItem(bitmarkConfig.ClientRPC.Announce, $index)">x</button>
+                   <button ng-if="bitmarkConfig.ClientRPC.Announce.length > 1" ng-click="deleteItem(bitmarkConfig.ClientRPC.Announce, $index)">x</button>
                    </div>
                </div>
-              </div>  
-            </div> 
+              </div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-     <div class="col-md-4">   
+     <div class="col-md-4">
           <div class="panel panel-default">
             <div class="main-title" style="font-weight: bold;">BITMARK PEER</div>
             <p class="configuration-sub">Max connections:{{bitmarkConfig.Peering.MaximumConnections}}</p>
           </div>
-     </div> 
+     </div>
     <div class="col-md-8 col-md-offset-0">
         <div class="main-body">
            <div class="row row-text">
@@ -80,9 +80,24 @@
                   <div class="main-text">
                   <p class="configuration-text" ng-if="bitmarkConfig.Peering.PublicKey != ''"> {{bitmarkConfig.Peering.PublicKey}}</p>
                  <button style=" color: #0060F2; text-transform: uppercase; margin-bottom: 10px; margin-left: 50px;">Generate new keypairs</button></div>
-              </div>  
-            </div> 
+              </div>
+            </div>
             <div class="row row-text">
+              <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                 <div class="main-text"><b>BROADCAST</b>
+                 <button ng-click="addItem(bitmarkConfig.Peering.Broadcast, bitmarkConfig.Peering.MaximumConnections)">+</button></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+               <div class="main-text">
+               <div ng-repeat="listen in bitmarkConfig.Peering.Broadcast track by $index">
+               {{$index+1}}
+               <input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Broadcast[$index]" required>
+               <button ng-if="bitmarkConfig.Peering.Broadcast.length > 1" ng-click="deleteItem(bitmarkConfig.Peering.Broadcast, $index)">x</button>
+               </div>
+               </div>
+              </div>
+            </div>
               <div class="col-xs-6 col-sm-4">
                  <div class="main-text"><b>LISTEN</b>
                  <button ng-click="addItem(bitmarkConfig.Peering.Listen, bitmarkConfig.Peering.MaximumConnections)">+</button></div>
@@ -92,52 +107,123 @@
                <div ng-repeat="listen in bitmarkConfig.Peering.Listen track by $index">
                {{$index+1}}
                <input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Listen[$index]" required>
-               <button ng-if="bitmarkConfig.Peering.Listen.length>1" ng-click="deleteItem(bitmarkConfig.Peering.Listen, $index)">x</button>
+               <button ng-if="bitmarkConfig.Peering.Listen.length > 1" ng-click="deleteItem(bitmarkConfig.Peering.Listen, $index)">x</button>
                </div>
                </div>
-              </div>  
-            </div> 
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-                 <div class="main-text"><b>ANNOUNCE</b>
-                <button ng-click="addItem(bitmarkConfig.Peering.Announce, bitmarkConfig.Peering.MaximumConnections)">+</button></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-                <div class="main-text">
-                <div ng-repeat="announce in bitmarkConfig.Peering.Announce track by $index">
-                {{$index+1}}
-                <input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Announce[$index]" required>
-                 <button ng-click="deleteItem(bitmarkConfig.Peering.Announce, $index)">x</button>
-                </div>
-                </div>
               </div>
             </div>
-            <div class="row row-text">
-              <div class="col-xs-6 col-sm-4">
-                 <div class="main-text"><b>CONNECT</b>
-                <button ng-click="addItem(bitmarkConfig.Peering.Connect, bitmarkConfig.Peering.MaximumConnections)">+</button></div>
-              </div>
-              <div class="col-xs-6 col-sm-8">
-                <table class="main-text">
-                  <tr>
-                  <th style="font-weight:normal; padding-right:4px;">#</th>
-                  <th style="font-weight:normal;">PublicKey</th>
-                  <th style="font-weight:normal;">Address</th>
-                  <th></th>
-                  </tr>
-                <tr ng-repeat="connect in bitmarkConfig.Peering.Connect track by $index">
-                <td>{{$index+1}}</td>
-                 <td><input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Connect[$index].PublicKey" ng-pattern="publicKeyPattern" required name="peerConnectPublicKey{{$index}}"></td>
-                 <td><input class="inputform" type="text" ng-model="bitmarkConfig.Peering.Connect[$index].Address" required></td>
-                  <td><button ng-click="deleteItem(bitmarkConfig.Peering.Connect, $index)">x</button></td>
-                 </tr>
-                </table>
-              </div>  
-            </div> 
+
         </div>
     </div>
 </div>
 
+
+<div class="row">
+     <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="main-title" style="font-weight: bold;">BITMARK PROOFING</div>
+          </div>
+     </div>
+    <div class="col-md-8 col-md-offset-0">
+        <div class="main-body">
+           <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                 <div class="main-text"><b>PUBLICKEY</b></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+                  <div class="main-text">
+                  <p class="configuration-text" ng-if="bitmarkConfig.Proofing.PublicKey != ''"> {{bitmarkConfig.Proofing.PublicKey}}</p>
+                 <button style=" color: #0060F2; text-transform: uppercase; margin-bottom: 10px; margin-left: 50px;">Generate new keypairs</button></div>
+              </div>
+            </div>
+            <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                 <div class="main-text"><b>PUBLISH</b>
+                 <button ng-click="addItem(bitmarkConfig.Proofing.Publish, bitmarkConfig.Proofing.MaximumConnections)">+</button></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+               <div class="main-text">
+               <div ng-repeat="Publish in bitmarkConfig.Proofing.Publish track by $index">
+               {{$index+1}}
+               <input class="inputform" type="text" ng-model="bitmarkConfig.Proofing.Publish[$index]" required>
+               <button ng-if="bitmarkConfig.Proofing.Publish.length>1" ng-click="deleteItem(bitmarkConfig.Proofing.Publish, $index)">x</button>
+               </div>
+               </div>
+              </div>
+            </div>
+             <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                 <div class="main-text"><b>SUBMIT</b>
+                 <button ng-click="addItem(bitmarkConfig.Proofing.Submit, bitmarkConfig.Proofing.MaximumConnections)">+</button></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+               <div class="main-text">
+               <div ng-repeat="listen in bitmarkConfig.Proofing.Submit track by $index">
+               {{$index+1}}
+               <input class="inputform" type="text" ng-model="bitmarkConfig.Proofing.Submit[$index]" required>
+               <button ng-if="bitmarkConfig.Proofing.Submit.length>1" ng-click="deleteItem(bitmarkConfig.Proofing.Submit, $index)">x</button>
+               </div>
+               </div>
+              </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+     <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="main-title" style="font-weight: bold;">PROOFERD PEER</div>
+            <p class="configuration-sub">Max connections:{{prooferdConfig.Peering.MaximumConnections}}</p>
+          </div>
+     </div>
+    <div class="col-md-8 col-md-offset-0">
+        <div class="main-body">
+           <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                 <div class="main-text"><b>PUBLICKEY</b></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+                  <div class="main-text">
+                  <p class="configuration-text" ng-if="prooferdConfig.Peering.PublicKey != ''"> {{prooferdConfig.Peering.PublicKey}}</p>
+                 <button style=" color: #0060F2; text-transform: uppercase; margin-bottom: 10px; margin-left: 50px;">Generate new keypairs</button></div>
+              </div>
+            </div>
+
+            <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                 <div class="main-text"><b>CONNECT</b>
+                <button ng-click="addItem(prooferdConfig.Peering.Connect, prooferdConfig.Peering.MaximumConnections)">+</button></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+                <table class="main-text">
+                <tr ng-repeat-start="connect in prooferdConfig.Peering.Connect track by $index">
+                    <td># {{$index+1}}</td>
+                    <td></td>
+                    <td></td>
+                 </tr>
+                 <tr>
+                    <td style="font-weight:normal;">PublicKey</td>
+                    <td><input class="inputform" type="text" ng-model="prooferdConfig.Peering.Connect[$index].PublicKey" ng-pattern="publicKeyPattern" required name="peerConnectPublicKey{{$index}}"></td>
+                    <td rowspan="3"><button ng-click="deleteItem(prooferdConfig.Peering.Connect, $index)">x</button></td>
+                 </tr>
+                 <tr>
+                    <td style="font-weight:normal;">Blocks</td>
+                    <td><input class="inputform" type="text" ng-model="prooferdConfig.Peering.Connect[$index].Blocks" required></td>
+                    <td></td>
+                 </tr>
+                 <tr ng-repeat-end>
+                    <td style="font-weight:normal;">Submit</td>
+                    <td><input class="inputform" type="text" ng-model="prooferdConfig.Peering.Connect[$index].Submit" required></td>
+                    <td></td>
+                 </tr>
+                </table>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- <div class="row"> -->
 <!--   <div class="col-md-4">    -->

@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/bitmark-inc/bitmarkd/configuration"
@@ -13,15 +14,10 @@ import (
 )
 
 const (
-	defaultDataDirectory = "" // this will error; use "." for the same directory as the config file
-
 	defaultPublicKeyFile  = "prooferd.private"
 	defaultPrivateKeyFile = "prooferd.public"
 
-	defaultLogDirectory = "log"
-	defaultLogFile      = "prooferd.log"
-	defaultLogCount     = 10          //  number of log files retained
-	defaultLogSize      = 1024 * 1024 // rotate when <logfile> exceeds this size
+	defaultProoferdLogFile = "prooferd.log"
 )
 
 // to hold log levels
@@ -56,6 +52,12 @@ type ProoferdConfiguration struct {
 	Logging       LoggerType `libucl:"logging"`
 }
 
+func (p *ProoferdConfiguration) SaveToJson(file *os.File) error {
+	p.Logging.File = filepath.Base(p.Logging.File)
+	encoder := json.NewEncoder(file)
+	return encoder.Encode(p)
+}
+
 // will read decode and verify the configuration
 func NewProoferdConfiguration(configurationFileName string) (*ProoferdConfiguration, error) {
 
@@ -69,7 +71,7 @@ func NewProoferdConfiguration(configurationFileName string) (*ProoferdConfigurat
 
 	options := &ProoferdConfiguration{
 
-		DataDirectory: defaultDataDirectory,
+		DataDirectory: dataDirectory,
 		PidFile:       "", // no PidFile by default
 		Chain:         Bitmark,
 		Threads:       0,
@@ -80,7 +82,7 @@ func NewProoferdConfiguration(configurationFileName string) (*ProoferdConfigurat
 
 		Logging: LoggerType{
 			Directory: defaultLogDirectory,
-			File:      defaultLogFile,
+			File:      defaultProoferdLogFile,
 			Size:      defaultLogSize,
 			Count:     defaultLogCount,
 			Levels:    defaultLogLevels,

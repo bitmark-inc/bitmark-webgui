@@ -11,6 +11,8 @@ const (
 	// bitmarkConfig error
 	bitmarkdConfigGetErr    = `Failed to get bitmarkd config`
 	bitmarkdConfigUpdateErr = `Failed to update bitmarkd config`
+	prooferdConfigGetErr    = `Failed to get prooferd config`
+	prooferdConfigUpdateErr = `Failed to update prooferd config`
 
 	// bitmark-webgui error
 	setPasswordErr = `Failed to set up bitmark-webgui password`
