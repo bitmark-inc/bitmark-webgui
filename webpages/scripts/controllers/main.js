@@ -253,5 +253,6 @@ angular.module('bitmarkWebguiApp')
 
     $scope.$on('$destroy', function () {
       $interval.cancel(getInfoPromise);
+      $interval.cancel(getProoferdStatusPromise);
     });
   });
