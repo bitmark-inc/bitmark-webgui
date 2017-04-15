@@ -133,6 +133,11 @@ func getBitmarkdInfo(bitmarkConfigFile string, log *logger.L) (*rpc.InfoReply, s
 		return nil, bitmarkdGetConfigErr
 	}
 
+	if len(bitmarkConfig.ClientRPC.Listen) == 0 {
+		log.Errorf("No listensing port in bitmarkd configuration.")
+		return nil, bitmarkdConnectErr
+	}
+
 	conn, err := bitmarkService.Connect(bitmarkConfig.ClientRPC.Listen[0])
 	if nil != err {
 		log.Errorf("Failed to connect to bitmarkd: %v", err)
