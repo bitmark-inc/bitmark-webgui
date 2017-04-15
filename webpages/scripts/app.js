@@ -31,8 +31,8 @@ var app = angular
             Address: ""
         })
         .constant("BitmarkdNetwork", {
-            "testing": "testnet",
-            "bitmark": "livenet"
+            "testing": "testing",
+            "bitmark": "bitmark"
         })
         .constant("BitmarkdConfig", {
             "testing": "/etc/bitmarkd-TESTING.conf",

@@ -32,24 +32,24 @@ var (
 )
 
 type Connection struct {
-	PublicKey string `libucl:"public_key"`
-	Blocks    string `libucl:"blocks"`
-	Submit    string `libucl:"submit"`
+	PublicKey string `libucl:"public_key" json:"public_key"`
+	Blocks    string `libucl:"blocks" json:"blocks"`
+	Submit    string `libucl:"submit" json:"submit"`
 }
 
 type PeerType struct {
-	PrivateKey string       `libucl:"private_key"`
-	PublicKey  string       `libucl:"public_key"`
-	Connect    []Connection `libucl:"connect"`
+	PrivateKey string       `libucl:"private_key" json:"private_key"`
+	PublicKey  string       `libucl:"public_key" json:"public_key"`
+	Connect    []Connection `libucl:"connect" json:"connect"`
 }
 
 type ProoferdConfiguration struct {
-	DataDirectory string     `libucl:"data_directory"`
-	PidFile       string     `libucl:"pidfile"`
-	Chain         string     `libucl:"chain"`
-	Threads       int        `libucl:"threads"`
-	Peering       PeerType   `libucl:"peering"`
-	Logging       LoggerType `libucl:"logging"`
+	DataDirectory string     `libucl:"data_directory" json:"data_directory"`
+	PidFile       string     `libucl:"pidfile" json:"pidfile"`
+	Chain         string     `libucl:"chain" json:"chain"`
+	Threads       int        `libucl:"threads" json:"threads"`
+	Peering       PeerType   `libucl:"peering" json:"peering"`
+	Logging       LoggerType `libucl:"logging" json:"logging"`
 }
 
 func (p *ProoferdConfiguration) SaveToJson(filename string) error {
@@ -84,7 +84,9 @@ func NewProoferdConfiguration(configurationFileName string) (*ProoferdConfigurat
 		Threads:       0,
 
 		Peering: PeerType{
-			Connect: make([]Connection, 0),
+			Connect:    make([]Connection, 0),
+			PrivateKey: defaultProofPrivateKeyFile,
+			PublicKey:  defaultProofPublicKeyFile,
 		},
 
 		Logging: LoggerType{

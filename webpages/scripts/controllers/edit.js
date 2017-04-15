@@ -13,24 +13,24 @@
  */
 
 var defaultBitmarkConfig = {
-  "ClientRPC": {
-    "MaximumConnections": 50,
-    "Listen": ["127.0.0.1:2130"],
-    "Announce": ["127.0.0.1:2130"]
+  "client_rpc": {
+    "maximum_connections": 50,
+    "listen": ["127.0.0.1:2130"],
+    "announce": ["127.0.0.1:2130"]
   },
-  "Peering": {
-    "MaximumConnections": 50,
-    "Broadcast": ["127.0.0.1:2135"],
-    "Listen": ["127.0.0.1:2136"],
-    "Announce": {
-      "Broadcast": [""],
-      "Listen": [""]
+  "peering": {
+    "maximum_connections": 50,
+    "broadcast": ["127.0.0.1:2135"],
+    "listen": ["127.0.0.1:2136"],
+    "announce": {
+      "broadcast": [""],
+      "listen": [""]
     }
   },
-  "Proofing": {
-    "MaximumConnections": 50,
-    "Publish": ["127.0.0.1:2140"],
-    "Submit": ["127.0.0.1:2141"]
+  "proofing": {
+    "maximum_connections": 50,
+    "publish": ["127.0.0.1:2140"],
+    "submit": ["127.0.0.1:2141"]
   },
   "Bitcoin": {
     "username": "",
@@ -40,11 +40,11 @@ var defaultBitmarkConfig = {
 }
 
 var defaultProoferdConfig = {
-  "Peering": {
-    "MaximumConnections": 50,
-    "Connect": [{
-      "Blocks": "127.0.0.1:2140",
-      "Submit": "127.0.0.1:2141"
+  "peering": {
+    "maximum_connections": 50,
+    "connect": [{
+      "blocks": "127.0.0.1:2140",
+      "submit": "127.0.0.1:2141"
     }]
   }
 }
@@ -125,7 +125,7 @@ angular.module('bitmarkWebguiApp')
     };
 
     $scope.addItem = function (list, limit) {
-      if (list.length < limit) {
+      if (typeof limit !== "number" || list.length < limit) {
         list.splice(list.length, 0, "");
       }
     };
@@ -173,22 +173,12 @@ angular.module('bitmarkWebguiApp')
           break;
       }
 
-      var bitmarkConfig = checkConfig($scope.bitmarkConfig);
-      if (bitmarkConfig.error !== "") {
-        $scope.error.show = true;
-        $scope.error.msg = result.error;
-        return;
-      }
-      var prooferdConfig = checkConfig($scope.prooferdConfig);
-      if (prooferdConfig.error !== "") {
-        $scope.error.show = true;
-        $scope.error.msg = result.error;
-        return;
-      }
+      var bitmarkConfig = $scope.bitmarkConfig;
+      var prooferdConfig = $scope.prooferdConfig;
 
       var configs = {
-        bitmarkConfig: bitmarkConfig.config,
-        prooferdConfig: prooferdConfig.config
+        bitmarkConfig: bitmarkConfig,
+        prooferdConfig: prooferdConfig
       };
       httpService.send('updateBitmarkConfig', configs).then(
         function (result) {
@@ -208,13 +198,13 @@ angular.module('bitmarkWebguiApp')
           if (results.bitmarkd.Err || Object.keys(results.bitmarkd).length == 0) {
             $scope.bitmarkConfig = defaultBitmarkConfig;
           } else {
-            $scope.bitmarkConfig = initConfig(results.bitmarkd);
+            $scope.bitmarkConfig = results.bitmarkd;
           }
 
           if (results.prooferd.Err || Object.keys(results.prooferd).length == 0) {
             $scope.prooferdConfig = defaultProoferdConfig
           } else {
-            $scope.prooferdConfig = initConfig(results.prooferd);
+            $scope.prooferdConfig = results.prooferd;
           }
         },
         function (errorMsg) {

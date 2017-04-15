@@ -72,7 +72,7 @@ func (bitmarkd *Bitmarkd) IsRunning() bool {
 	return bitmarkd.running
 }
 
-func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile, chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
 	if bitmarkd.running {
 		return fault.ErrBitmarkdIsRunning
 	}
@@ -88,6 +88,7 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile strin
 	if bitmarkConfigs, err := structs.NewBitmarkdConfiguration(bitmarkConfigFile); nil != err {
 		return err
 	} else {
+		bitmarkConfigs.Chain = chain
 		bitmarkConfigs.SaveToJson(bitmarkConfigFile)
 	}
 

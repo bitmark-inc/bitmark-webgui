@@ -24,9 +24,9 @@ func IsValidChain(name string) bool {
 }
 
 type LoggerType struct {
-	Directory string            `libucl:"directory"`
-	File      string            `libucl:"file"`
-	Size      int               `libucl:"size"`
-	Count     int               `libucl:"count"`
-	Levels    map[string]string `libucl:"levels"`
+	Directory string            `libucl:"directory" json:"directory"`
+	File      string            `libucl:"file" json:"file"`
+	Size      int               `libucl:"size" json:"size"`
+	Count     int               `libucl:"count" json:"count"`
+	Levels    map[string]string `libucl:"levels" json:"levels"`
 }

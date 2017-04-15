@@ -26,16 +26,18 @@ import (
 func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile, prooferdConfigFile string, log *logger.L) {
 	log.Info("GET /api/config")
 	results := map[string]interface{}{}
-
+	var err error
 	bitmarkConfigs := &structs.BitmarkdConfiguration{}
 	prooferdConfig := &structs.ProoferdConfiguration{}
-
-	if err := configuration.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
+	if err = configuration.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
 		log.Errorf("Error: %v", err)
 		results["bitmarkd"] = err
 	} else {
-		confDir := filepath.Dir(bitmarkConfigFile)
-		pubKeyFile := filepath.Join(confDir, bitmarkConfigs.Peering.PublicKey)
+		pubKeyFile, err := filepath.Abs(bitmarkConfigs.Peering.PublicKey)
+		if err != nil {
+			log.Errorf("Error: %v", err)
+			results["bitmarkd"] = err
+		}
 		if peerPublicKey, err := getPeerPublicKey(pubKeyFile); nil != err {
 			results["bitmarkd"] = err
 		} else {
@@ -48,8 +50,11 @@ func ListConfig(w http.ResponseWriter, req *http.Request, bitmarkConfigFile, pro
 		log.Errorf("Error: %v", err)
 		results["prooferd"] = err
 	} else {
-		confDir := filepath.Dir(prooferdConfigFile)
-		pubKeyFile := filepath.Join(confDir, prooferdConfig.Peering.PublicKey)
+		pubKeyFile, err := filepath.Abs(prooferdConfig.Peering.PublicKey)
+		if err != nil {
+			log.Errorf("Error: %v", err)
+			results["bitmarkd"] = err
+		}
 		if peerPublicKey, err := getPeerPublicKey(pubKeyFile); nil != err {
 			results["prooferd"] = err
 		} else {

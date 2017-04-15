@@ -85,7 +85,7 @@ func Prooferd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 			response.Result = prooferdAlreadyStartErr
 		} else {
 			prooferdConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("prooferd-%s", request.Network), "prooferd.conf")
-			if err := prooferdService.Setup(prooferdConfigFile, webguiFilePath, webguiConfig); nil != err {
+			if err := prooferdService.Setup(prooferdConfigFile, request.Network, webguiFilePath, webguiConfig); nil != err {
 				if os.IsNotExist(err) {
 					response.Result = "prooferd config not found"
 				} else {

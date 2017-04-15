@@ -37,30 +37,30 @@ const (
 )
 
 type RPCType struct {
-	MaximumConnections int      `libucl:"maximum_connections"`
-	Listen             []string `libucl:"listen"`
-	Certificate        string   `libucl:"certificate"`
-	PrivateKey         string   `libucl:"private_key"`
-	Announce           []string `libucl:"announce"`
+	MaximumConnections int      `libucl:"maximum_connections" json:"maximum_connections"`
+	Listen             []string `libucl:"listen" json:"listen"`
+	Certificate        string   `libucl:"certificate" json:"certificate"`
+	PrivateKey         string   `libucl:"private_key" json:"private_key"`
+	Announce           []string `libucl:"announce" json:"announce"`
 }
 
 type DatabaseType struct {
-	Directory string `libucl:"directory"`
-	Name      string `libucl:"name"`
+	Directory string `libucl:"directory" json:"directory"`
+	Name      string `libucl:"name" json:"name"`
 }
 
 type BitmarkdConfiguration struct {
-	DataDirectory string       `libucl:"data_directory"`
-	PidFile       string       `libucl:"pidfile"`
-	Chain         string       `libucl:"chain"`
-	Nodes         string       `libucl:"nodes"`
-	Database      DatabaseType `libucl:"database"`
+	DataDirectory string       `libucl:"data_directory" json:"data_directory"`
+	PidFile       string       `libucl:"pidfile" json:"pidfile"`
+	Chain         string       `libucl:"chain" json:"chain"`
+	Nodes         string       `libucl:"nodes" json:"nodes"`
+	Database      DatabaseType `libucl:"database" json:"database"`
 
-	ClientRPC RPCType               `libucl:"client_rpc"`
-	Peering   peer.Configuration    `libucl:"peering"`
-	Proofing  proof.Configuration   `libucl:"proofing"`
-	Bitcoin   bitcoin.Configuration `libucl:"bitcoin"`
-	Logging   LoggerType            `libucl:"logging"`
+	ClientRPC RPCType               `libucl:"client_rpc" json:"client_rpc"`
+	Peering   peer.Configuration    `libucl:"peering" json:"peering"`
+	Proofing  proof.Configuration   `libucl:"proofing" json:"proofing"`
+	Bitcoin   bitcoin.Configuration `libucl:"bitcoin" json:"bitcoin"`
+	Logging   LoggerType            `libucl:"logging" json:"logging"`
 }
 
 func (b *BitmarkdConfiguration) SaveToJson(filename string) error {

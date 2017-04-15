@@ -68,7 +68,7 @@ func (prooferd *Prooferd) IsRunning() bool {
 	return prooferd.running
 }
 
-func (prooferd *Prooferd) Setup(prooferdConfigFile string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+func (prooferd *Prooferd) Setup(prooferdConfigFile, chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
 	if prooferd.running {
 		return fault.ErrProoferdIsRunning
 	}
@@ -81,9 +81,10 @@ func (prooferd *Prooferd) Setup(prooferdConfigFile string, webguiConfigFile stri
 		return err
 	}
 
-	if prooferdConfigs, err := structs.NewBitmarkdConfiguration(prooferdConfigFile); nil != err {
+	if prooferdConfigs, err := structs.NewProoferdConfiguration(prooferdConfigFile); nil != err {
 		return err
 	} else {
+		prooferdConfigs.Chain = chain
 		prooferdConfigs.SaveToJson(prooferdConfigFile)
 	}
 
