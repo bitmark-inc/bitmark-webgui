@@ -10,7 +10,6 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/structs"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
-	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/logger"
 	"os"
 	"os/exec"
@@ -82,10 +81,14 @@ func (prooferd *Prooferd) Setup(prooferdConfigFile string, webguiConfigFile stri
 		return err
 	}
 
-	prooferdConfigs := &structs.ProoferdConfiguration{}
-	if err := bitmarkdConfig.ParseConfigurationFile(prooferdConfigFile, prooferdConfigs); nil != err {
+	if prooferdConfigs, err := structs.NewBitmarkdConfiguration(prooferdConfigFile); nil != err {
 		return err
+	} else {
+		prooferdConfigs.SaveToJson(prooferdConfigFile)
 	}
+
+	cmd := exec.Command("bitmarkd", "--config-file="+prooferdConfigFile, "gen-proof-identity")
+	_ = cmd.Run()
 
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }

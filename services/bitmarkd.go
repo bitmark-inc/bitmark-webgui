@@ -11,7 +11,6 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/structs"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
-	bitmarkdConfig "github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net"
@@ -86,10 +85,17 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile string, webguiConfigFile strin
 		return err
 	}
 
-	bitmarkConfigs := &structs.BitmarkdConfiguration{}
-	if err := bitmarkdConfig.ParseConfigurationFile(bitmarkConfigFile, bitmarkConfigs); nil != err {
+	if bitmarkConfigs, err := structs.NewBitmarkdConfiguration(bitmarkConfigFile); nil != err {
 		return err
+	} else {
+		bitmarkConfigs.SaveToJson(bitmarkConfigFile)
 	}
+
+	cmd := exec.Command("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-peer-identity")
+	_ = cmd.Run()
+
+	cmd = exec.Command("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-rpc-cert")
+	_ = cmd.Run()
 
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }

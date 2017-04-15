@@ -91,7 +91,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 		return
 	}
 
-	fileBitmarkdConf, err := os.OpenFile(bitmarkConfigFile, os.O_WRONLY|os.O_CREATE, 0600)
+	_, err := os.OpenFile(bitmarkConfigFile, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Errorf("Error: %s, %v", bitmarkdConfigUpdateErr, err)
 		response.Result = bitmarkdConfigUpdateErr
@@ -100,8 +100,8 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 		}
 		return
 	}
-	defer fileBitmarkdConf.Close()
-	fileProoferdConf, err := os.OpenFile(prooferdConfigFile, os.O_WRONLY|os.O_CREATE, 0600)
+
+	_, err = os.OpenFile(prooferdConfigFile, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Errorf("Error: %s, %v", bitmarkdConfigUpdateErr, err)
 		response.Result = bitmarkdConfigUpdateErr
@@ -110,7 +110,6 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 		}
 		return
 	}
-	defer fileBitmarkdConf.Close()
 
 	bitmarkdConfig, err := structs.NewBitmarkdConfiguration(bitmarkConfigFile)
 	if nil != err {
@@ -122,10 +121,13 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 		return
 	}
 	bitmarkdConfig.Chain = chain
-	bitmarkdConfig.ClientRPC = request.BitmarkConfig.ClientRPC
-	bitmarkdConfig.Peering = request.BitmarkConfig.Peering
-	bitmarkdConfig.Proofing = request.BitmarkConfig.Proofing
-	bitmarkdConfig.SaveToJson(fileBitmarkdConf)
+	bitmarkdConfig.ClientRPC.Listen = request.BitmarkConfig.ClientRPC.Listen
+	bitmarkdConfig.ClientRPC.Announce = request.BitmarkConfig.ClientRPC.Announce
+	bitmarkdConfig.Peering.Broadcast = request.BitmarkConfig.Peering.Broadcast
+	bitmarkdConfig.Peering.Listen = request.BitmarkConfig.Peering.Listen
+	bitmarkdConfig.Proofing.Publish = request.BitmarkConfig.Proofing.Publish
+	bitmarkdConfig.Proofing.Submit = request.BitmarkConfig.Proofing.Submit
+	bitmarkdConfig.SaveToJson(bitmarkConfigFile)
 
 	prooferdConfig, err := structs.NewProoferdConfiguration(prooferdConfigFile)
 	if nil != err {
@@ -138,8 +140,8 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 		return
 	}
 	prooferdConfig.Chain = chain
-	prooferdConfig.Peering = request.ProoferdConfig.Peering
-	prooferdConfig.SaveToJson(fileProoferdConf)
+	prooferdConfig.Peering.Connect = request.ProoferdConfig.Peering.Connect
+	prooferdConfig.SaveToJson(prooferdConfigFile)
 
 	response.Ok = true
 	response.Result = nil

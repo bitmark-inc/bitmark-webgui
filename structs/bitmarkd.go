@@ -63,10 +63,17 @@ type BitmarkdConfiguration struct {
 	Logging   LoggerType            `libucl:"logging"`
 }
 
-func (b *BitmarkdConfiguration) SaveToJson(file *os.File) error {
+func (b *BitmarkdConfiguration) SaveToJson(filename string) error {
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	b.Database.Name = filepath.Base(b.Database.Name)
 	b.Logging.File = filepath.Base(b.Logging.File)
 	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
 	return encoder.Encode(b)
 }
 
@@ -96,10 +103,14 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 			MaximumConnections: defaultRPCClients,
 			Certificate:        defaultCertificateFile,
 			PrivateKey:         defaultKeyFile,
+			Announce:           []string{},
+			Listen:             []string{},
 		},
 
 		Peering: peer.Configuration{
 			//MaximumConnections: defaultPeers,
+			Broadcast:  []string{},
+			Listen:     []string{},
 			PublicKey:  defaultPeerPublicKeyFile,
 			PrivateKey: defaultPeerPrivateKeyFile,
 			Announce: peer.Announce{
@@ -113,6 +124,8 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 			PublicKey:  defaultProofPublicKeyFile,
 			PrivateKey: defaultProofPrivateKeyFile,
 			SigningKey: defaultProofSigningKeyFile,
+			Submit:     []string{},
+			Publish:    []string{},
 		},
 
 		Logging: LoggerType{
@@ -124,9 +137,7 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 		},
 	}
 
-	if err := configuration.ParseConfigurationFile(configurationFileName, options); err != nil {
-		return nil, err
-	}
+	_ = configuration.ParseConfigurationFile(configurationFileName, options)
 
 	// if any test mode and the database file was not specified
 	// switch to appropriate default.  Abort if then chain name is

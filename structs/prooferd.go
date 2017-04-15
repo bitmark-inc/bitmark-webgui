@@ -52,9 +52,16 @@ type ProoferdConfiguration struct {
 	Logging       LoggerType `libucl:"logging"`
 }
 
-func (p *ProoferdConfiguration) SaveToJson(file *os.File) error {
+func (p *ProoferdConfiguration) SaveToJson(filename string) error {
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	p.Logging.File = filepath.Base(p.Logging.File)
 	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
 	return encoder.Encode(p)
 }
 
@@ -89,9 +96,7 @@ func NewProoferdConfiguration(configurationFileName string) (*ProoferdConfigurat
 		},
 	}
 
-	if err := configuration.ParseConfigurationFile(configurationFileName, options); err != nil {
-		return nil, err
-	}
+	_ = configuration.ParseConfigurationFile(configurationFileName, options)
 
 	// if any test mode and the database file was not specified
 	// switch to appropriate default.  Abort if then chain name is
