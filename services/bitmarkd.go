@@ -148,6 +148,9 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 	}()
 
 	go func() {
+		defer func() {
+			stopped <- true
+		}()
 		for bitmarkd.running {
 			// start bitmarkd as sub process
 			cmd := exec.Command("bitmarkd", "--config-file="+bitmarkd.configFile)
@@ -200,7 +203,6 @@ func (bitmarkd *Bitmarkd) startBitmarkd() error {
 					time.Sleep(time.Second)
 				}
 				bitmarkd.process = nil
-				stopped <- true
 			}
 		}
 	}()
@@ -220,11 +222,13 @@ func (bitmarkd *Bitmarkd) stopBitmarkd() error {
 
 	// if err := bitmarkd.process.Signal(os.Interrupt); nil != err {
 	// bitmarkd.log.Errorf("Send interrupt to bitmarkd failed: %v", err)
+	if bitmarkd.process == nil {
+		return nil
+	}
 	if err := bitmarkd.process.Signal(os.Kill); nil != err {
 		bitmarkd.log.Errorf("Send kill to bitmarkd failed: %v", err)
 		return err
 	}
-	// }
 
 	bitmarkd.log.Infof("Stop bitmarkd. PID: %d", bitmarkd.process.Pid)
 	bitmarkd.process = nil
