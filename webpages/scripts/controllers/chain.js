@@ -58,35 +58,30 @@ angular.module('bitmarkWebguiApp')
         }
       })
 
-      function isNotFoundError(err) {
-        return err.search("not found") >= 0
-      }
-
       $q.all([setupBitmarkdPromise, setupProoferdPromise])
         .then(function (results) {
-          var setupBitmarkdResult = results[0],
-            setupProoferdResult = results[1];
-          if (setupBitmarkdResult || setupProoferdResult) {
-            var otherErrors = []
-            if ((setupBitmarkdResult && !isNotFoundError(setupBitmarkdResult.error))) {
-              otherErrors.push(setupBitmarkdResult.error)
+          var otherErrors = []
+          for (var i = results.length - 1; i >= 0; i--) {
+            if (results[i] && results[i].result) {
+              otherErrors.push(results[i].result)
             }
-            if ((setupProoferdResult && !isNotFoundError(setupProoferdResult.error))) {
-              otherErrors.push(setupProoferdResult.error)
-            }
-            if (otherErrors.length > 0) {
-              $scope.setErrorMsg(true, otherErrors);
-            } else {
-              $location.path("/edit");
-              $scope.$emit('Authenticated', true);
-            }
+          }
+          if (otherErrors.length > 0) {
+            $scope.setErrorMsg(true, otherErrors);
           } else {
-            $location.path("/main");
+            $location.path("/edit");
             $scope.$emit('Authenticated', true);
           }
         })
-        .catch(function (errors) {
-          $scope.setErrorMsg(true, errors);
+        .catch(function (error) {
+          if (error instanceof Array) {
+            $scope.setErrorMsg(true, error);
+          } else if (error instanceof Error) {
+            $scope.setErrorMsg(true, error.message);
+          } else {
+            $scope.setErrorMsg(true, "Unexcepted error");
+            console.log("Unexcepted error:", err)
+          }
           $scope.request.running = false;
         });
     };
