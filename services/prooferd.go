@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -88,8 +89,13 @@ func (prooferd *Prooferd) Setup(prooferdConfigFile, chain string, webguiConfigFi
 		prooferdConfigs.SaveToJson(prooferdConfigFile)
 	}
 
-	cmd := exec.Command("bitmarkd", "--config-file="+prooferdConfigFile, "gen-proof-identity")
-	_ = cmd.Run()
+	cmdResult, err := SimpleCmd("bitmarkd", "--config-file="+prooferdConfigFile, "gen-proof-identity")
+	if err != nil {
+		if !strings.Contains(cmdResult, "file already exists") {
+			return err
+		}
+		prooferd.log.Warn(cmdResult)
+	}
 
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }

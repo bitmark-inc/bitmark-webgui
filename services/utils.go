@@ -5,7 +5,9 @@
 package services
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/logger"
 	"io/ioutil"
@@ -27,6 +29,18 @@ func EnsureFile(filename string) error {
 		return err
 	}
 	return nil
+}
+
+func SimpleCmd(cmdString ...string) (output string, err error) {
+	if len(cmdString) == 0 {
+		return "", fmt.Errorf("Invaild command strings")
+	}
+	outBuffer := &bytes.Buffer{}
+	cmd := exec.Command(cmdString[0], cmdString[1:]...)
+	cmd.Stdout = outBuffer
+	cmd.Stderr = outBuffer
+	err = cmd.Run()
+	return outBuffer.String(), err
 }
 
 // logStdOut determines print result from stdout or not

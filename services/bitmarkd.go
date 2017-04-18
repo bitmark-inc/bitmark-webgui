@@ -18,6 +18,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -92,11 +93,21 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile, chain string, webguiConfigFil
 		bitmarkConfigs.SaveToJson(bitmarkConfigFile)
 	}
 
-	cmd := exec.Command("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-peer-identity")
-	_ = cmd.Run()
+	cmdResult, err := SimpleCmd("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-peer-identity")
+	if err != nil {
+		if !strings.Contains(cmdResult, "file already exists") {
+			return err
+		}
+		bitmarkd.log.Warn(cmdResult)
+	}
 
-	cmd = exec.Command("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-rpc-cert")
-	_ = cmd.Run()
+	cmdResult, err = SimpleCmd("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-rpc-cert")
+	if err != nil {
+		if !strings.Contains(cmdResult, "file already exists") {
+			return err
+		}
+		bitmarkd.log.Warn(cmdResult)
+	}
 
 	return configuration.UpdateConfiguration(webguiConfigFile, webguiConfig)
 }
