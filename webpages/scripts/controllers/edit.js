@@ -19,7 +19,6 @@ var defaultBitmarkConfig = {
     "announce": ["127.0.0.1:2130"]
   },
   "peering": {
-    "maximum_connections": 50,
     "broadcast": ["127.0.0.1:2135"],
     "listen": ["127.0.0.1:2136"],
     "announce": {
@@ -28,7 +27,6 @@ var defaultBitmarkConfig = {
     }
   },
   "proofing": {
-    "maximum_connections": 50,
     "publish": ["127.0.0.1:2140"],
     "submit": ["127.0.0.1:2141"]
   },
@@ -41,7 +39,6 @@ var defaultBitmarkConfig = {
 
 var defaultProoferdConfig = {
   "peering": {
-    "maximum_connections": 50,
     "connect": [{
       "blocks": "127.0.0.1:2140",
       "submit": "127.0.0.1:2141"
@@ -50,11 +47,15 @@ var defaultProoferdConfig = {
 }
 
 angular.module('bitmarkWebguiApp')
-  .controller('EditCtrl', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp) {
+  .controller('EditCtrl', function ($scope, $location, httpService, BitmarkProxyURL, ProxyTemp, utils) {
 
     $scope.error = {
       show: false,
       msg: ""
+    };
+
+    $scope.setErrorMsg = function (show, msg) {
+      utils.setErrorMsg($scope.error, show, msg);
     };
 
     // Check bitamrkd is not running, if it is running, stop it first
@@ -193,18 +194,21 @@ angular.module('bitmarkWebguiApp')
     };
 
     var getAndSetBitmarkConfig = function () {
+      var error = [];
       httpService.send('getBitmarkConfig').then(
         function (results) {
-          if (results.bitmarkd.Err || Object.keys(results.bitmarkd).length == 0) {
+          if (results.bitmarkd.err) {
             $scope.bitmarkConfig = defaultBitmarkConfig;
+            $scope.setErrorMsg(true, results.prooferd.err);
           } else {
-            $scope.bitmarkConfig = results.bitmarkd;
+            $scope.bitmarkConfig = results.bitmarkd.data;
           }
 
-          if (results.prooferd.Err || Object.keys(results.prooferd).length == 0) {
+          if (results.prooferd.err || Object.keys(results.prooferd).length == 0) {
             $scope.prooferdConfig = defaultProoferdConfig
+            $scope.setErrorMsg(true, results.prooferd.err);
           } else {
-            $scope.prooferdConfig = results.prooferd;
+            $scope.prooferdConfig = results.prooferd.data;
           }
         },
         function (errorMsg) {

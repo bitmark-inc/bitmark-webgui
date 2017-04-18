@@ -1,3 +1,5 @@
+<uib-alert type="danger" close="setErrorMsg(false, '')" ng-show="error.show">{{error.msg}}</uib-alert>
+
 <div>
   <h3 class="home">CONFIGURATION
     <div class="text-right">
@@ -6,7 +8,6 @@
     </div>
   </h3>
 </div>
-<p ng-show="error.show" style="padding-left: 12px; color: rgb(255, 0, 0);">{{ error.msg }}</p>
 
 <form name="bitmarkForm" novalidate>
   <div class="row">
