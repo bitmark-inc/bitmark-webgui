@@ -101,6 +101,14 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile, chain string, webguiConfigFil
 		bitmarkd.log.Warn(cmdResult)
 	}
 
+	cmdResult, err = SimpleCmd("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-proof-identity")
+	if err != nil {
+		if !strings.Contains(cmdResult, "file already exists") {
+			return err
+		}
+		bitmarkd.log.Warn(cmdResult)
+	}
+
 	cmdResult, err = SimpleCmd("bitmarkd", "--config-file="+bitmarkConfigFile, "gen-rpc-cert")
 	if err != nil {
 		if !strings.Contains(cmdResult, "file already exists") {
