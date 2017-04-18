@@ -121,8 +121,8 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 
 		Proofing: proof.Configuration{
 			//MaximumConnections: defaultProofers,
-			PublicKey:  defaultProofPublicKeyFile,
-			PrivateKey: defaultProofPrivateKeyFile,
+			PublicKey:  defaultProofPrivateKeyFile,
+			PrivateKey: defaultProofPublicKeyFile,
 			SigningKey: defaultProofSigningKeyFile,
 			Submit:     []string{},
 			Publish:    []string{},
