@@ -108,7 +108,8 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 		},
 
 		Peering: peer.Configuration{
-			//MaximumConnections: defaultPeers,
+			DynamicConnections: true,
+
 			Broadcast:  []string{},
 			Listen:     []string{},
 			PublicKey:  defaultPeerPublicKeyFile,

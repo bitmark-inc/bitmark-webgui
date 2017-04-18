@@ -154,6 +154,7 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 		return
 	}
 	bitmarkdConfig.Chain = chain
+	bitmarkdConfig.Nodes = request.BitmarkConfig.Nodes
 	bitmarkdConfig.ClientRPC.Listen = request.BitmarkConfig.ClientRPC.Listen
 	bitmarkdConfig.ClientRPC.Announce = request.BitmarkConfig.ClientRPC.Announce
 	bitmarkdConfig.Peering.Broadcast = request.BitmarkConfig.Peering.Broadcast

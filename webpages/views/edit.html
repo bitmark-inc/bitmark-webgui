@@ -33,6 +33,18 @@
         </div>
         <div class="row row-text">
           <div class="col-xs-6 col-sm-4">
+            <div class="main-text"><b>Nodes</b></div>
+          </div>
+          <div class="col-xs-6 col-sm-8">
+            <div class="main-text">
+              <div>
+                <input class="inputform" type="text" ng-model="bitmarkConfig.nodes" required>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row row-text">
+          <div class="col-xs-6 col-sm-4">
             <div class="main-text"><b>LISTEN</b>
               <button ng-click="addItem(bitmarkConfig.client_rpc.listen, bitmarkConfig.client_rpc.maximum_connections)">+</button></div>
           </div>
