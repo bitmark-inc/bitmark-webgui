@@ -53,13 +53,22 @@ angular.module('bitmarkWebguiApp')
 
     httpService.send('getBitmarkConfig').then(
       function (result) {
-        $scope.bitmarkConfig = result;
-
-        $scope.showOptionBitcoinItems = true;
-        if (result.Bitcoin.Username == ProxyTemp.Username) {
-          $scope.showOptionBitcoinItems = false;
+        var errors = []
+        if (result.bitmarkd.error) {
+          errors.push(result.bitmarkd.error)
+        } else {
+          $scope.bitmarkConfig = result.bitmarkd.data;
         }
 
+        if (result.prooferd.error) {
+          errors.push(result.prooferd.error)
+        } else {
+          $scope.prooferdConfig = result.prooferd.data;
+        }
+
+        if (errors.length > 0) {
+          $scope.setErrorMsg(true, errors);
+        }
       },
       function (errorMsg) {
         $scope.setErrorMsg(true, errorMsg);
@@ -218,7 +227,7 @@ angular.module('bitmarkWebguiApp')
     };
 
 
-    function getProoferdStatus () {
+    function getProoferdStatus() {
       httpService.send('statusProoferd').then(
         function (result) {
           if (result.search("stop") >= 0) {

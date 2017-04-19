@@ -82,10 +82,18 @@
             </div>
           </div>
           <div class="col-xs-6 col-sm-9">
-            <div class="main-text">{{ bitmarkConfig.Chain }}</div>
+            <div class="main-text">{{ bitmarkConfig.chain }}</div>
           </div>
         </div>
-
+        <div class="row row-text">
+          <div class="col-xs-6 col-sm-3">
+            <div class="main-text"><b>NODES</b>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-9">
+            <div class="main-text">{{ bitmarkConfig.nodes }}</div>
+          </div>
+        </div>
         <div class="row row-text">
           <div class="col-xs-6 col-sm-3">
             <div class="main-text"><b>LISTEN</b>
@@ -93,7 +101,7 @@
           </div>
           <div class="col-xs-6 col-sm-9">
             <ul class="main-list" style="list-style-type:none">
-              <li ng-repeat="listen in bitmarkConfig.ClientRPC.Listen">{{listen}}</li>
+              <li ng-repeat="listen in bitmarkConfig.client_rpc.listen">{{listen}}</li>
             </ul>
           </div>
         </div>
@@ -104,7 +112,7 @@
           </div>
           <div class="col-xs-6 col-sm-9">
             <ul class="main-list" style="list-style-type:none">
-              <li ng-repeat="announce in bitmarkConfig.ClientRPC.Announce">{{announce}}</li>
+              <li ng-repeat="announce in bitmarkConfig.client_rpc.announce">{{announce}}</li>
             </ul>
           </div>
         </div>
@@ -130,8 +138,19 @@
           </div>
           <div class="col-xs-6 col-sm-9">
             <ul class="main-list" style="list-style-type:none">
-              <li ng-if="bitmarkConfig.Peering.PublicKey == ''">Please Generate Keypairs <button>Generate</button></li>
-              <li ng-if="bitmarkConfig.Peering.PublicKey != ''"> {{bitmarkConfig.Peering.PublicKey}}</li>
+              <li ng-if="bitmarkConfig.peering.public_key == ''">Please Generate Keypairs <button>Generate</button></li>
+              <li ng-if="bitmarkConfig.peering.public_key != ''"> {{bitmarkConfig.peering.public_key}}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row row-text">
+          <div class="col-xs-6 col-sm-3">
+            <div class="main-text"><b>BROADCAST</b>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-9">
+            <ul class="main-list" style="list-style-type:none">
+              <li ng-repeat="brdc in bitmarkConfig.peering.broadcast"> {{brdc}} </li>
             </ul>
           </div>
         </div>
@@ -143,21 +162,52 @@
           </div>
           <div class="col-xs-6 col-sm-9">
             <ul class="main-list" style="list-style-type:none">
-              <li ng-repeat="listen in bitmarkConfig.Peering.Listen"> {{listen}} </li>
+              <li ng-repeat="listen in bitmarkConfig.peering.listen"> {{listen}} </li>
             </ul>
           </div>
         </div>
+      </div>
+    </div>
+    <!-- ol-md-8 col-md-offset-0 end -->
+  </div>
 
+  <!-- Prooferd section -->
+  <div class="row">
+    <div class="col-md-2">
+      <div class="panel panel-default">
+        <div class="main-title" style="font-weight: bold;">PROOFERD PEER
+        </div>
+      </div>
+    </div>
+    <div class="col-md-10">
+      <div class="main-body">
         <div class="row row-text">
           <div class="col-xs-6 col-sm-3">
-            <div class="main-text"><b>ANNOUNCE</b>
+            <div class="main-text"><b>PUBLICKEY</b>
             </div>
           </div>
           <div class="col-xs-6 col-sm-9">
-            <dl>
-              <dt ng-repeat-start="(key, val) in bitmarkConfig.Peering.Announce">{{key}}</dt>
-              <dd ng-repeat-end>{{val}}</dd>
+            <ul class="main-list" style="list-style-type:none">
+              <li ng-if="prooferdConfig.peering.public_key == ''">Please Generate Keypairs <button>Generate</button></li>
+              <li ng-if="prooferdConfig.peering.public_key != ''"> {{prooferdConfig.peering.public_key}}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row row-text">
+          <div class="col-xs-6 col-sm-3">
+            <div class="main-text"><b>CONNECT</b>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-9">
+            <dl ng-repeat-start="(key, val) in prooferdConfig.peering.connect">
+              <dt>PUBLICKEY</dt>
+              <dd>{{val.public_key}}</dd>
+              <dt>SUBMIT</dt>
+              <dd>{{val.submit}}</dd>
+              <dt>BLOCKS</dt>
+              <dd>{{val.blocks}}</dd>
             </dl>
+            <hr ng-repeat-end>
           </div>
         </div>
       </div>
