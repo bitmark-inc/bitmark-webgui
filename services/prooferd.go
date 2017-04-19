@@ -6,6 +6,7 @@ package services
 
 import (
 	"bufio"
+	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/structs"
@@ -14,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -69,7 +71,8 @@ func (prooferd *Prooferd) IsRunning() bool {
 	return prooferd.running
 }
 
-func (prooferd *Prooferd) Setup(prooferdConfigFile, chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+func (prooferd *Prooferd) Setup(chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+	prooferdConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("prooferd-%s", chain), "prooferd.conf")
 	if prooferd.running {
 		return fault.ErrProoferdIsRunning
 	}

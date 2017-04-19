@@ -6,12 +6,10 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/logger"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -84,8 +82,7 @@ func Prooferd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 		if prooferdService.IsRunning() {
 			response.Result = prooferdAlreadyStartErr
 		} else {
-			prooferdConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("prooferd-%s", request.Network), "prooferd.conf")
-			if err := prooferdService.Setup(prooferdConfigFile, request.Network, webguiFilePath, webguiConfig); nil != err {
+			if err := prooferdService.Setup(request.Network, webguiFilePath, webguiConfig); nil != err {
 				if os.IsNotExist(err) {
 					response.Result = "prooferd config not found"
 				} else {

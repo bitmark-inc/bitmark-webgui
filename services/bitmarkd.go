@@ -7,6 +7,7 @@ package services
 import (
 	"bufio"
 	"crypto/tls"
+	"fmt"
 	"github.com/bitmark-inc/bitmark-webgui/configuration"
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/structs"
@@ -19,6 +20,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -74,12 +76,16 @@ func (bitmarkd *Bitmarkd) IsRunning() bool {
 	return bitmarkd.running
 }
 
-func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile, chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+func (bitmarkd *Bitmarkd) Setup(chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
+	bitmarkConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("bitmarkd-%s", chain), "bitmarkd.conf")
+
 	if bitmarkd.running {
 		return fault.ErrBitmarkdIsRunning
 	}
 
 	bitmarkd.configFile = bitmarkConfigFile
+
+	webguiConfig.BitmarkChain = chain
 	webguiConfig.BitmarkConfigFile = bitmarkConfigFile
 
 	err := EnsureFile(bitmarkConfigFile)
