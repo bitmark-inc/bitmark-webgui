@@ -1,5 +1,12 @@
 package structs
 
+import (
+	"github.com/bitmark-inc/logger"
+)
+
+// to hold log levels
+type LoglevelMap map[string]string
+
 // names of all chains
 const (
 	Bitmark = "bitmark"
@@ -11,6 +18,13 @@ const (
 	defaultLogDirectory = "log"
 	defaultLogCount     = 10          //  number of log files retained
 	defaultLogSize      = 1024 * 1024 // rotate when <logfile> exceeds this size
+)
+
+var (
+	defaultLogLevels = LoglevelMap{
+		"main":            "info",
+		logger.DefaultTag: "info",
+	}
 )
 
 // validate a chain name

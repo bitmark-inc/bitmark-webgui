@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/bitmark-inc/bitmarkd/configuration"
 	"github.com/bitmark-inc/bitmarkd/util"
-	"github.com/bitmark-inc/logger"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -18,17 +17,6 @@ const (
 	defaultPrivateKeyFile = "prooferd.public"
 
 	defaultProoferdLogFile = "prooferd.log"
-)
-
-// to hold log levels
-type LoglevelMap map[string]string
-
-// path expanded or calculated defaults
-var (
-	defaultLogLevels = LoglevelMap{
-		"main":            "info",
-		logger.DefaultTag: "critical",
-	}
 )
 
 type Connection struct {
