@@ -11,6 +11,7 @@ import (
 	"github.com/bitmark-inc/bitmark-webgui/fault"
 	"github.com/bitmark-inc/bitmark-webgui/structs"
 	"github.com/bitmark-inc/bitmark-webgui/utils"
+	"github.com/bitmark-inc/bitmarkd/payment/bitcoin"
 	"github.com/bitmark-inc/bitmarkd/rpc"
 	"github.com/bitmark-inc/logger"
 	"net"
@@ -90,6 +91,16 @@ func (bitmarkd *Bitmarkd) Setup(bitmarkConfigFile, chain string, webguiConfigFil
 		return err
 	} else {
 		bitmarkConfigs.Chain = chain
+		switch chain {
+		case structs.Bitmark:
+			bitmarkConfigs.Bitcoin = bitcoin.Configuration{
+				URL: "https://spoon.live.bitmark.com:17011/",
+			}
+		case structs.Testing:
+			bitmarkConfigs.Bitcoin = bitcoin.Configuration{
+				URL: "https://spoon.test.bitmark.com:17011/",
+			}
+		}
 		bitmarkConfigs.SaveToJson(bitmarkConfigFile)
 	}
 

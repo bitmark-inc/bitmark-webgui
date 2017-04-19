@@ -93,7 +93,7 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 		DataDirectory: dataDirectory,
 		PidFile:       "", // no PidFile by default
 		Chain:         Bitmark,
-
+		Nodes:         "chain",
 		Database: DatabaseType{
 			Directory: defaultLevelDBDirectory,
 			Name:      defaultBitmarkDatabase,
