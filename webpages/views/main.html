@@ -87,27 +87,6 @@
         </div>
         <div class="row row-text">
           <div class="col-xs-6 col-sm-3">
-            <div class="main-text"><b>NODES</b>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-9">
-            <div class="main-text">{{ bitmarkConfig.nodes }}</div>
-          </div>
-        </div>
-        <div class="row row-text">
-          <div class="col-xs-6 col-sm-3">
-            <div class="main-text"><b>LISTEN</b>
-            </div>
-          </div>
-          <div class="col-xs-6 col-sm-9">
-            <ul class="main-list" style="list-style-type:none">
-              <li ng-repeat="listen in bitmarkConfig.client_rpc.listen">{{listen}}</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="row row-text">
-          <div class="col-xs-6 col-sm-3">
             <div class="main-text"><b>ANNOUNCE</b></div>
           </div>
           <div class="col-xs-6 col-sm-9">
@@ -150,7 +129,7 @@
           </div>
           <div class="col-xs-6 col-sm-9">
             <ul class="main-list" style="list-style-type:none">
-              <li ng-repeat="brdc in bitmarkConfig.peering.broadcast"> {{brdc}} </li>
+              <li ng-repeat="brdc in bitmarkConfig.peering.announce.broadcast"> {{brdc}} </li>
             </ul>
           </div>
         </div>
@@ -162,7 +141,7 @@
           </div>
           <div class="col-xs-6 col-sm-9">
             <ul class="main-list" style="list-style-type:none">
-              <li ng-repeat="listen in bitmarkConfig.peering.listen"> {{listen}} </li>
+              <li ng-repeat="listen in bitmarkConfig.peering.announce.listen"> {{listen}} </li>
             </ul>
           </div>
         </div>
