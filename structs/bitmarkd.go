@@ -104,14 +104,14 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 			Certificate:        defaultCertificateFile,
 			PrivateKey:         defaultKeyFile,
 			Announce:           []string{},
-			Listen:             []string{},
+			Listen:             []string{"0.0.0.0:2130"},
 		},
 
 		Peering: peer.Configuration{
 			DynamicConnections: true,
 
-			Broadcast:  []string{},
-			Listen:     []string{},
+			Broadcast:  []string{"0.0.0.0:2135"},
+			Listen:     []string{"0.0.0.0:2136"},
 			PublicKey:  defaultPeerPublicKeyFile,
 			PrivateKey: defaultPeerPrivateKeyFile,
 			Announce: peer.Announce{
@@ -125,8 +125,8 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 			PublicKey:  defaultProofPrivateKeyFile,
 			PrivateKey: defaultProofPublicKeyFile,
 			SigningKey: defaultProofSigningKeyFile,
-			Submit:     []string{},
-			Publish:    []string{},
+			Submit:     []string{"127.0.0.1:2141"},
+			Publish:    []string{"127.0.0.1:2140"},
 		},
 
 		Logging: LoggerType{

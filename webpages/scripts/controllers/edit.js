@@ -15,25 +15,17 @@
 var defaultBitmarkConfig = {
   "client_rpc": {
     "maximum_connections": 50,
-    "listen": ["127.0.0.1:2130"],
     "announce": ["127.0.0.1:2130"]
   },
   "peering": {
-    "broadcast": ["127.0.0.1:2135"],
-    "listen": ["127.0.0.1:2136"],
     "announce": {
-      "broadcast": [""],
-      "listen": [""]
+      "broadcast": ["127.0.0.1:2135"],
+      "listen": ["127.0.0.1:2136"]
     }
   },
   "proofing": {
     "publish": ["127.0.0.1:2140"],
     "submit": ["127.0.0.1:2141"]
-  },
-  "Bitcoin": {
-    "username": "",
-    "password": "",
-    "url": ""
   }
 }
 
@@ -158,22 +150,6 @@ angular.module('bitmarkWebguiApp')
     };
 
     var saveConfig = function (callBackFunc) {
-      // set bitcoin object
-      switch ($scope.bitcoinUseProxy) {
-        case 'local':
-          $scope.bitmarkConfig.Bitcoin = $scope.localBitcoin;
-          break;
-        case 'other':
-          $scope.bitmarkConfig.Bitcoin = $scope.otherProxyTemp;
-          break;
-        case 'testing':
-          $scope.bitmarkConfig.Bitcoin = $scope.bitmarkTestNetProxyTemp;
-          break;
-        case 'bitmark':
-          $scope.bitmarkConfig.Bitcoin = $scope.bitmarkProxyTemp;
-          break;
-      }
-
       var bitmarkConfig = $scope.bitmarkConfig;
       var prooferdConfig = $scope.prooferdConfig;
 
@@ -201,7 +177,7 @@ angular.module('bitmarkWebguiApp')
             $scope.bitmarkConfig = defaultBitmarkConfig;
             $scope.setErrorMsg(true, results.prooferd.err);
           } else {
-            $scope.bitmarkConfig = results.bitmarkd.data;
+            $scope.bitmarkConfig = checkConfig(results.bitmarkd.data);
           }
 
           if (results.prooferd.err || Object.keys(results.prooferd).length == 0) {
@@ -248,35 +224,22 @@ angular.module('bitmarkWebguiApp')
 
     // return {bitmarkConfig:{}, error:""}
     var checkConfig = function (config) {
-      var result = {
-        config: {},
-        error: ""
-      };
 
-      // delete empty element
-      var checkItems = ["ClientRPC", "Peering"];
-      var checkFields = ["Listen", "Announce", "Connect", "Broadcast"];
+      var clientAnnounce = config.client_rpc.announce
+      var peerAnnounce = config.peering.announce
 
-      for (var i = 0; i < checkItems.length; i++) {
-        var checkItem = checkItems[i];
-        if (!config[checkItem]) {
-          continue
-        }
-        for (var j = 0; j < checkFields.length; j++) {
-          var checkField = checkFields[j];
-          if (config[checkItem][checkField] != undefined) {
-            var fields = config[checkItem][checkField];
-            for (var k = fields.length - 1; k > 0; k--) {
-              if (fields[k] == "") {
-                fields.splice(k, 1);
-              }
-            }
-          }
-        }
+      if (!peerAnnounce.broadcast || peerAnnounce.broadcast.length == 0) {
+        peerAnnounce.broadcast = ["127.0.0.1:2135"]
       }
 
+      if (!peerAnnounce.listen || peerAnnounce.listen.length == 0) {
+        peerAnnounce.listen = ["127.0.0.1:2136"]
+      }
 
-      result.config = config;
-      return result;
+      if (!clientAnnounce || clientAnnounce.length == 0) {
+        config.client_rpc.announce = ["127.0.0.1:2130"]
+      }
+
+      return config;
     };
   });

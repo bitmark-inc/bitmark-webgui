@@ -155,12 +155,8 @@ func UpdateConfig(w http.ResponseWriter, req *http.Request, chain, bitmarkConfig
 	}
 	bitmarkdConfig.Chain = chain
 	bitmarkdConfig.Nodes = request.BitmarkConfig.Nodes
-	bitmarkdConfig.ClientRPC.Listen = request.BitmarkConfig.ClientRPC.Listen
 	bitmarkdConfig.ClientRPC.Announce = request.BitmarkConfig.ClientRPC.Announce
-	bitmarkdConfig.Peering.Broadcast = request.BitmarkConfig.Peering.Broadcast
-	bitmarkdConfig.Peering.Listen = request.BitmarkConfig.Peering.Listen
-	bitmarkdConfig.Proofing.Publish = request.BitmarkConfig.Proofing.Publish
-	bitmarkdConfig.Proofing.Submit = request.BitmarkConfig.Proofing.Submit
+	bitmarkdConfig.Peering.Announce = request.BitmarkConfig.Peering.Announce
 	bitmarkdConfig.SaveToJson(bitmarkConfigFile)
 
 	prooferdConfig, err := structs.NewProoferdConfiguration(prooferdConfigFile)
