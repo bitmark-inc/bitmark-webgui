@@ -1,7 +1,9 @@
 FROM ubuntu
 
-RUN apt-get -q update
-RUN apt-get -yq install automake autoconf pkg-config libtool software-properties-common git wget
+RUN apt-get -q update && \
+    apt-get -yq install automake autoconf pkg-config libtool software-properties-common && \
+    apt-get -yq install git wget net-tools vim && \
+    apt-get -y autoclean
 
 RUN git clone https://github.com/vstakhov/libucl /libucl && \
     cd /libucl && \
@@ -18,12 +20,22 @@ RUN mkdir /phc-winner-argon2 && \
 
 RUN add-apt-repository ppa:longsleep/golang-backports && apt-get -q update && apt-get install -yq golang-go libzmq3-dev
 
-ENV GOPATH /go
-RUN go get github.com/bitmark-inc/bitmark-cli && \
-    go get github.com/bitmark-inc/bitmarkd || go install github.com/bitmark-inc/bitmarkd/command/...
-RUN go get github.com/yudai/gotty && go get github.com/bitmark-inc/bitmark-webgui
-RUN /go/bin/bitmark-webgui -c ~/.config/webgui/webgui.conf setup
-RUN cd ~/.config/webgui && ln -s /go/src/github.com/bitmark-inc/bitmark-webgui/webpages
+RUN apt-get install -y maven openjdk-8-jdk && apt-get -y autoclean
+RUN git clone https://github.com/bitmark-inc/bitmark-pay /bitmark-pay && cd /bitmark-pay && \
+    mvn -Dmaven.repo.local="local-maven-repository/m2" package && \
+    sed -i -e "s/%%BITMARK_PAY_JAR%%/\/bitmark-pay\/target\/bitmarkPayService-3.1-jar-with-dependencies.jar/g" bin/bitmark-pay && \
+    mv bin/bitmark-pay /usr/local/bin/
 
-EXPOSE 2150
-CMD ["/go/bin/bitmark-webgui", "-c", "/root/.config/webgui/webgui.conf", "start"]
+ENV GOPATH /go
+ENV PATH="/go/bin:${PATH}"
+RUN go get github.com/bitmark-inc/bitmark-cli && \
+    go get github.com/bitmark-inc/bitmarkd || go install github.com/bitmark-inc/bitmarkd/command/... && \
+    go get github.com/yudai/gotty
+
+COPY webpages /.config/webgui/webpages
+RUN go get github.com/bitmark-inc/bitmark-webgui && \
+    /go/bin/bitmark-webgui -c /.config/webgui/webgui.conf setup
+
+EXPOSE 2130 2135 2136 2150
+CMD ["/go/bin/bitmark-webgui", "-c", "/.config/webgui/webgui.conf", "start"]
+
