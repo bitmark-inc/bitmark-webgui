@@ -28,25 +28,14 @@ angular.module('bitmarkWebguiApp')
       utils.setErrorMsg($scope.error, show, msg);
     };
 
-    var getInfoPromise;
+    var getBitmarkdStatusPromise;
     var getProoferdStatusPromise;
     var intervalTime = 6 * 1000;
     var bitmarkdisRunning = false;
     var prooferdisRunning = false;
-    httpService.send('statusBitmarkd').then(
-      function (result) {
-        // check status and set disable button
-        if (result.search("stop") >= 0) {
-          disableStartBitmarkBtn(false);
-        } else { // bitmarkd is running
-          getBitmarkInfo();
-          getInfoPromise = $interval(getBitmarkInfo, intervalTime);
-        }
-      },
-      function (errorMsg) {
-        $scope.setErrorMsg(true, errorMsg);
-        $interval.cancel(getInfoPromise);
-      });
+
+    getBitmarkdStatus()
+    getBitmarkdStatusPromise = $interval(getBitmarkdStatus, intervalTime)
 
     getProoferdStatus()
     getProoferdStatusPromise = $interval(getProoferdStatus, intervalTime);
@@ -81,8 +70,7 @@ angular.module('bitmarkWebguiApp')
         function (result) {
           // disable bitmark start button
           if (result.search("start running bitmarkd") >= 0) {
-            getBitmarkInfo();
-            getInfoPromise = $interval(getBitmarkInfo, intervalTime);
+            disableStartBitmarkBtn(true);
           } else {
             disableStartBitmarkBtn(false);
           }
@@ -90,17 +78,10 @@ angular.module('bitmarkWebguiApp')
         function (errorMsg) {
           disableStartBitmarkBtn(false);
           $scope.setErrorMsg(true, errorMsg);
-          $interval.cancel(getInfoPromise);
         });
     };
     $scope.stopBitmark = function () {
       allBitmarkdDisable();
-      $scope.setErrorMsg(false, "");
-      $interval.cancel(getInfoPromise);
-
-      // check bitmark mode
-      //  mode: resynchronize: show modal to alert
-
       $scope.bitmarkInfo = undefined;
       httpService.send("stopBitmarkd").then(
         function (result) {
@@ -139,7 +120,7 @@ angular.module('bitmarkWebguiApp')
           }
         },
         function (errorMsg) {
-          disableStartProoferdBtn(false);
+          disableStartProoferdBtn(true);
           $scope.setErrorMsg(true, errorMsg);
         });
     }
@@ -182,7 +163,6 @@ angular.module('bitmarkWebguiApp')
         // kill the stop
         allBitmarkdDisable();
         $scope.setErrorMsg(false, "");
-        $interval.cancel(getInfoPromise);
         $scope.bitmarkInfo = undefined;
         httpService.send("stopBitmarkd").then(
           function (result) {
@@ -226,6 +206,20 @@ angular.module('bitmarkWebguiApp')
       $scope.disableProoferdStop = true;
     };
 
+    function getBitmarkdStatus() {
+      httpService.send('statusBitmarkd').then(
+        function (result) {
+          if (result.search("stop") >= 0) {
+            disableStartBitmarkBtn(false);
+          } else {
+            disableStartBitmarkBtn(true);
+            getBitmarkInfo();
+          }
+        },
+        function (errorMsg) {
+          $scope.setErrorMsg(true, errorMsg);
+        });
+    }
 
     function getProoferdStatus() {
       httpService.send('statusProoferd').then(
@@ -241,27 +235,21 @@ angular.module('bitmarkWebguiApp')
         });
     }
 
-    var getBitmarkInfo = function () {
+    function getBitmarkInfo() {
       httpService.send("getBitmarkdInfo").then(
         function (result) {
           $scope.setErrorMsg(false, "");
           $scope.bitmarkInfo = result;
-          if (result.mode == undefined) {
-            allBitmarkdDisable();
-          } else {
-            disableStartBitmarkBtn(true);
-          }
         },
         function (errorMsg) {
           if (errorMsg != "Failed to connect to bitmarkd") {
             $scope.setErrorMsg(true, errorMsg);
-            $interval.cancel(getInfoPromise);
           }
         });
     };
 
     $scope.$on('$destroy', function () {
-      $interval.cancel(getInfoPromise);
+      $interval.cancel(getBitmarkdStatusPromise);
       $interval.cancel(getProoferdStatusPromise);
     });
   });
