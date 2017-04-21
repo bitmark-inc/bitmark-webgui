@@ -104,7 +104,7 @@ func (bitmarkd *Bitmarkd) Setup(chain string, webguiConfigFile string, webguiCon
 			}
 		case structs.Testing:
 			bitmarkConfigs.Bitcoin = bitcoin.Configuration{
-				URL: "https://spoon.test.bitmark.com:17011/rpc-call",
+				URL: "https://spoon.test.bitmark.com:17555/rpc-call",
 			}
 		}
 		bitmarkConfigs.SaveToJson(bitmarkConfigFile)

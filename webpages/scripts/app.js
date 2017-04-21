@@ -20,8 +20,8 @@ var app = angular
     'ui.bootstrap'
   ])
         .constant("BitmarkProxyURL", {
-            "testing": "https://spoon.test.bitmark.com:17555/rpc-call",
-            "bitmark": "https://spoon.live.bitmark.com:17555/rpc-call"
+            "testing": "https://spoon.live.bitmark.com:17011/rpc-call",
+            "bitmark": "https://spoon.test.bitmark.com:17555/rpc-call"
         })
         .constant("ProxyTemp", {
             Username: "No-need-username",
