@@ -156,51 +156,52 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="row">
-          <div class="col-md-4">
-            <div class="panel panel-default">
-              <div class="main-title" style="font-weight: bold;">PROOFERD PEER</div>
-            </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="main-title" style="font-weight: bold;">PROOFERD PEER</div>
           </div>
-          <div class="col-md-8 col-md-offset-0">
-            <div class="main-body">
-              <div class="row row-text">
-                <div class="col-xs-6 col-sm-4">
-                  <div class="main-text"><b>CONNECT</b>
-                    <button ng-click="addItem(prooferdConfig.peering.connect, prooferdConfig.peering.maximum_connections)">+</button></div>
-                </div>
-                <div class="col-xs-6 col-sm-8">
-                  <table class="main-text">
-                    <tr ng-repeat-start="connect in prooferdConfig.peering.connect track by $index">
-                      <td># {{$index+1}}</td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:normal;">PUBLICKEY</td>
-                      <td><input class="inputform" type="text" ng-model="prooferdConfig.peering.connect[$index].public_key" ng-pattern="publicKeyPattern"
-                          required name="peerConnectpublic_key{{$index}}"></td>
-                      <td rowspan="3"><button ng-click="deleteItem(prooferdConfig.peering.connect, $index)">x</button></td>
-                    </tr>
-                    <tr>
-                      <td style="font-weight:normal;">Blocks</td>
-                      <td><input class="inputform" type="text" ng-model="prooferdConfig.peering.connect[$index].blocks" required></td>
-                      <td></td>
-                    </tr>
-                    <tr ng-repeat-end>
-                      <td style="font-weight:normal;">Submit</td>
-                      <td><input class="inputform" type="text" ng-model="prooferdConfig.peering.connect[$index].submit" required></td>
-                      <td></td>
-                    </tr>
-                  </table>
-                </div>
+        </div>
+        <div class="col-md-8 col-md-offset-0">
+          <div class="main-body">
+            <div class="row row-text">
+              <div class="col-xs-6 col-sm-4">
+                <div class="main-text"><b>CONNECT</b>
+                  <button ng-click="addItem(prooferdConfig.peering.connect, prooferdConfig.peering.maximum_connections)">+</button></div>
+              </div>
+              <div class="col-xs-6 col-sm-8">
+                <table class="main-text">
+                  <tr ng-repeat-start="connect in prooferdConfig.peering.connect track by $index">
+                    <td># {{$index+1}}</td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:normal;">PUBLICKEY</td>
+                    <td><input class="inputform" type="text" ng-model="prooferdConfig.peering.connect[$index].public_key" ng-pattern="publicKeyPattern"
+                        required name="peerConnectpublic_key{{$index}}"></td>
+                    <td rowspan="3"><button ng-click="deleteItem(prooferdConfig.peering.connect, $index)">x</button></td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight:normal;">Blocks</td>
+                    <td><input class="inputform" type="text" ng-model="prooferdConfig.peering.connect[$index].blocks" required></td>
+                    <td></td>
+                  </tr>
+                  <tr ng-repeat-end>
+                    <td style="font-weight:normal;">Submit</td>
+                    <td><input class="inputform" type="text" ng-model="prooferdConfig.peering.connect[$index].submit" required></td>
+                    <td></td>
+                  </tr>
+                </table>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
   <!-- <div class="row"> -->
   <!--   <div class="col-md-4">    -->

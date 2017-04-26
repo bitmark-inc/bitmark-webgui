@@ -175,7 +175,7 @@ angular.module('bitmarkWebguiApp')
         function (results) {
           if (results.bitmarkd.err) {
             $scope.bitmarkConfig = defaultBitmarkConfig;
-            $scope.setErrorMsg(true, results.prooferd.err);
+            $scope.setErrorMsg(true, results.bitmarkd.err);
           } else {
             $scope.bitmarkConfig = checkConfig(results.bitmarkd.data);
           }
