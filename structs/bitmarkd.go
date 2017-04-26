@@ -122,6 +122,7 @@ func NewBitmarkdConfiguration(configurationFileName string) (*BitmarkdConfigurat
 
 		Proofing: proof.Configuration{
 			//MaximumConnections: defaultProofers,
+			Currency:   "bitcoin",
 			PublicKey:  defaultProofPrivateKeyFile,
 			PrivateKey: defaultProofPublicKeyFile,
 			SigningKey: defaultProofSigningKeyFile,
