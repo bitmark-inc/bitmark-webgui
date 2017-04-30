@@ -24,14 +24,31 @@
   div
     nav-bar(v-if="this.$route.path !== '/login'")
     div.container
-      router-view
+      alert(:text="errorMsg" v-on:close="this.closeAlert")
+      router-view(v-on:error="this.handleError")
 </template>
 
 <script>
   import Navbar from "./navbar.vue"
+  import Alert from "./alert.vue"
   export default {
     components: {
+      "alert": Alert,
       "nav-bar": Navbar
+    },
+    methods: {
+      handleError(message) {
+        this.errorMsg = message
+      },
+
+      closeAlert() {
+        this.errorMsg = ""
+      }
+    },
+    data() {
+      return {
+        errorMsg: ""
+      }
     }
   }
 </script>

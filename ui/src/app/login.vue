@@ -78,6 +78,8 @@
               this.$router.push({
                 path: redirect
               })
+            } else {
+              this.$emit("error", response.data.result)
             }
           })
           .catch((error) => {
