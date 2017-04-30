@@ -20,7 +20,11 @@ var router = new VueRouter({routes, linkActiveClass: "active"})
 
 router.beforeEach((to, from, next) => {
   if (to.path === "/login") {
-    next()
+    if (getCookie("bitmark-webgui") !== "") {
+      next({path: "/"})
+    } else {
+      next()
+    }
   } else if (getCookie("bitmark-webgui") === "") {
     next({path: "/login", query: {redirect: to.fullPath}})
   } else {
