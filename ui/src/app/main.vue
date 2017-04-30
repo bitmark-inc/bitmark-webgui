@@ -22,7 +22,7 @@
 
 <template lang="pug">
   div
-    nav-bar
+    nav-bar(v-if="this.$route.path !== '/login'")
     div.container
       router-view
 </template>
