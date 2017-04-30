@@ -7,7 +7,6 @@
   .container {
     margin: 0 auto;
     text-align: center;
-    font-family: "Avenir Next LT Pro", Helvetica, Arial, sans-serif;
     text-transform: uppercase;
   }
 
@@ -45,27 +44,43 @@
 
 <template lang="pug">
     div.container
-      div.login-form
+      form.login-form(@submit="this.login")
         h3 login bitmark node web
         div
           input.password(type="password", v-model="password" placeholder="PASSWORD")
         div
-          button.login-btn(type="button", @click="this.login") login
+          button.login-btn(type="submit") login
 </template>
 
 <script>
   const axios = require("axios");
+  import {
+    getCookie
+  } from "../utils"
+
   export default {
     methods: {
-      login() {
-        console.log("login", this.password)
+      login(e) {
+        e.preventDefault();
+
+        let redirect = this.$route.query.redirect || "/"
+
+        if (getCookie("bitmark-webgui")) {
+          this.$router.push({
+            path: redirect
+          })
+        }
         axios.post('/api/login', {
             password: this.password
           })
-          .then(function(response) {
-            console.log(response);
+          .then((response) => {
+            if (response.data.ok) {
+              this.$router.push({
+                path: redirect
+              })
+            }
           })
-          .catch(function(error) {
+          .catch((error) => {
             console.log(error);
           });
       }
