@@ -3,6 +3,24 @@
     font-family: 'Avenir Next LT Pro';
     font-style: normal;
     src: url(/static/fonts/AvenirNextLTPro-Regular.otf) format('opentype'), local('Avenir Next LT Pro');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next LT Pro';
+    font-style: normal;
+    src: url(/static/fonts/AvenirNextLTPro-Bold.otf) format('opentype'), local('Avenir Next LT Pro');
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Avenir Next LT Pro';
+    font-style: normal;
+    src: url(/static/fonts/AvenirNextLTPro-Bold.otf) format('opentype'), local('Avenir Next LT Pro');
+    font-weight: bold;
+    font-style: bold;
   }
 
   body {
