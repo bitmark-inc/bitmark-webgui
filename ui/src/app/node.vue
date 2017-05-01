@@ -3,7 +3,7 @@
 </style>
 
 <template lang="pug">
-  div.content
+  div
     h3 current chain
     h3 bitmark node
     h3 prooferd node

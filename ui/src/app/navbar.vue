@@ -39,9 +39,10 @@
   }
 
   .menu a {
-    height: 14.5px;
     display: inline-block;
-    padding: 16px;
+    line-height: 0;
+    box-sizing: border-box;
+    padding: 23px;
     color: black;
     text-decoration: none;
   }

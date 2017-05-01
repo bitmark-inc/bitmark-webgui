@@ -28,12 +28,14 @@
     padding: 0 20px;
   }
 
-  .container {
+  .content {
     margin-top: 70px;
   }
 
-  .container h3,
-  .container h4 {
+  .content h3,
+  .content h4,
+  .content h5 {
+    font-weight: bold;
     text-transform: uppercase;
   }
 </style>
@@ -41,7 +43,7 @@
 <template lang="pug">
   div
     nav-bar(v-if="this.$route.path !== '/login'")
-    div.container
+    div.container-fluid.content
       alert(:text="errorMsg" v-on:close="this.closeAlert")
       router-view(v-on:error="this.handleError")
 </template>
