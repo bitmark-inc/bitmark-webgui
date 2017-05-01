@@ -11,7 +11,14 @@
 </template>
 
 <script>
+import {getCookie} from "../utils"
   export default {
+    mounted () {
+      let network = getCookie("bitmark-webgui-network")
+      if (!network) {
+        this.$router.push("/chain")
+      }
+    },
     data() {
       return {}
     }

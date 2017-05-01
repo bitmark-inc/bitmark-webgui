@@ -57,20 +57,52 @@ div
       div.col-md-9
         div.panel-body
           label.option
-            input(type="radio")
+            input(type="radio", value="testing", v-model="network")
             .
               TESTING
             p.help-text Link to public test bitmark network, to pay the transactions, please contact us.
           label.option
-            input(type="radio")
+            input(type="radio", value="bitmark", v-model="network")
             .
               BITMARK
             p.help-text Link to public bitmark network, pay the transactions with real bitcoin.
         div.panel-footer
-          button.start-node START NODE »
+          button.start-node(@click="start") START NODE »
 
 </template>
 
 <script>
+  import axios from "axios"
+  import {
+    setCookie,
+    getCookie
+  } from "../utils"
 
+  export default {
+    methods: {
+      start() {
+        axios.post("/api/bitmarkd", {
+            "option": "setup",
+            "network": this.network
+          })
+          .then((result) => {
+            console.log(result)
+            if (result.data && result.data.ok) {
+              setCookie("bitmark-webgui-network", this.network, 30)
+              this.$router.push("/node")
+            } else {
+              this.$emit("error", 'can not setup network')
+            }
+          })
+          .catch((e) => {
+            this.$emit("error", e)
+          })
+      }
+    },
+    data() {
+      return {
+        network: getCookie("bitmark-webgui-network")
+      }
+    }
+  }
 </script>

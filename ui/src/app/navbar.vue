@@ -69,6 +69,7 @@ div.navbar
       logout(e) {
         e.preventDefault();
         setCookie("bitmark-webgui", "", 0)
+        setCookie("bitmark-webgui-network", "", 0)
         this.$router.push({path: "/login"})
       }
     }
