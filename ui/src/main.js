@@ -6,6 +6,7 @@ var Main = require('./app/main.vue')
 var Login = require('./app/login.vue')
 var Chain = require('./app/Chain.vue')
 var Node = require('./app/node.vue')
+var Config = require('./app/config.vue')
 var Console = require('./app/console.vue')
 
 import axios from "axios";
@@ -16,6 +17,7 @@ var routes = [
   {path: '/login', component: Login},
   {path: '/chain', component: Chain},
   {path: '/node', component: Node},
+  {path: '/node/config', component: Config},
   {path: '/console', component: Console}
 ]
 
