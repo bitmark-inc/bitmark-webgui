@@ -4,6 +4,7 @@ Vue.use(VueRouter)
 
 var Main = require('./app/main.vue')
 var Login = require('./app/login.vue')
+var Chain = require('./app/Chain.vue')
 var Node = require('./app/node.vue')
 var Console = require('./app/console.vue')
 
@@ -12,6 +13,7 @@ import {getCookie} from "./utils"
 var routes = [
   {path: '/', component: Main, redirect: '/node'},
   {path: '/login', component: Login},
+  {path: '/chain', component: Chain},
   {path: '/node', component: Node},
   {path: '/console', component: Console}
 ]

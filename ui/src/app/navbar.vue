@@ -56,9 +56,8 @@ div.navbar
     router-link(to="/node") Node
     router-link(to="/console") Console
   div.right.menu
-    a(href="") Switch Network
+    router-link(to="/chain") Switch Chain
     a(href="", @click="this.logout") Logout
-
 </template>
 
 <script>
