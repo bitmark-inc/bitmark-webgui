@@ -18,9 +18,12 @@ import {getCookie} from "../utils"
       if (!network) {
         this.$router.push("/chain")
       }
+      this.network = network;
     },
     data() {
-      return {}
+      return {
+        network: ""
+      }
     }
   }
 </script>
