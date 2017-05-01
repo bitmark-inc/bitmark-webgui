@@ -86,12 +86,22 @@ div
             "network": this.network
           })
           .then((result) => {
+            if (result.data && result.data.ok) {
+              return axios.post("/api/prooferd", {
+                "option": "setup",
+                "network": this.network
+              })
+            } else {
+              this.$emit("error", 'fail to setup bitmarkd service')
+            }
+          })
+          .then((result) => {
             console.log(result)
             if (result.data && result.data.ok) {
               setCookie("bitmark-webgui-network", this.network, 30)
               this.$router.push("/node")
             } else {
-              this.$emit("error", 'can not setup network')
+              this.$emit("error", 'fail to setup prooferd service')
             }
           })
           .catch((e) => {
