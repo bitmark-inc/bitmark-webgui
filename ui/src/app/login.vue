@@ -79,11 +79,11 @@
                 path: redirect
               })
             } else {
-              this.$emit("error", response.data.result)
+              throw new Error(response.data.result);
             }
           })
-          .catch((error) => {
-            console.log(error);
+          .catch((e) => {
+            this.$emit("error", e.message)
           });
       }
     },

@@ -188,10 +188,10 @@
             if (resp.data.ok) {
               service.status = resp.data.result
             } else {
-              this.$emit("error", resp.data.result)
+              throw new Error(resp.data.result)
             }
           }).catch((e) => {
-            this.$emit("error", e)
+            this.$emit("error", e.message)
           })
           .then(() => {
             service.querying = false
