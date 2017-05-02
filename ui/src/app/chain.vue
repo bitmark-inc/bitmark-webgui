@@ -81,31 +81,34 @@ div
   export default {
     methods: {
       start() {
+        if (!this.network) {
+          this.$emit("error", "no network is selected")
+          return
+        }
         axios.post("/api/bitmarkd", {
             "option": "setup",
             "network": this.network
           })
-          .then((result) => {
-            if (result.data && result.data.ok) {
+          .then((resp) => {
+            if (resp.data && resp.data.ok) {
               return axios.post("/api/prooferd", {
                 "option": "setup",
                 "network": this.network
               })
             } else {
-              this.$emit("error", 'fail to setup bitmarkd service')
+              throw new Error('fail to setup bitmarkd service: ' + resp.data.result)
             }
           })
-          .then((result) => {
-            console.log(result)
-            if (result.data && result.data.ok) {
+          .then((resp) => {
+            if (resp.data && resp.data.ok) {
               setCookie("bitmark-webgui-network", this.network, 30)
               this.$router.push("/node")
             } else {
-              this.$emit("error", 'fail to setup prooferd service')
+              throw new Error('fail to setup prooferd service: ' + resp.data.result)
             }
           })
           .catch((e) => {
-            this.$emit("error", e)
+            this.$emit("error", e.message)
           })
       }
     },
