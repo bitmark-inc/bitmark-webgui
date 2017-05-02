@@ -11,7 +11,7 @@
     padding: 15px;
   }
 
-  .info-box > span {
+  .info-box>span {
     text-transform: uppercase;
     font-weight: bold;
   }
