@@ -80,7 +80,7 @@ func (bitmarkd *Bitmarkd) Setup(chain string, webguiConfigFile string, webguiCon
 	bitmarkConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("bitmarkd-%s", chain), "bitmarkd.conf")
 
 	if bitmarkd.running {
-		return fault.ErrBitmarkdIsRunning
+		bitmarkd.ModeStart <- false
 	}
 
 	bitmarkd.configFile = bitmarkConfigFile

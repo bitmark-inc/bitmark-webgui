@@ -44,6 +44,7 @@ axios.interceptors.response.use(function (response) {
     // Do something with response error
     if (error.response && error.response.status === 401) {
       setCookie("bitmark-webgui", "", 0)
+      setCookie("bitmark-webgui-network", "", 0)
       setTimeout(()=>{
         router.push("/login")
       }, 0)

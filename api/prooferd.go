@@ -79,20 +79,17 @@ func Prooferd(w http.ResponseWriter, req *http.Request, webguiFilePath string, w
 			response.Result = prooferdStopped
 		}
 	case `setup`:
-		if prooferdService.IsRunning() {
-			response.Result = prooferdAlreadyStartErr
-		} else {
-			if err := prooferdService.Setup(request.Network, webguiFilePath, webguiConfig); nil != err {
-				if os.IsNotExist(err) {
-					response.Result = "prooferd config not found"
-				} else {
-					response.Result = err.Error()
-				}
+		if err := prooferdService.Setup(request.Network, webguiFilePath, webguiConfig); nil != err {
+			if os.IsNotExist(err) {
+				response.Result = "prooferd config not found"
 			} else {
-				response.Ok = true
-				response.Result = nil
+				response.Result = err.Error()
 			}
+		} else {
+			response.Ok = true
+			response.Result = nil
 		}
+
 	default:
 		response.Result = apiErr
 		if err := writeApiResponseAndSetCookie(w, response); nil != err {

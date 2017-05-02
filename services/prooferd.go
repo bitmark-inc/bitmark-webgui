@@ -74,7 +74,7 @@ func (prooferd *Prooferd) IsRunning() bool {
 func (prooferd *Prooferd) Setup(chain string, webguiConfigFile string, webguiConfig *configuration.Configuration) error {
 	prooferdConfigFile := filepath.Join(webguiConfig.DataDirectory, fmt.Sprintf("prooferd-%s", chain), "prooferd.conf")
 	if prooferd.running {
-		return fault.ErrProoferdIsRunning
+		prooferd.ModeStart <- false
 	}
 
 	prooferd.configFile = prooferdConfigFile
