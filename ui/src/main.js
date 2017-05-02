@@ -42,9 +42,11 @@ axios.interceptors.response.use(function (response) {
     return response;
   }, function (error) {
     // Do something with response error
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       setCookie("bitmark-webgui", "", 0)
-      router.push("/login")
+      setTimeout(()=>{
+        router.push("/login")
+      }, 0)
     }
     return Promise.reject(error);
   });
