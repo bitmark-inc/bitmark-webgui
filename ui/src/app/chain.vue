@@ -1,5 +1,5 @@
 <style lang="" scoped>
-  .panel {
+  .chain-content {
     max-width: 730px;
     margin: 0 auto;
   }
@@ -10,6 +10,7 @@
   }
 
   .panel-heading .sub {
+    font-size: 12px;
     font-style: italic;
   }
 
@@ -24,6 +25,10 @@
   .option .help-text {
     font-size: 12px;
     margin: 4px 17px;
+  }
+
+  .panel-body {
+    margin: 25px 0;
   }
 
   .panel-footer {
@@ -46,7 +51,7 @@
 </style>
 
 <template lang="pug">
-div
+div.chain-content
   h4 start bitmark node
   div.panel.panel-default.box
     div.row
