@@ -3,9 +3,11 @@
     float: right;
   }
 
-  h3 .action .btn {
+  .action .btn {
     border: none;
-    margin-right: 10px;
+    margin: 0;
+    padding: 0 10px;
+    height: 100%;
     background: none;
     color: rgb(0, 96, 242);
     text-transform: uppercase;
@@ -14,36 +16,75 @@
     text-decoration: none;
   }
 
-  h3 .action .btn:hover {
+  .action .btn:hover {
     color: rgb(126, 211, 33);
   }
 
-  h3 .action .btn.stop:hover {
+  .action .btn.stop:hover {
     color: red;
   }
 
-  h3 .action .btn[disabled],
-  h3 .action .btn[disabled]:hover {
+  .action .btn[disabled],
+  .action .btn[disabled]:hover {
     color: rgb(193, 193, 193);
     cursor: not-allowed;
+  }
+
+  .row {
+    padding-bottom: 10px;
+  }
+
+  .fields {
+    margin-top: 5px;
+  }
+
+  .info-box {
+    background-color: rgb(249, 251, 255);
+    text-align: center;
+    padding: 15px;
+  }
+  .info-box > span {
+    text-transform: uppercase;
+    font-weight: bold;
   }
 </style>
 
 <template lang="pug">
   div
-    h3 current chain
-    p {{this.network}}
-    h3 bitmark node
+    h4 current chain
+    p.info-box
+      span {{this.network}}
+    h4 bitmark node
       div.action
-        button.btn(@click="this.startBitmarkd", :disabled="this.bitmarkd.status==='started'") Start
-        button.btn.stop(disabled, @click="this.stopBitmarkd", :disabled="this.bitmarkd.status==='stopped'") Stop
+        button.btn(
+          @click="this.startBitmarkd"
+          :disabled="!this.bitmarkd.status || this.bitmarkd.status==='started'") Start
+        button.btn.stop(
+          disabled, @click="this.stopBitmarkd"
+          :disabled="!this.bitmarkd.status || this.bitmarkd.status==='stopped'") Stop
         router-link(tag="button", class="btn",to="/node/config") Config
-    h3 prooferd node
+    p.info-box
+      status-grid(
+        v-if="this.bitmarkdInfo", title="bitmark info", :style='{backgroundColor: "rgb(249, 251, 255)"}'
+        :data="this.bitmarkdInfo", sub-align="horizontal")
+      span(v-else) Bitmarkd info is not available
+
+    h4 prooferd node
       div.action
-        button.btn(@click="this.startProoferd", :disabled="this.prooferd.status==='started'") Start
-        button.btn.stop(disabled, @click="this.stopProoferd", :disabled="this.prooferd.status==='stopped'") Stop
+        button.btn(@click="this.startProoferd"
+          :disabled="!this.prooferd.status || this.prooferd.status==='started'") Start
+        button.btn.stop(disabled, @click="this.stopProoferd"
+          :disabled="!this.prooferd.status || this.prooferd.status==='stopped'") Stop
         router-link(tag="button", class="btn", to="/node/config") Config
-    h3 configuration
+    p.info-box
+      span(v-if="this.prooferd.status") Prooferd is {{this.prooferd.status}}
+      span(v-else) Prooferd info is not available
+
+    h4 configuration
+
+    status-grid(title="bitmarkd rpc", :data="{chain: network, announce: bitmarkdConfig.chain}")
+    status-grid(title="bitmarkd peer", :data="this.bitmarkdPeerData")
+    status-grid(title="prooferd peer", :data="this.prooferdPeerData")
 </template>
 
 <script>
@@ -51,7 +92,28 @@
     getCookie
   } from "../utils"
   import axios from "axios"
+
+  import statusGrid from "../components/statusGrid.vue"
+
   export default {
+
+    computed: {
+      bitmarkdPeerData() {
+        return (this.bitmarkdConfig.peering) ? {
+          publickey: this.bitmarkdConfig.peering.public_key,
+          broadcast: this.bitmarkdConfig.peering.announce.broadcast[0],
+          listen: this.bitmarkdConfig.peering.announce.listen[0]
+        } : {}
+      },
+      prooferdPeerData() {
+        return (this.prooferdConfig.peering) ? {
+          connect: this.prooferdConfig.peering.connect
+        } : {}
+      }
+    },
+    components: {
+      "status-grid": statusGrid
+    },
     methods: {
       startBitmarkd(e) {
         e.preventDefault();
@@ -84,6 +146,35 @@
         })
       },
 
+      fetchBitmarkInfo() {
+        if (this.bitmarkd.status === "started") {
+          axios.post("/api/" + "bitmarkd", {
+            option: "info"
+          }).then((resp) => {
+            let data = resp.data
+            if (data.ok) {
+              this.bitmarkdInfo = data.result
+            }
+          })
+        }
+      },
+
+      fetchConfig() {
+        axios.get("/api/config")
+          .then((resp) => {
+            let data = resp.data
+            console.log(data)
+            if (data.ok) {
+              this.bitmarkdConfig = data.result.bitmarkd.data
+              this.prooferdConfig = data.result.prooferd.data
+              console.log(this.bitmarkdConfig, this.prooferdConfig)
+            }
+          })
+          .catch((e) => {
+
+          })
+      },
+
       fetchStatus(serviceName) {
         let service = this[serviceName]
         if (service.querying) {
@@ -114,32 +205,33 @@
         this.$router.push("/chain")
       }
       this.network = network;
-      this.bitmarkdTask = setInterval(() => {
+      this.fetchConfig()
+      this.periodicalTask = setInterval(() => {
         this.fetchStatus('bitmarkd')
-      }, 2000)
-      this.prooferdTask = setInterval(() => {
         this.fetchStatus('prooferd')
+        this.fetchBitmarkInfo()
       }, 2000)
     },
 
     destroyed() {
-      clearInterval(this.bitmarkdTask)
-      clearInterval(this.prooferdTask)
+      clearInterval(this.periodicalTask)
     },
 
     data() {
       return {
         network: "",
-        bitmarkdTask: null,
-        prooferdTask: null,
+        periodicalTask: null,
         bitmarkd: {
           querying: false,
-          status: "stopped"
+          status: ""
         },
         prooferd: {
           querying: false,
-          status: "stopped"
-        }
+          status: ""
+        },
+        bitmarkdInfo: null,
+        bitmarkdConfig: {},
+        prooferdConfig: {}
       }
     }
   }
