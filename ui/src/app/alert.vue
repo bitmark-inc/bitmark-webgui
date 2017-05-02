@@ -3,8 +3,9 @@
     width: 100%;
     border-radius: 5px;
     border: 1px solid;
-    border-color: #ff5656;
-    background-color: #ffbcbc;
+    color: #a94442;
+    border-color: #ebccd1;
+    background-color: #f2dede;
   }
 
   .alert p {
