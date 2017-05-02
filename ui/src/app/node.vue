@@ -68,7 +68,7 @@
       status-grid(
         v-if="this.bitmarkdInfo", title="bitmark info", :style='{backgroundColor: "rgb(249, 251, 255)"}'
         :data="this.bitmarkdInfo", sub-align="horizontal")
-      span(v-else) Bitmarkd info is not available
+      span(v-else) {{ (this.bitmarkd.status === 'started') ? 'Bitmarkd info is not available' : ('Bitmarkd is ' + (this.bitmarkd.status || "loading status")) }}
 
     h4 prooferd node
       div.action
@@ -78,8 +78,7 @@
           :disabled="!this.prooferd.status || this.prooferd.status==='stopped'") Stop
         router-link(tag="button", class="btn", to="/node/config") Config
     p.info-box
-      span(v-if="this.prooferd.status") Prooferd is {{this.prooferd.status}}
-      span(v-else) Prooferd info is not available
+      span Prooferd is {{this.prooferd.status || "loading status"}}
 
     h4 configuration
 
@@ -116,32 +115,30 @@
       "status-grid": statusGrid
     },
     methods: {
-      startBitmarkd(e) {
-        e.preventDefault();
-        console.log("start")
+      startBitmarkd() {
+        this.bitmarkd.status = ""
         axios.post("/api/" + "bitmarkd", {
           option: "start"
         })
       },
 
-      stopBitmarkd(e) {
-        e.preventDefault();
+      stopBitmarkd() {
+        this.bitmarkd.status = ""
+        this.bitmarkdInfo = null;
         axios.post("/api/" + "bitmarkd", {
           option: "stop"
         })
       },
 
-      startProoferd(e) {
-        e.preventDefault();
-        e.preventDefault();
+      startProoferd() {
+        this.prooferd.status = ""
         axios.post("/api/" + "prooferd", {
           option: "start"
         })
       },
 
-      stopProoferd(e) {
-        e.preventDefault();
-        e.preventDefault();
+      stopProoferd() {
+        this.prooferd.status = ""
         axios.post("/api/" + "prooferd", {
           option: "stop"
         })
@@ -164,15 +161,13 @@
         axios.get("/api/config")
           .then((resp) => {
             let data = resp.data
-            console.log(data)
             if (data.ok) {
               this.bitmarkdConfig = data.result.bitmarkd.data
               this.prooferdConfig = data.result.prooferd.data
-              console.log(this.bitmarkdConfig, this.prooferdConfig)
             }
           })
           .catch((e) => {
-
+            this.$emit(e.message)
           })
       },
 
