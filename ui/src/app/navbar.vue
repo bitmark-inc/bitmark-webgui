@@ -17,6 +17,14 @@
     border-bottom: 0.5px solid #b2c1d8;
     background-color: rgba(255, 255, 255, 0.8);
   }
+  .bitmark {
+    width: 120px;
+    height: 46px;
+  }
+  .bitmark img {
+    margin-top: 9px;
+    width: 120px;
+  }
   .menu {
     float: left;
     height: 46px;
@@ -51,8 +59,8 @@
 
 <template lang="pug">
 div.navbar
-  div.menu
-    p.trademark Bitmark
+  div.menu.bitmark
+    img(src="/static/images/bitmark-logo.png")
   div.menu
     router-link(to="/node") Node
     router-link(to="/console") Console
