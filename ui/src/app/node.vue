@@ -83,7 +83,7 @@
 
     h4 configuration
 
-    status-grid(title="bitmarkd rpc", :data="{chain: network, announce: bitmarkdConfig.chain}")
+    status-grid(title="bitmarkd rpc", :data="this.bitmarkdRPCData")
     status-grid(title="bitmarkd peer", :data="this.bitmarkdPeerData")
     status-grid(title="prooferd peer", :data="this.prooferdPeerData")
 </template>
@@ -99,6 +99,12 @@
   export default {
 
     computed: {
+      bitmarkdRPCData() {
+        return (this.bitmarkdConfig.peering) ? {
+          chain: this.network,
+          announce: this.bitmarkdConfig.client_rpc.announce[0]
+        } : {}
+      },
       bitmarkdPeerData() {
         return (this.bitmarkdConfig.peering) ? {
           publickey: this.bitmarkdConfig.peering.public_key,
