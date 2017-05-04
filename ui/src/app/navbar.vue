@@ -5,7 +5,6 @@
     padding: 0;
     list-style: none;
   }
-
   .navbar {
     top: 0;
     left: 0;
@@ -14,37 +13,39 @@
     margin: 0 20px;
     padding: 0 15px;
     min-height: 50px;
+    border-radius: 0;
     border-bottom: 0.5px solid #b2c1d8;
     background-color: rgba(255, 255, 255, 0.8);
   }
-
   .menu {
     float: left;
     height: 46px;
   }
-
   .menu .trademark {
     margin: 0;
     padding: 0 16px;
     line-height: 50px;
   }
-
   .menu.right {
     float: right;
   }
-
-  .menu a.active,
-  .menu a:hover {
-    border-bottom: 3.5px solid #b2c1d8
+  .menu>a.active,
+  .menu>a:hover {
+    border-bottom: 3px solid #b2c1d8
   }
-
-  .menu a {
+  .menu>a {
     display: inline-block;
     line-height: 0;
+    height: 0;
     box-sizing: border-box;
     padding: 23px;
     color: black;
+    border-bottom: 3px solid transparent;
     text-decoration: none;
+  }
+  .dropdown-menu {
+    margin: -4px;
+    padding: 10px 0;
   }
 </style>
 
@@ -56,8 +57,17 @@ div.navbar
     router-link(to="/node") Node
     router-link(to="/console") Console
   div.right.menu
-    router-link(to="/chain") Switch Chain
-    a(href="", @click="this.logout") Logout
+    a(@click="this.openAdmin") admin#{' '}
+      span.caret
+    div.dropdown(:class='{open: this.showAdmin}')
+      ul.dropdown-menu
+        li
+          router-link(to="/chain") Switch Chain
+        li
+          router-link(to="/password") Change Password
+        li.divider(role="separator")
+        li
+          a(href="", @click="this.logout") Logout
 </template>
 
 <script>
@@ -66,11 +76,26 @@ div.navbar
   } from "../utils"
   export default {
     methods: {
+      openAdmin() {
+        this.showAdmin = true
+        setTimeout(() => window.addEventListener('click', this.closeAdmin), 0)
+      },
+      closeAdmin() {
+        this.showAdmin = false
+        window.removeEventListener('click', this.closeAdmin)
+      },
       logout(e) {
         e.preventDefault();
         setCookie("bitmark-webgui", "", 0)
         setCookie("bitmark-webgui-network", "", 0)
-        this.$router.push({path: "/login"})
+        this.$router.push({
+          path: "/login"
+        })
+      }
+    },
+    data() {
+      return {
+        showAdmin: false
       }
     }
   }
