@@ -8,6 +8,7 @@
     margin: 0;
     padding: 0 10px;
     height: 100%;
+    opacity: 1;
     background: none;
     color: rgb(0, 96, 242);
     text-transform: uppercase;
