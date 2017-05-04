@@ -68,6 +68,10 @@ div
       div.col-xs-6.col-sm-4 CHAIN
       div.upper.col-xs-6.col-sm-8 {{bitmarkdConfig.chain}}
     div.row
+      div.col-xs-6.col-sm-4 NODES
+      div.col-xs-6.col-sm-8
+        input.input-form(v-model="bitmarkdConfig.nodes")
+    div.row
       div.col-xs-6.col-sm-4 Announce
       div.col-xs-6.col-sm-8
         input.input-form(v-model="bitmarkdConfig.client_rpc.announce[0]")
@@ -219,6 +223,7 @@ div
       return {
         bitmarkdConfig: {
           chain: getCookie("bitmark-webgui-network"),
+          nodes: "chain",
           client_rpc: {
             announce: ["127.0.0.1:2130"]
           },
