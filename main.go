@@ -221,11 +221,7 @@ func startWebServer(configs *configuration.Configuration) error {
 
 	// serve web pages
 	mainLog.Info("Set up server files")
-	baseWebDir := configs.DataDirectory + "/webpages"
-	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir(baseWebDir+"/lib/"))))
-	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir(baseWebDir+"/scripts/"))))
-	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(baseWebDir+"/images/"))))
-	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir(baseWebDir+"/styles/"))))
+	baseWebDir := "./ui/public"
 	http.Handle("/", http.FileServer(http.Dir(baseWebDir+"/")))
 
 	// serve api
