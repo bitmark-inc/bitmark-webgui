@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"path"
 	"path/filepath"
 	"strconv"
 	"syscall"
@@ -221,7 +222,7 @@ func startWebServer(configs *configuration.Configuration) error {
 
 	// serve web pages
 	mainLog.Info("Set up server files")
-	baseWebDir := "./ui/public"
+	baseWebDir := path.Join(configs.DataDirectory, "/ui/public")
 	http.Handle("/", http.FileServer(http.Dir(baseWebDir+"/")))
 
 	// serve api
