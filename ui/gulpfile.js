@@ -18,8 +18,7 @@ gulp.task("dev", ["clean", "html"], function () {
   const b = browserify('./src/main.js')
     .plugin(hmr)
     .transform(vueify)
-    .transform(babelify,
-               {presets: ["es2015", "stage-2"], plugins: ["transform-runtime"]})
+    .transform(babelify, {presets: ["es2015"]})
 
   function bundle() {
     b.bundle()
@@ -77,6 +76,7 @@ gulp.task("html", ["bundle-js"], function(){
 gulp.task("bundle-js", function() {
   return browserify('./src/main.js')
     .transform(vueify)
+    .transform(babelify, {presets: ["es2015"]})
     .bundle()
     .on('error', function(err){
       console.error('' + err);
