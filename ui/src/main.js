@@ -4,7 +4,7 @@ Vue.use(VueRouter)
 
 var Main = require('./app/main.vue')
 var Login = require('./app/login.vue')
-var Chain = require('./app/Chain.vue')
+var Chain = require('./app/chain.vue')
 var Node = require('./app/node.vue')
 var Config = require('./app/config.vue')
 var Console = require('./app/console.vue')
